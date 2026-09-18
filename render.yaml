@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: duty-line
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    envVars:
+      - key: LLM_BASE_URL
+        value: https://api.anthropic.com/v1
+      - key: LLM_MODEL
+        value: claude-sonnet-4-6
+      - key: LLM_API_KEY
+        sync: false

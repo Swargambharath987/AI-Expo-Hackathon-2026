@@ -329,6 +329,9 @@ export default function App() {
     const fetchHealth = () => fetch("/api/health").then(r => r.json()).then(setHealth).catch(() => {});
     fetchHealth();
     const t = setTimeout(fetchHealth, 4000);
+    fetch("/api/profile").then(r => r.json()).then((p) => {
+      if (p?.name_last_first) { setProfile(p); setProfileDraft(p); setPage("main"); }
+    }).catch(() => {});
     return () => clearTimeout(t);
   }, []);
 
@@ -611,6 +614,28 @@ export default function App() {
                         <div style={{ padding: "12px 16px" }}>
                           {renderMarkdown(msg.content)}
                         </div>
+
+                        {/* Tool trace / reasoning */}
+                        {msg.tool_calls && msg.tool_calls.length > 0 && (
+                          <div style={{ margin: "0 16px 12px", borderTop: "1px solid #f1f5f9", paddingTop: 10 }}>
+                            <button onClick={() => toggleReasoning(msg.id)}
+                              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: 12, color: "#64748b", fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}
+                            >
+                              <span>{showReasoning[msg.id] ? "▾" : "▸"}</span>
+                              {msg.tool_calls.length} tool call{msg.tool_calls.length > 1 ? "s" : ""}
+                            </button>
+                            {showReasoning[msg.id] && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                                {msg.tool_calls.map((tc, idx) => (
+                                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: 2, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "8px 12px" }}>
+                                    <span style={{ fontSize: 12, fontWeight: 600, color: NAVY }}>{tc.label}</span>
+                                    <span style={{ fontSize: 12, color: "#64748b" }}>{tc.result_summary}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         {/* Form download */}
                         {msg.form_output && (

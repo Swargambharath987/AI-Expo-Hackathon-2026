@@ -23,6 +23,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, field_validator
 
 load_dotenv()
@@ -33,11 +34,12 @@ log = logging.getLogger("dutyline")
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-ROOT         = Path(__file__).parent
-OUTPUT_DIR   = ROOT / "output"
-PROFILE_FILE = ROOT / "profile.json"
-GSA_CACHE    = ROOT / "data" / "gsa_cache.json"
-VECTORSTORE  = ROOT / "vectorstore"
+ROOT           = Path(__file__).parent
+OUTPUT_DIR     = ROOT / "output"
+PROFILE_FILE   = ROOT / "profile.json"
+GSA_CACHE      = ROOT / "data" / "gsa_cache.json"
+VECTORSTORE    = ROOT / "vectorstore"
+FRONTEND_DIST  = ROOT / "frontend" / "dist"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.anthropic.com/v1")
@@ -467,6 +469,19 @@ async def clear_history():
     return {"status": "cleared"}
 
 
-@app.get("/")
-async def root():
-    return {"service": "Duty Line API", "version": "1.0.0", "docs": "/docs"}
+if FRONTEND_DIST.is_dir():
+    # Production: serve the built React app from the same process.
+    # /api/* is registered above and always wins; everything else falls
+    # through to index.html so client-side routing works.
+    app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def spa(full_path: str):
+        candidate = FRONTEND_DIST / full_path
+        if full_path and candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(FRONTEND_DIST / "index.html")
+else:
+    @app.get("/")
+    async def root():
+        return {"service": "Duty Line API", "version": "1.0.0", "docs": "/docs"}
