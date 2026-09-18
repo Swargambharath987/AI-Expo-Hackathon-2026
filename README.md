@@ -148,7 +148,7 @@ This means Duty Line isn't locked into a single vendor. If a better model comes 
 
 ```bash
 # 1. Clone and set up Python environment
-git clone https://github.com/yli12313/AI-Expo-Hackathon-2026.git
+git clone https://github.com/Swargambharath987/AI-Expo-Hackathon-2026.git
 cd AI-Expo-Hackathon-2026
 python3 -m venv venv
 source venv/bin/activate
@@ -158,8 +158,11 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env — add your Claude API key (or OpenRouter key)
 
-# 3. Build the vector store (first time only, ~5-10 min)
-#    Parses all regulation PDFs, chunks semantically, embeds, stores in ChromaDB
+# 3. (Optional) Rebuild the vector store — only needed if you're changing
+#    the source regulations. A pre-built vectorstore/ ships in the repo,
+#    so most setups can skip straight to step 4.
+#    Needs pdfplumber, which isn't in the runtime requirements:
+pip install -r requirements-ingest.txt
 python3 ingest.py
 
 # 4. Start the backend (Terminal 1)
@@ -178,6 +181,23 @@ Open [http://localhost:5173](http://localhost:5173).
 ```bash
 curl http://localhost:8000/api/health
 ```
+
+---
+
+## Deploying (Render)
+
+The `Dockerfile` builds the React frontend and bundles it into the same
+FastAPI process (backend serves the built UI under `/`, API under `/api/*`)
+— one service, one URL.
+
+1. Push to GitHub (already done if you're reading this from the repo).
+2. On [Render](https://render.com), New → Web Service → connect this repo.
+   Render auto-detects `render.yaml` and the Docker runtime.
+3. Set the `LLM_API_KEY` environment variable in the Render dashboard
+   (kept out of `render.yaml`/git on purpose).
+4. Deploy. First build takes a few minutes (installs `sentence-transformers`
+   / `chromadb` / torch). The free instance (512MB RAM) may be tight for the
+   embedding model at load — bump to Starter if it OOMs on boot.
 
 ---
 
