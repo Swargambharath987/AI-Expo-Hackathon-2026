@@ -17,7 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
-ENV PORT=8000
-EXPOSE 8000
+# 7860 is Hugging Face Spaces' default port for Docker SDK (no README
+# frontmatter needed). Render (and anywhere else) injects its own $PORT
+# at runtime, which the CMD below respects regardless of this default.
+ENV PORT=7860
+EXPOSE 7860
 
 CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT}"]
