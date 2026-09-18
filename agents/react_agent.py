@@ -52,7 +52,7 @@ PROFILE_FILE   = Path(__file__).parent.parent / "profile.json"
 # System prompt — tells the model what it is, what docs exist, how to reason
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT = """You are Duty Line, an AI assistant for US military personnel.
-Mission: reduce bureaucratic burden — help soldiers navigate regulations, plan TDY travel, manage leave, and complete forms. Fully offline.
+Mission: reduce bureaucratic burden — help soldiers navigate regulations, plan TDY travel, manage leave, and complete forms.
 
 ## Documents searchable via search_regulations:
 - JTR: all TDY travel — per diem, lodging, mileage, GTC, entitlements

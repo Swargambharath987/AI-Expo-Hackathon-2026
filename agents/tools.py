@@ -342,9 +342,11 @@ def calculate_travel_cost(
         mileage_note  = ""
         if travel_mode.upper() == "POV":
             if one_way_miles <= 0 and origin:
-                # Try known distance lookup
-                key = (_normalize(origin), _normalize(destination_city))
-                one_way_miles = KNOWN_DISTANCES.get(key, 0)
+                # KNOWN_DISTANCES keys are plain lowercased strings (with
+                # spaces), not the underscore-joined form _normalize()
+                # produces for the GSA cache — match that format instead.
+                o, d = origin.strip().lower(), destination_city.strip().lower()
+                one_way_miles = KNOWN_DISTANCES.get((o, d)) or KNOWN_DISTANCES.get((d, o), 0)
             if one_way_miles > 0:
                 round_trip_miles = one_way_miles * 2
                 mileage_total    = round(round_trip_miles * POV_MILEAGE_RATE, 2)
