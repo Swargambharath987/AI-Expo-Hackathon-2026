@@ -7,3 +7,4 @@ __pycache__/
 output/
 profile.json
 CLAUDE_CONTEXT.md
+NOTES_*.txt
