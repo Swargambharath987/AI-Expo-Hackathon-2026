@@ -222,6 +222,105 @@ function storeProfile(p: SoldierProfile) {
   try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch {}
 }
 
+// Optional "use your own key": kept only in this browser, sent with each chat
+// request, and used instead of the server's key for that request.
+type Provider = "anthropic" | "openai";
+interface OwnKey { provider: Provider; api_key: string; model: string; }
+const OWN_KEY_KEY = "dutyline_own_key";
+const PROVIDER_LABEL: Record<Provider, string> = { anthropic: "Anthropic (Claude)", openai: "OpenAI" };
+
+function loadOwnKey(): OwnKey | null {
+  try {
+    const raw = localStorage.getItem(OWN_KEY_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function storeOwnKey(k: OwnKey | null) {
+  try { k ? localStorage.setItem(OWN_KEY_KEY, JSON.stringify(k)) : localStorage.removeItem(OWN_KEY_KEY); } catch {}
+}
+
+function AiSettingsModal({ current, onSave, onClose }: {
+  current: OwnKey | null;
+  onSave: (k: OwnKey | null) => void;
+  onClose: () => void;
+}) {
+  const [provider, setProvider] = useState<Provider>(current?.provider ?? "anthropic");
+  const [apiKey, setApiKey]     = useState(current?.api_key ?? "");
+  const [model, setModel]       = useState(current?.model ?? "");
+  const [models, setModels]     = useState<string[]>(current?.model ? [current.model] : []);
+  const [state, setState]       = useState<"idle" | "checking" | "valid" | "invalid" | "unreachable">(current ? "valid" : "idle");
+
+  async function check() {
+    setState("checking");
+    try {
+      const res = await fetch("/api/llm/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, api_key: apiKey.trim() }),
+      });
+      if (!res.ok) { setState("invalid"); return; }
+      const data: { valid: boolean | null; models: string[]; default_model: string } = await res.json();
+      if (data.valid === null) { setState("unreachable"); return; }
+      if (!data.valid) { setState("invalid"); return; }
+      setModels(data.models);
+      setModel(data.models.includes(data.default_model) ? data.default_model : (data.models[0] ?? data.default_model));
+      setState("valid");
+    } catch { setState("unreachable"); }
+  }
+
+  const input = { display: "block", width: "100%", marginBottom: 10, border: "1px solid #e2e8f0", borderRadius: 6, padding: "8px 12px", fontSize: 13, color: "#1e293b", outline: "none", background: "#fff" } as const;
+  const note: Record<typeof state, string> = {
+    idle: "", checking: "Checking key…", valid: "✓ Key accepted",
+    invalid: "✕ Key rejected by the provider", unreachable: "Couldn't reach the provider — try again",
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 20px 60px rgba(0,0,0,0.15)", width: 360, maxWidth: "100%", padding: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <span style={{ fontWeight: 600, fontSize: 15 }}>AI Settings</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: 18, lineHeight: 1 }}>✕</button>
+        </div>
+        <p style={{ fontSize: 12, color: "#64748b", marginTop: 0, marginBottom: 14, lineHeight: 1.5 }}>
+          Optionally use your own API key. It's stored only in this browser and sent with your requests — never saved on the server.
+        </p>
+        <select value={provider} style={input}
+          onChange={e => { setProvider(e.target.value as Provider); setModels([]); setModel(""); setState("idle"); }}>
+          {(Object.keys(PROVIDER_LABEL) as Provider[]).map(p => <option key={p} value={p}>{PROVIDER_LABEL[p]}</option>)}
+        </select>
+        <input type="password" autoComplete="off" placeholder={provider === "anthropic" ? "sk-ant-…" : "sk-…"} style={input}
+          value={apiKey} onChange={e => { setApiKey(e.target.value); setState("idle"); }} />
+        {state === "valid" && models.length > 0 && (
+          <select value={model} onChange={e => setModel(e.target.value)} style={input}>
+            {models.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+        )}
+        {note[state] && (
+          <div style={{ fontSize: 12, marginBottom: 10, color: state === "valid" ? "#166534" : state === "checking" ? "#64748b" : "#b91c1c" }}>{note[state]}</div>
+        )}
+        {state === "valid" ? (
+          <button onClick={() => onSave({ provider, api_key: apiKey.trim(), model })}
+            style={{ width: "100%", padding: "10px 0", background: OLIVE, color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            Use this key
+          </button>
+        ) : (
+          <button onClick={check} disabled={apiKey.trim().length < 20 || state === "checking"}
+            style={{ width: "100%", padding: "10px 0", background: NAVY, color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: apiKey.trim().length < 20 ? 0.5 : 1 }}>
+            Check key
+          </button>
+        )}
+        {current && (
+          <button onClick={() => onSave(null)}
+            style={{ width: "100%", marginTop: 8, padding: "8px 0", background: "none", color: "#64748b", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>
+            Stop using my key (use the app's default)
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Landing Page ────────────────────────────────────────────────────────────
 
 function LandingPage({ onComplete }: { onComplete: (profile: SoldierProfile) => void }) {
@@ -331,6 +430,8 @@ export default function App() {
   const [showReasoning, setShowReasoning]   = useState<Record<string, boolean>>({});
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileDraft, setProfileDraft]     = useState<SoldierProfile>(EMPTY_PROFILE);
+  const [ownKey, setOwnKey]                 = useState<OwnKey | null>(() => loadOwnKey());
+  const [editingAi, setEditingAi]           = useState(false);
 
   const endRef   = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -374,7 +475,7 @@ export default function App() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, tab, profile }),
+        body: JSON.stringify({ message: text, tab, profile, ...(ownKey ? { llm: ownKey } : {}) }),
       });
       if (res.status === 429) {
         const detail = (await res.json().catch(() => null))?.detail ?? "Too many requests — please wait a moment and try again.";
@@ -419,14 +520,16 @@ export default function App() {
   const currentMod    = MODULES.find(m => m.key === tab)!;
   const tabMessages   = messages[tab];
   const userMessages  = tabMessages.filter(m => m.role === "user");
-  const llmReady     = health ? (health.llm_ready ?? health.ollama ?? false) : null;
+  // With their own key the visitor isn't affected by the server key's status
+  // (their key was verified when they saved it).
+  const llmReady     = ownKey ? true : health ? (health.llm_ready ?? health.ollama ?? false) : null;
   const llmDown      = llmReady === false;
 
   // Status pill
   const pillBg    = llmDown || status === "error" ? "#fee2e2" : busy ? "#fef3c7" : "#dcfce7";
   const pillText  = llmDown || status === "error" ? "#b91c1c" : busy ? "#92400e" : "#166534";
   const pillBorder= llmDown || status === "error" ? "#fca5a5" : busy ? "#fde68a" : "#86efac";
-  const pillLabel = llmDown ? "LLM Offline" : status === "error" ? "Error" :
+  const pillLabel = llmDown ? "AI Unavailable" : status === "error" ? "Error" :
                     status === "thinking" ? "Reasoning…" : status === "streaming" ? "Responding…" :
                     status === "done" ? "Complete" : "Ready";
   const dotColor  = llmDown || status === "error" ? "#ef4444" : busy ? "#f59e0b" : "#22c55e";
@@ -473,6 +576,11 @@ export default function App() {
         </div>
       </header>
 
+      {editingAi && (
+        <AiSettingsModal current={ownKey} onClose={() => setEditingAi(false)}
+          onSave={k => { setOwnKey(k); storeOwnKey(k); setEditingAi(false); }} />
+      )}
+
       {/* ── Profile modal ── */}
       {editingProfile && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -513,29 +621,9 @@ export default function App() {
 
           <div style={{ flex: 1, overflowY: "auto", padding: 16 }}>
 
-            {/* Modules */}
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Modules</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              {MODULES.map(m => {
-                const active = tab === m.key;
-                return (
-                  <button key={m.key} onClick={() => setTab(m.key)} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 8, border: "none", borderLeft: active ? `3px solid ${CRIMSON}` : "3px solid transparent", cursor: "pointer", background: active ? "#f0f4ff" : "transparent", color: active ? NAVY : "#475569", textAlign: "left", transition: "background 0.15s" }}
-                    onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "#f8fafc"; }}
-                    onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-                  >
-                    <span style={{ fontSize: 16, lineHeight: 1, marginTop: 1, flexShrink: 0 }}>{m.icon}</span>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: active ? NAVY : "#1e293b", lineHeight: 1.2 }}>{m.label}</div>
-                      <div style={{ fontSize: 11, color: active ? "#64748b" : "#94a3b8", marginTop: 2 }}>{m.subtitle}</div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
             {/* Session history */}
             {userMessages.length > 0 && (
-              <div style={{ marginTop: 20 }}>
+              <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase" }}>This Session</span>
                   <button onClick={clearHistory} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 10, color: "#94a3b8" }}
@@ -555,16 +643,18 @@ export default function App() {
           {/* Health dots */}
           <div style={{ padding: "12px 16px", borderTop: "1px solid #f1f5f9" }}>
             {[
-              { label: health ? (health.llm_provider === "ollama" ? "Ollama (local)" : "AI Model") : "AI Model", ok: llmReady },
-              { label: `Vector Store (${health?.vector_store_chunks ?? "…"})`, ok: health ? (health.vector_store_chunks > 0) : null },
-              { label: "GSA Rates Cached", ok: health ? health.gsa_cache_loaded : null },
-              { label: health?.offline_ready ? "Offline Ready" : "Cloud Mode", ok: health ? true : null, color: health?.offline_ready ? "#22c55e" : "#f59e0b" },
-            ].map(({ label, ok, color }) => (
+              { label: ownKey ? `AI: your ${PROVIDER_LABEL[ownKey.provider]} key` : health?.llm_provider === "ollama" ? "AI: Ollama (local)" : "AI Model", ok: llmReady },
+              { label: `Regulation Search (${health?.vector_store_chunks ?? "…"})`, ok: health ? (health.vector_store_chunks > 0) : null },
+              { label: "Per Diem Rates", ok: health ? health.gsa_cache_loaded : null },
+            ].map(({ label, ok }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: ok === null ? "#cbd5e1" : ok ? (color || "#22c55e") : "#ef4444", display: "inline-block" }} />
+                <span style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: ok === null ? "#cbd5e1" : ok ? "#22c55e" : "#ef4444", display: "inline-block" }} />
                 <span style={{ fontSize: 11, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</span>
               </div>
             ))}
+            <button onClick={() => setEditingAi(true)} style={{ background: "none", border: "none", padding: 0, marginTop: 4, cursor: "pointer", fontSize: 11, fontWeight: 600, color: llmDown ? CRIMSON : "#64748b" }}>
+              ⚙ AI settings{llmDown ? " — use your own key" : ""}
+            </button>
           </div>
         </aside>
 

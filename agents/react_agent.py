@@ -26,7 +26,7 @@ import warnings
 from typing import Generator
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AuthenticationError, OpenAI
 
 from agents.tools import TOOL_SCHEMAS, execute_tool
 
@@ -112,10 +112,8 @@ class ReActAgent:
     """
 
     def __init__(self):
-        # Bounded timeout + a single retry so a hung API call fails visibly
-        # instead of holding the request open indefinitely.
-        self._client  = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY,
-                               timeout=LLM_TIMEOUT, max_retries=1)
+        self._clients: dict[tuple[str, str], OpenAI] = {}
+        self._use_llm(None)
         self._history: list[dict] = []   # conversation turns
         self._profile: dict       = {}   # set per turn by chat()
         self.last_form: dict | None = None   # fill_form result from the latest turn
@@ -124,13 +122,17 @@ class ReActAgent:
     # Public API
     # ------------------------------------------------------------------
 
-    def chat(self, user_message: str, profile: dict | None = None) -> Generator[str, None, None]:
+    def chat(self, user_message: str, profile: dict | None = None,
+             llm: dict | None = None) -> Generator[str, None, None]:
         """
         Process a user message. Yields response tokens as they stream.
         Yields tool observation lines (prefixed with ⚙) during reasoning.
         profile is the requesting soldier's profile, used for context and form fills.
+        llm is an optional {base_url, api_key, model} for the visitor's own key;
+        None uses the server's configured provider.
         """
         self._profile  = profile or {}
+        self._use_llm(llm)
         self.last_form = None
         # Enrich message with extracted structured fields before LLM sees it
         enriched = self._enrich_message(user_message)
@@ -138,6 +140,11 @@ class ReActAgent:
 
         try:
             yield from self._react_loop()
+        except AuthenticationError:
+            log.warning("LLM provider rejected the API key")
+            error_msg = "\n[Error: the AI provider rejected the API key. If you're using your own key, check it in AI settings.]"
+            self._add_message("assistant", error_msg)
+            yield error_msg
         except Exception:
             # Details go to the server log only — the raw exception can carry
             # API error bodies or internals that shouldn't reach the browser.
@@ -145,6 +152,26 @@ class ReActAgent:
             error_msg = "\n[Error: the assistant hit a problem answering this. Please try again.]"
             self._add_message("assistant", error_msg)
             yield error_msg
+
+    def _use_llm(self, llm: dict | None):
+        """Select the client and model for this turn."""
+        cfg = llm or {"base_url": LLM_BASE_URL, "api_key": LLM_API_KEY, "model": LLM_MODEL}
+        key = (cfg["base_url"], cfg["api_key"])
+        if key not in self._clients:
+            if len(self._clients) >= 3:
+                self._clients.clear()
+            # Bounded timeout + a single retry so a hung API call fails visibly
+            # instead of holding the request open indefinitely.
+            self._clients[key] = OpenAI(base_url=cfg["base_url"], api_key=cfg["api_key"],
+                                        timeout=LLM_TIMEOUT, max_retries=1)
+        self._client = self._clients[key]
+        self._model  = cfg["model"]
+        # OpenAI's newer models take max_completion_tokens and only the
+        # default temperature; reasoning models also need a bigger budget.
+        if "api.openai.com" in cfg["base_url"]:
+            self._gen_params = {"max_completion_tokens": 2048}
+        else:
+            self._gen_params = {"temperature": 0.1, "max_tokens": 512}
 
     def _enrich_message(self, message: str) -> str:
         """
@@ -206,12 +233,11 @@ class ReActAgent:
 
             # Call LLM — non-streaming for tool decision phase
             response = self._client.chat.completions.create(
-                model=LLM_MODEL,
+                model=self._model,
                 messages=messages,
                 tools=TOOL_SCHEMAS,
                 tool_choice="auto",
-                temperature=0.1,
-                max_tokens=512,
+                **self._gen_params,
             )
 
             choice      = response.choices[0]
@@ -293,11 +319,10 @@ class ReActAgent:
             "content": "Based on everything gathered so far, provide your best answer now.",
         })
         fallback = self._client.chat.completions.create(
-            model=LLM_MODEL,
+            model=self._model,
             messages=messages,
-            temperature=0.1,
-            max_tokens=512,
             stream=True,
+            **self._gen_params,
         )
         full = ""
         for chunk in fallback:

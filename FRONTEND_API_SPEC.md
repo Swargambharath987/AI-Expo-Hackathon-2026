@@ -25,6 +25,15 @@ localStorage and is sent with every request; the backend uses it for that reques
 form fills and never stores it. Invalid fields are dropped, not rejected (e.g. a non-4-digit
 `ssn_last4` becomes `""`).
 
+`llm` (optional) — visitor's own key: `{"provider": "anthropic" | "openai", "api_key": "...", "model": "..."}`.
+Used for this request instead of the server key; `model` defaults per provider. Base URLs are fixed
+server-side. Own-key requests skip the daily rate caps.
+
+### POST `/api/llm/check`
+Validate a visitor's own key before saving it. Body: `{"provider": "anthropic" | "openai", "api_key": "..."}`.
+Response: `{"valid": true | false | null, "models": [...], "default_model": "..."}` — `null` means the
+provider couldn't be reached. Uses the provider's model-list endpoint (no tokens spent).
+
 `error` in the response is a short code (`internal_error`, `agent_init_failed`, `timeout`) —
 never raw exception text. `response` always holds a user-facing message.
 

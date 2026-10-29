@@ -20,7 +20,7 @@ import time
 import uuid
 from collections import OrderedDict, defaultdict, deque
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import requests
 from dotenv import load_dotenv
@@ -49,6 +49,13 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.anthropic.com/v1")
 LLM_MODEL    = os.getenv("LLM_MODEL",    "claude-sonnet-4-6")
 LLM_API_KEY  = os.getenv("LLM_API_KEY",  "")
+
+# Providers a visitor may use with their own key. Base URLs are fixed here —
+# never taken from the request — so a user key can only go to its provider.
+BYOK_PROVIDERS = {
+    "anthropic": {"base_url": "https://api.anthropic.com/v1", "default_model": "claude-sonnet-4-6"},
+    "openai":    {"base_url": "https://api.openai.com/v1",    "default_model": "gpt-4.1"},
+}
 
 # ---------------------------------------------------------------------------
 # App + CORS
@@ -159,14 +166,15 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-def _rate_limit(ip: str) -> int | None:
+def _rate_limit(ip: str, byok: bool = False) -> int | None:
     """Record a hit and return None, or return retry-after seconds if over a limit."""
     now   = time.time()
-    rules = [
-        (f"ip-min:{ip}", RATE_PER_IP_MINUTE, 60),
-        (f"ip-day:{ip}", RATE_PER_IP_DAY,    86400),
-        ("global-day",   RATE_GLOBAL_DAY,    86400),
-    ]
+    rules = [(f"ip-min:{ip}", RATE_PER_IP_MINUTE, 60)]
+    if not byok:
+        rules += [
+            (f"ip-day:{ip}", RATE_PER_IP_DAY, 86400),
+            ("global-day",   RATE_GLOBAL_DAY, 86400),
+        ]
     with _rate_lock:
         for key, limit, window in rules:
             hits = _rate_hits[key]
@@ -209,12 +217,45 @@ class ProfileModel(BaseModel):
     def ssn_digits_only(cls, v: str) -> str:
         return v if re.match(r"^\d{4}$", v) else ""
 
+class KeyCheckRequest(BaseModel):
+    provider: Literal["anthropic", "openai"]
+    api_key:  str
+
+    @field_validator("api_key")
+    @classmethod
+    def key_shape(cls, v: str) -> str:
+        v = v.strip()
+        if not 20 <= len(v) <= 300 or not re.match(r"^[\w\-.]+$", v):
+            raise ValueError("API key doesn't look valid")
+        return v
+
+
+class LLMOverride(KeyCheckRequest):
+    model: str = ""
+
+    @field_validator("model")
+    @classmethod
+    def model_shape(cls, v: str) -> str:
+        v = v.strip()
+        if v and not re.match(r"^[\w\-.:/]{1,100}$", v):
+            raise ValueError("invalid model name")
+        return v
+
+    def resolved(self) -> dict:
+        p = BYOK_PROVIDERS[self.provider]
+        return {"base_url": p["base_url"], "api_key": self.api_key,
+                "model": self.model or p["default_model"]}
+
+
 class ChatRequest(BaseModel):
     message: str
     tab: str = "travel"
     # The soldier profile lives in the user's browser and comes with every
     # request, so each user's forms use their own details.
     profile: ProfileModel | None = None
+    # Optional "bring your own key" — used for this request instead of the
+    # server's key. Never logged or stored server-side beyond the session.
+    llm: LLMOverride | None = None
 
     @field_validator("message")
     @classmethod
@@ -346,17 +387,47 @@ def _check_ollama() -> bool:
         return False
 
 
-def _check_cloud_llm(provider: str) -> bool:
-    """Validate cloud API key by format — fast, no network call, no tokens burned."""
-    key = LLM_API_KEY or ""
-    if not key or "your-key" in key or len(key) < 20:
-        return False
-    if provider == "claude":
-        return key.startswith("sk-ant-")
-    if provider == "openrouter":
-        return key.startswith("sk-or-")
-    # Custom/unknown provider — key is present and not a placeholder
-    return True
+_NON_CHAT_MODEL = re.compile(r"embed|tts|whisper|dall-e|audio|realtime|image|transcribe|moderation|search|babbage|davinci")
+
+
+def _probe_llm_key(base_url: str, api_key: str) -> tuple[bool | None, list[str]]:
+    """
+    Ask the provider whether a key works by listing models — free, no tokens.
+    Returns (True, model_ids) if accepted, (False, []) if rejected,
+    (None, []) if the provider couldn't be reached.
+    """
+    if not api_key:
+        return False, []
+    try:
+        if "anthropic" in base_url:
+            r = requests.get("https://api.anthropic.com/v1/models",
+                             headers={"x-api-key": api_key, "anthropic-version": "2023-06-01"},
+                             params={"limit": 100}, timeout=8)
+        else:
+            r = requests.get(f"{base_url.rstrip('/')}/models",
+                             headers={"Authorization": f"Bearer {api_key}"}, timeout=8)
+    except requests.RequestException:
+        return None, []
+    if r.status_code in (401, 403):
+        return False, []
+    if not r.ok:
+        return None, []
+    ids = sorted(m.get("id", "") for m in r.json().get("data", []))
+    return True, [i for i in ids if i and not _NON_CHAT_MODEL.search(i)]
+
+
+_key_status: dict[str, Any] = {"ok": None, "checked": 0.0}
+
+
+def _server_key_ready() -> bool:
+    """Real check of the server's own key, cached (10 min if good, 1 min if not)."""
+    ttl = 600 if _key_status["ok"] else 60
+    if time.time() - _key_status["checked"] > ttl:
+        ok, _ = _probe_llm_key(LLM_BASE_URL, LLM_API_KEY)
+        if ok is not None or _key_status["ok"] is None:
+            _key_status["ok"] = bool(ok)
+        _key_status["checked"] = time.time()
+    return bool(_key_status["ok"])
 
 
 def _count_vector_chunks() -> int:
@@ -383,16 +454,14 @@ async def health():
     chunk_count = _count_vector_chunks()
     gsa_ok      = GSA_CACHE.exists() and GSA_CACHE.stat().st_size > 1000
 
-    # For Ollama: actively ping localhost to confirm it is running.
-    # For cloud providers (Claude, OpenRouter, custom): assume ready — we
-    # cannot ping the API without burning tokens; missing key is caught at
-    # first chat request.
+    # Ollama: ping localhost. Cloud providers: ask the provider whether the
+    # key is accepted (model listing — free, no tokens; cached).
     if provider == "ollama":
-        ollama_ok = _check_ollama()
+        ollama_ok = await run_in_threadpool(_check_ollama)
         llm_ready = ollama_ok
     else:
         ollama_ok = False
-        llm_ready = _check_cloud_llm(provider)
+        llm_ready = await run_in_threadpool(_server_key_ready)
 
     offline_ready = provider == "ollama" and llm_ready and chunk_count > 0 and gsa_ok
 
@@ -410,11 +479,27 @@ async def health():
     }
 
 
-def _run_turn(slot: _AgentSlot, message: str, profile: dict) -> tuple[str, dict | None]:
+def _run_turn(slot: _AgentSlot, message: str, profile: dict,
+              llm: dict | None) -> tuple[str, dict | None]:
     """Run one agent turn. Blocking — call via the threadpool, never on the event loop."""
     with slot.lock:
-        raw = "".join(slot.agent.chat(message, profile))
+        raw = "".join(slot.agent.chat(message, profile, llm))
         return raw, slot.agent.last_form
+
+
+@app.post("/api/llm/check")
+async def check_llm_key(req: KeyCheckRequest, request: Request):
+    """Validate a visitor's own key and list the chat models it can use."""
+    retry_after = _rate_limit(_client_ip(request), byok=True)
+    if retry_after is not None:
+        return JSONResponse(status_code=429, content={"detail": "Too many requests — please wait a moment."},
+                            headers={"Retry-After": str(retry_after)})
+    ok, models = await run_in_threadpool(_probe_llm_key, BYOK_PROVIDERS[req.provider]["base_url"], req.api_key)
+    return {
+        "valid":         ok,
+        "models":        models,
+        "default_model": BYOK_PROVIDERS[req.provider]["default_model"],
+    }
 
 
 @app.post("/api/chat", response_model=ChatResponse)
@@ -424,7 +509,9 @@ async def chat(req: ChatRequest, request: Request):
     returns a structured response.
     """
     ip = _client_ip(request)
-    retry_after = _rate_limit(ip)
+    # Own-key requests don't spend the server's API credit, so they skip the
+    # daily caps but still get the per-minute limit.
+    retry_after = _rate_limit(ip, byok=req.llm is not None)
     if retry_after is not None:
         log.warning(f"rate limited | ip={ip} | retry_after={retry_after}s")
         return JSONResponse(
@@ -433,7 +520,7 @@ async def chat(req: ChatRequest, request: Request):
             headers={"Retry-After": str(retry_after)},
         )
 
-    log.info(f"chat | tab={req.tab} | ip={ip} | msg={req.message[:80]!r}")
+    log.info(f"chat | tab={req.tab} | ip={ip} | own_key={req.llm.provider if req.llm else 'no'} | msg={req.message[:80]!r}")
 
     try:
         slot = await run_in_threadpool(_get_slot, request.state.session_id, req.tab)
@@ -457,7 +544,8 @@ async def chat(req: ChatRequest, request: Request):
     try:
         raw, form = await asyncio.wait_for(
             run_in_threadpool(_run_turn, slot, req.message,
-                              req.profile.model_dump() if req.profile else {}),
+                              req.profile.model_dump() if req.profile else {},
+                              req.llm.resolved() if req.llm else None),
             timeout=CHAT_TIMEOUT_SECS,
         )
         answer, tool_calls, form_output = _parse_agent_output(raw, form)
