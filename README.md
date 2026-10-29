@@ -185,6 +185,16 @@ Open [http://localhost:5173](http://localhost:5173).
 curl http://localhost:8000/api/health
 ```
 
+### Tests
+
+The JTR cost math and the API's session, rate-limit and profile behaviour
+are covered by pytest. No API key or network needed — the LLM is faked.
+
+```bash
+pip install -r requirements-dev.txt
+python3 -m pytest tests
+```
+
 ### Usage Limits
 
 The public deployment spends real Claude API credit, so `/api/chat` is
@@ -204,7 +214,9 @@ variables:
 
 Each browser gets its own conversation per tab (via an httponly session
 cookie). Conversations are held in memory and reset when the server
-restarts; the saved soldier profile is shared by everyone on a deployment.
+restarts. The soldier profile is stored in the user's own browser
+(localStorage) and sent with each chat request, so it's never shared between
+users and never written to the server.
 
 ---
 
