@@ -10,20 +10,25 @@ Start:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
 import re
+import threading
 import time
+import uuid
+from collections import OrderedDict, defaultdict, deque
 from pathlib import Path
 from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, field_validator
 
 load_dotenv()
@@ -65,17 +70,117 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
-# ReAct agent — lazy singleton, one instance reused across requests
+# Sessions — one ReAct agent (and so one conversation history) per browser
+# session per tab. The session id lives in an httponly cookie. State is
+# in-memory, which is fine with Cloud Run's --max-instances 1; an instance
+# restart just starts everyone on a fresh conversation.
 # ---------------------------------------------------------------------------
-_agent = None
+SESSION_COOKIE    = "dl_session"
+SESSION_IDLE_SECS = 60 * 60   # drop conversations idle for an hour
+MAX_AGENTS        = 500       # hard cap on live (session, tab) agents
+CHAT_TIMEOUT_SECS = float(os.getenv("CHAT_TIMEOUT", "120"))
+_SID_RE           = re.compile(r"^[0-9a-f]{32}$")
 
-def get_agent():
-    global _agent
-    if _agent is None:
-        from agents.react_agent import ReActAgent
-        _agent = ReActAgent()
-        log.info("ReAct agent initialised")
-    return _agent
+
+class _AgentSlot:
+    def __init__(self, agent):
+        self.agent     = agent
+        self.lock      = threading.Lock()   # one in-flight turn per conversation
+        self.last_used = time.time()
+
+
+_agents: OrderedDict[tuple[str, str], _AgentSlot] = OrderedDict()
+_agents_lock = threading.Lock()
+
+
+def _get_slot(session_id: str, tab: str) -> _AgentSlot:
+    """Return the agent for this session+tab, creating it on first use."""
+    key = (session_id, tab)
+    with _agents_lock:
+        now  = time.time()
+        slot = _agents.pop(key, None)
+        # Least-recently-used first: evict idle conversations and enforce the cap
+        while _agents:
+            oldest_key, oldest = next(iter(_agents.items()))
+            if now - oldest.last_used > SESSION_IDLE_SECS or len(_agents) >= MAX_AGENTS:
+                del _agents[oldest_key]
+            else:
+                break
+        if slot is None:
+            from agents.react_agent import ReActAgent
+            slot = _AgentSlot(ReActAgent())
+            log.info(f"agent created | tab={tab} | live={len(_agents) + 1}")
+        slot.last_used = now
+        _agents[key] = slot
+        return slot
+
+
+def _session_slots(session_id: str) -> list[tuple[str, _AgentSlot]]:
+    with _agents_lock:
+        return [(tab, slot) for (sid, tab), slot in _agents.items() if sid == session_id]
+
+
+@app.middleware("http")
+async def session_cookie(request: Request, call_next):
+    sid = request.cookies.get(SESSION_COOKIE, "")
+    is_new = not _SID_RE.match(sid)
+    if is_new:
+        sid = uuid.uuid4().hex
+    request.state.session_id = sid
+    response = await call_next(request)
+    if is_new:
+        response.set_cookie(
+            SESSION_COOKIE, sid,
+            max_age=7 * 24 * 3600,
+            httponly=True,
+            samesite="lax",
+            secure=request.headers.get("x-forwarded-proto") == "https",
+        )
+    return response
+
+# ---------------------------------------------------------------------------
+# Rate limiting — /api/chat spends real Claude API credit on a public URL.
+# Sliding windows per client IP, plus a global daily cap that bounds total
+# spend even if per-IP limits are evaded.
+# ---------------------------------------------------------------------------
+RATE_PER_IP_MINUTE = int(os.getenv("RATE_PER_IP_MINUTE", "10"))
+RATE_PER_IP_DAY    = int(os.getenv("RATE_PER_IP_DAY",    "100"))
+RATE_GLOBAL_DAY    = int(os.getenv("RATE_GLOBAL_DAY",    "500"))
+
+_rate_hits: defaultdict[str, deque[float]] = defaultdict(deque)
+_rate_lock = threading.Lock()
+
+
+def _client_ip(request: Request) -> str:
+    # Cloud Run's front end appends the real client IP to X-Forwarded-For;
+    # earlier entries are client-supplied and can be spoofed.
+    fwd = request.headers.get("x-forwarded-for", "")
+    if fwd:
+        return fwd.split(",")[-1].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def _rate_limit(ip: str) -> int | None:
+    """Record a hit and return None, or return retry-after seconds if over a limit."""
+    now   = time.time()
+    rules = [
+        (f"ip-min:{ip}", RATE_PER_IP_MINUTE, 60),
+        (f"ip-day:{ip}", RATE_PER_IP_DAY,    86400),
+        ("global-day",   RATE_GLOBAL_DAY,    86400),
+    ]
+    with _rate_lock:
+        for key, limit, window in rules:
+            hits = _rate_hits[key]
+            while hits and now - hits[0] >= window:
+                hits.popleft()
+            if len(hits) >= limit:
+                return int(window - (now - hits[0])) + 1
+        for key, _, _ in rules:
+            _rate_hits[key].append(now)
+        if len(_rate_hits) > 10_000:
+            for key in [k for k, v in _rate_hits.items() if not v or now - v[-1] >= 86400]:
+                del _rate_hits[key]
+    return None
 
 # ---------------------------------------------------------------------------
 # Request / Response models
@@ -148,18 +253,17 @@ TOOL_LABEL_TO_NAME = {
 }
 
 
-def _parse_agent_output(raw: str) -> tuple[str, list[dict], dict | None]:
+def _parse_agent_output(raw: str, form: dict | None) -> tuple[str, list[dict], dict | None]:
     """
     Parse raw agent output into:
       - answer:      final response text
       - tool_calls:  list of {tool, label, result_summary} matching frontend ToolTrace
-      - form_output: {form_name, filled_fields, missing_fields, pdf_path, summary} or None
+      - form_output: built from this conversation's own fill_form result, or None
     """
     lines        = raw.split("\n")
     answer_lines = []
     tool_calls   = []
     form_output  = None
-    fill_used    = False
 
     # Pair ⚙ header lines with their following → result lines
     i = 0
@@ -174,8 +278,6 @@ def _parse_agent_output(raw: str) -> tuple[str, list[dict], dict | None]:
                 if marker in label:
                     tool_name = name
                     break
-            if tool_name == "fill_form":
-                fill_used = True
 
             # Grab the → result line that usually follows
             result_summary = ""
@@ -200,35 +302,16 @@ def _parse_agent_output(raw: str) -> tuple[str, list[dict], dict | None]:
 
         i += 1
 
-    # Detect form output when fill_form was called
-    if fill_used:
-        pdfs = sorted(OUTPUT_DIR.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
-        txts = sorted(OUTPUT_DIR.glob("*.txt"), key=lambda p: p.stat().st_mtime, reverse=True)
-        recent_pdf = pdfs[0] if pdfs and (time.time() - pdfs[0].stat().st_mtime) < 30 else None
-        recent_txt = txts[0] if txts and (time.time() - txts[0].stat().st_mtime) < 30 else None
-
-        txt_content = recent_txt.read_text() if recent_txt else ""
-        form_name   = recent_pdf.stem if recent_pdf else (recent_txt.stem if recent_txt else "form")
-
-        # Parse txt_content into filled_fields for the frontend table
-        filled_fields:  dict[str, str] = {}
-        missing_fields: list[str]      = []
-        for line in txt_content.splitlines():
-            if ": " in line and not line.startswith("Missing"):
-                k, _, v = line.partition(": ")
-                filled_fields[k.strip()] = v.strip()
-            elif line.startswith("Missing") or line.startswith("- "):
-                field = line.lstrip("- ").strip()
-                if field:
-                    missing_fields.append(field)
-
+    if form:
+        pdf_path = Path(form["pdf_path"]) if form.get("pdf_path") else None
+        pdf_ok   = pdf_path is not None and pdf_path.exists()
         form_output = {
-            "form_name":      form_name,
-            "filled_fields":  filled_fields,
-            "missing_fields": missing_fields,
-            "pdf_available":  recent_pdf is not None,
-            "pdf_url":        f"/api/forms/{recent_pdf.name}" if recent_pdf else None,
-            "txt_summary":    txt_content,
+            "form_name":      pdf_path.stem if pdf_path else form.get("form_name", "form"),
+            "filled_fields":  form.get("filled_fields", {}),
+            "missing_fields": form.get("missing_fields", []),
+            "pdf_available":  pdf_ok,
+            "pdf_url":        f"/api/forms/{pdf_path.name}" if pdf_ok else None,
+            "txt_summary":    form.get("summary", ""),
         }
 
     answer = "\n".join(answer_lines).strip()
@@ -321,15 +404,33 @@ async def health():
     }
 
 
+def _run_turn(slot: _AgentSlot, message: str) -> tuple[str, dict | None]:
+    """Run one agent turn. Blocking — call via the threadpool, never on the event loop."""
+    with slot.lock:
+        raw = "".join(slot.agent.chat(message))
+        return raw, slot.agent.last_form
+
+
 @app.post("/api/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest):
+async def chat(req: ChatRequest, request: Request):
     """
-    Main chat endpoint. Runs the ReAct agent and returns structured response.
+    Main chat endpoint. Runs this session's agent for the given tab and
+    returns a structured response.
     """
-    log.info(f"chat | tab={req.tab} | msg={req.message[:80]!r}")
+    ip = _client_ip(request)
+    retry_after = _rate_limit(ip)
+    if retry_after is not None:
+        log.warning(f"rate limited | ip={ip} | retry_after={retry_after}s")
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Too many requests — please wait a moment and try again."},
+            headers={"Retry-After": str(retry_after)},
+        )
+
+    log.info(f"chat | tab={req.tab} | ip={ip} | msg={req.message[:80]!r}")
 
     try:
-        agent = get_agent()
+        slot = await run_in_threadpool(_get_slot, request.state.session_id, req.tab)
     except Exception as e:
         log.error(f"Agent init failed: {e}")
         return ChatResponse(
@@ -339,13 +440,20 @@ async def chat(req: ChatRequest):
             error=str(e),
         )
 
-    try:
-        raw_parts: list[str] = []
-        for token in agent.chat(req.message):
-            raw_parts.append(token)
+    if slot.lock.locked():
+        return ChatResponse(
+            response="Still working on your previous message in this tab — please wait for it to finish.",
+            tool_calls=[],
+            form_output=None,
+            error=None,
+        )
 
-        raw = "".join(raw_parts)
-        answer, tool_calls, form_output = _parse_agent_output(raw)
+    try:
+        raw, form = await asyncio.wait_for(
+            run_in_threadpool(_run_turn, slot, req.message),
+            timeout=CHAT_TIMEOUT_SECS,
+        )
+        answer, tool_calls, form_output = _parse_agent_output(raw, form)
 
         log.info(f"chat done | tools={[t['tool'] for t in tool_calls]} | answer_len={len(answer)}")
 
@@ -356,6 +464,15 @@ async def chat(req: ChatRequest):
             error=None,
         )
 
+    except asyncio.TimeoutError:
+        log.error(f"chat timed out after {CHAT_TIMEOUT_SECS}s | tab={req.tab}")
+        return ChatResponse(
+            response="This request took too long and was stopped. Please try again.",
+            tool_calls=[],
+            form_output=None,
+            error="timeout",
+        )
+
     except Exception as e:
         log.error(f"Agent chat error: {e}", exc_info=True)
         return ChatResponse(
@@ -364,45 +481,6 @@ async def chat(req: ChatRequest):
             form_output=None,
             error=str(e),
         )
-
-
-@app.post("/api/chat/stream")
-async def chat_stream(req: ChatRequest):
-    """
-    Streaming chat via Server-Sent Events.
-    Each event: data: {"type": "reasoning"|"token"|"done", "text": "..."}
-    Frontend: use EventSource or fetch with ReadableStream.
-    """
-    import asyncio
-
-    def _run_agent(message: str):
-        agent = get_agent()
-        return list(agent.chat(message))
-
-    async def generate():
-        try:
-            loop = asyncio.get_event_loop()
-            tokens = await loop.run_in_executor(None, _run_agent, req.message)
-            for token in tokens:
-                stripped = token.strip()
-                if stripped.startswith("⚙") or stripped.startswith("→") or stripped.startswith("⚠"):
-                    event = json.dumps({"type": "reasoning", "text": token})
-                else:
-                    event = json.dumps({"type": "token", "text": token})
-                yield f"data: {event}\n\n"
-            yield f"data: {json.dumps({'type': 'done'})}\n\n"
-        except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'text': str(e)})}\n\n"
-
-    return StreamingResponse(
-        generate(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
-            "Connection": "keep-alive",
-        },
-    )
 
 
 @app.get("/api/forms/{filename}")
@@ -450,9 +528,10 @@ async def save_profile(profile: ProfileModel):
         data = profile.model_dump()
         PROFILE_FILE.write_text(json.dumps(data, indent=2))
 
-        # Reload profile in running agent without reinitialising
-        if _agent is not None:
-            _agent._profile = data
+        # Reload profile in running agents without resetting their conversations
+        with _agents_lock:
+            for slot in _agents.values():
+                slot.agent.update_profile(data)
 
         log.info(f"Profile saved: {data.get('name_last_first')} {data.get('rank')}")
         return {"status": "saved"}
@@ -462,10 +541,11 @@ async def save_profile(profile: ProfileModel):
 
 
 @app.delete("/api/chat/history")
-async def clear_history():
-    """Clear the agent's conversation history."""
-    if _agent is not None:
-        _agent.reset()
+async def clear_history(request: Request, tab: str | None = None):
+    """Clear this session's conversation history — one tab, or all tabs if none given."""
+    for slot_tab, slot in _session_slots(request.state.session_id):
+        if tab is None or slot_tab == tab:
+            slot.agent.reset()
     return {"status": "cleared"}
 
 

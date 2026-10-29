@@ -354,7 +354,7 @@ export default function App() {
   }
 
   async function clearHistory() {
-    try { await fetch("/api/chat/history", { method: "DELETE" }); } catch {}
+    try { await fetch(`/api/chat/history?tab=${tab}`, { method: "DELETE" }); } catch {}
     setMessages(p => ({ ...p, [tab]: [] }));
     setStatus("idle");
   }
@@ -372,6 +372,13 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text, tab }),
       });
+      if (res.status === 429) {
+        const detail = (await res.json().catch(() => null))?.detail ?? "Too many requests — please wait a moment and try again.";
+        setMessages(p => ({ ...p, [tab]: [...p[tab], { id: crypto.randomUUID(), role: "assistant", content: detail, timestamp: new Date() }] }));
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 3000);
+        return;
+      }
       if (!res.ok) throw new Error(`${res.status}`);
       const data: ChatResponse = await res.json();
       if (data.error) {

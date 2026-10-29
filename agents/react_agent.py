@@ -43,6 +43,7 @@ warnings.filterwarnings("ignore", message=".*existing embedding ID.*")
 LLM_BASE_URL   = os.getenv("LLM_BASE_URL",  "https://api.anthropic.com/v1")
 LLM_MODEL      = os.getenv("LLM_MODEL",     "claude-sonnet-4-6")
 LLM_API_KEY    = os.getenv("LLM_API_KEY",   "")
+LLM_TIMEOUT    = float(os.getenv("LLM_TIMEOUT", "30"))   # seconds per LLM call
 MAX_ITERATIONS = 5      # max tool calls per turn before forcing a final answer
 HISTORY_WINDOW = 8      # max messages kept in context (sliding window)
 RAG_TOP_K      = 2      # chunks per search — keeps context under 4096 tokens
@@ -112,9 +113,13 @@ class ReActAgent:
     """
 
     def __init__(self):
-        self._client  = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY)
+        # Bounded timeout + a single retry so a hung API call fails visibly
+        # instead of holding the request open indefinitely.
+        self._client  = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY,
+                               timeout=LLM_TIMEOUT, max_retries=1)
         self._history: list[dict] = []   # conversation turns
         self._profile: dict       = self._load_profile()
+        self.last_form: dict | None = None   # fill_form result from the latest turn
 
     # ------------------------------------------------------------------
     # Public API
@@ -126,6 +131,7 @@ class ReActAgent:
         Yields tool observation lines (prefixed with ⚙) during reasoning.
         """
         # Enrich message with extracted structured fields before LLM sees it
+        self.last_form = None
         enriched = self._enrich_message(user_message)
         self._add_message("user", enriched)
 
@@ -178,6 +184,11 @@ class ReActAgent:
     def reset(self):
         """Clear conversation history, keep profile."""
         self._history = []
+        self.last_form = None
+
+    def update_profile(self, profile: dict):
+        """Swap in a newly saved profile without resetting the conversation."""
+        self._profile = profile
 
     def get_history(self) -> list[dict]:
         return list(self._history)
@@ -240,6 +251,13 @@ class ReActAgent:
 
                     # Execute tool
                     result_str = execute_tool(tool_name, tool_args)
+                    if tool_name == "fill_form":
+                        try:
+                            form = json.loads(result_str)
+                            if form.get("success"):
+                                self.last_form = form
+                        except json.JSONDecodeError:
+                            pass
 
                     # Yield a short summary of the result
                     yield self._summarize_tool_result(tool_name, result_str) + "\n"

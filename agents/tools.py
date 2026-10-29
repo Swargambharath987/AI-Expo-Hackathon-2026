@@ -755,7 +755,8 @@ def fill_form(form_name: str, field_values: dict) -> dict:
                 missing_labels.append(label)
 
         # ---- Primary output: reportlab PDF (always generated) ----
-        ts          = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Microseconds keep concurrent fills of the same form from colliding
+        ts          = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         output_path = OUTPUT_DIR / f"{form_name}_{ts}.pdf"
         rl_ok       = _generate_reportlab_pdf(form_name, display_rows, missing_labels, output_path)
         if not rl_ok:
