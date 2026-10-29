@@ -60,21 +60,6 @@ Main chat endpoint. Runs the ReAct agent and returns a structured response.
 
 ---
 
-### POST `/api/chat/stream`
-Same as `/api/chat` but streams via Server-Sent Events. Use for real-time "watching it think" UX.
-
-**Response:** `text/event-stream`
-```
-data: {"type": "reasoning", "text": "⚙ Searching regulations [travel]: \"GTC mandatory\""}
-data: {"type": "reasoning", "text": "  → Found: jtr.pdf | 010204. Government Travel Charge Card"}
-data: {"type": "token",     "text": "Yes, the Government Travel Charge Card (GTCC) "}
-data: {"type": "token",     "text": "is mandatory for all TDY travel — JTR 010204."}
-data: {"type": "done"}
-```
-Frontend: `fetch` with `ReadableStream` decoder, or `EventSource`.
-
----
-
 ### GET `/api/health`
 Check backend + model status. Call on mount to populate sidebar status dots.
 
@@ -138,8 +123,9 @@ Load current saved profile. Call on mount to hydrate profile form.
 
 ---
 
-### DELETE `/api/chat/history`
-Clear the agent's conversation memory. Call when user clicks "New Conversation".
+### DELETE `/api/chat/history?tab=<tab>`
+Clear this session's conversation memory for one tab (omit `tab` to clear all tabs). Call when user clicks "New Conversation".
+Conversations are per browser session (httponly `dl_session` cookie) and per tab.
 
 **Response:** `{"status": "cleared"}`
 
@@ -149,7 +135,7 @@ Clear the agent's conversation memory. Call when user clicks "New Conversation".
 
 ### Backend ✅ ALL DONE
 - [x] `POST /api/chat` — ReAct agent, structured `tool_calls` + `form_output`
-- [x] `POST /api/chat/stream` — SSE streaming endpoint live
+- [x] `POST /api/chat` returns `429` + `Retry-After` when rate limited (10/min, 100/day per IP; 500/day total)
 - [x] `GET /api/health` — provider-agnostic LLM + ChromaDB + GSA status (`llm_provider`, `llm_ready`, `ollama` for backwards compat)
 - [x] `GET /api/forms/{filename}` — PDF download with path traversal protection
 - [x] `POST /api/profile` + `GET /api/profile` — persists to `profile.json`

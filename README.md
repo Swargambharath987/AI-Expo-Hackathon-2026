@@ -3,6 +3,9 @@
 **SCSP AI Expo Hackathon 2026 — GenAI.mil Track**
 *Phase 1: April 25–26, 2026*
 
+**Try it live:** https://duty-line-nfkymvutzq-uc.a.run.app — no login needed.
+The first load after a quiet period can take ~15s while the server wakes up.
+
 ---
 
 ## Team
@@ -94,7 +97,7 @@ React Frontend (Vite + TypeScript + Tailwind)
      |  POST /api/chat
      v
 FastAPI Backend (Python)
-     |
+     |  rate limit -> session cookie -> agent for this session + tab
      v
 ReAct Agent (Thought -> Action -> Observation loop)
   |-- Tool 1: search_regulations  <- ChromaDB semantic search over 2,063 reg chunks
@@ -182,20 +185,57 @@ Open [http://localhost:5173](http://localhost:5173).
 curl http://localhost:8000/api/health
 ```
 
+### Usage Limits
+
+The public deployment spends real Claude API credit, so `/api/chat` is
+rate limited: **10 requests/minute and 100/day per IP, 500/day total**.
+Over the limit the API returns `429` with a `Retry-After` header and the UI
+shows a "please wait" message. Each Claude call times out after 30s and a
+whole chat turn is capped at 120s. All limits are tunable via environment
+variables:
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `RATE_PER_IP_MINUTE` | `10` | Chat requests per IP per minute |
+| `RATE_PER_IP_DAY` | `100` | Chat requests per IP per day |
+| `RATE_GLOBAL_DAY` | `500` | Chat requests per day across all users |
+| `LLM_TIMEOUT` | `30` | Seconds per LLM API call |
+| `CHAT_TIMEOUT` | `120` | Seconds per full chat turn |
+
+Each browser gets its own conversation per tab (via an httponly session
+cookie). Conversations are held in memory and reset when the server
+restarts; the saved soldier profile is shared by everyone on a deployment.
+
 ---
 
-## Deploying (Render)
+## Deploying (Google Cloud Run)
 
+The live app runs on Cloud Run (project `duty-line`, region `us-central1`).
 The `Dockerfile` builds the React frontend and bundles it into the same
 FastAPI process (backend serves the built UI under `/`, API under `/api/*`)
 — one service, one URL.
 
-1. Push to GitHub (already done if you're reading this from the repo).
-2. On [Render](https://render.com), New → Web Service → connect this repo.
+From the repo root (Cloud Build builds the Dockerfile, no local Docker needed):
+
+```bash
+gcloud run deploy duty-line --source . --region us-central1 \
+  --allow-unauthenticated --memory 1Gi --max-instances 1
+```
+
+- `--max-instances 1` is a deliberate spend cap, and the in-memory sessions
+  and rate limits rely on it. Raising it would need shared state (e.g. Redis).
+- `LLM_API_KEY` is set in the Cloud Run console (Edit & deploy new revision →
+  Variables & Secrets), never in git.
+- A build takes ~5–10 minutes. Check it with
+  `curl https://duty-line-nfkymvutzq-uc.a.run.app/api/health`.
+
+### Alternative: Render
+
+1. On [Render](https://render.com), New → Web Service → connect this repo.
    Render auto-detects `render.yaml` and the Docker runtime.
-3. Set the `LLM_API_KEY` environment variable in the Render dashboard
+2. Set the `LLM_API_KEY` environment variable in the Render dashboard
    (kept out of `render.yaml`/git on purpose).
-4. Deploy. First build takes a few minutes (installs `sentence-transformers`
+3. Deploy. First build takes a few minutes (installs `sentence-transformers`
    / `chromadb` / torch). The free instance (512MB RAM) may be tight for the
    embedding model at load — bump to Starter if it OOMs on boot.
 
