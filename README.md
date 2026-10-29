@@ -117,8 +117,16 @@ The agent connects to any OpenAI-compatible API through a single environment var
 | Provider | Config | Cost (per 1M tokens) |
 |----------|--------|----------------------|
 | **Claude API (default)** | `LLM_BASE_URL=https://api.anthropic.com/v1` | ~$3–15 input / $15–75 output |
+| OpenAI | `LLM_BASE_URL=https://api.openai.com/v1`, `LLM_MODEL=gpt-4.1` | varies by model |
 | OpenRouter (Llama 3.1 70B) | `LLM_BASE_URL=https://openrouter.ai/api/v1` | ~$0.40 input / $0.40 output |
 | Ollama (optional) | `LLM_BASE_URL=http://localhost:11434/v1` | $0 — requires local GPU |
+
+Visitors can also **use their own key**: *AI settings* in the sidebar lets
+them pick Anthropic or OpenAI, paste a key (checked against the provider's
+free model-list endpoint, then they choose a model), and their requests go to
+that provider instead of the server's. The key stays in their browser's
+localStorage and is only ever sent to the fixed provider URL — the request
+can't redirect it elsewhere.
 
 This means Duty Line isn't locked into a single vendor. If a better model comes out tomorrow, or if procurement requires a specific provider, or if policy changes which APIs are authorized on a given network — the switch is one line in a config file. The rest of the system (retrieval, cost calculation, form generation) is completely independent of which LLM is behind the endpoint.
 
@@ -199,6 +207,8 @@ python3 -m pytest tests
 
 The public deployment spends real Claude API credit, so `/api/chat` is
 rate limited: **10 requests/minute and 100/day per IP, 500/day total**.
+Requests made with a visitor's own key skip the daily caps (they don't
+spend the server's credit) but keep the per-minute limit.
 Over the limit the API returns `429` with a `Retry-After` header and the UI
 shows a "please wait" message. Each Claude call times out after 30s and a
 whole chat turn is capped at 120s. All limits are tunable via environment
@@ -236,8 +246,13 @@ gcloud run deploy duty-line --source . --region us-central1 \
 
 - `--max-instances 1` is a deliberate spend cap, and the in-memory sessions
   and rate limits rely on it. Raising it would need shared state (e.g. Redis).
-- `LLM_API_KEY` is set in the Cloud Run console (Edit & deploy new revision →
-  Variables & Secrets), never in git.
+- `LLM_API_KEY` is never in git. To set or rotate it, run
+  `./scripts/set_llm_key.sh` — it prompts for the key with hidden input,
+  checks it with Anthropic, and updates Cloud Run (about a minute, no
+  rebuild) and your local `.env`. Or edit it in the Cloud Run console
+  (Edit & deploy new revision → Variables & Secrets).
+- `/api/health` checks the key for real (free model-list call, cached), so
+  the "AI Model" status light turns red if the key is revoked.
 - A build takes ~5–10 minutes. Check it with
   `curl https://duty-line-nfkymvutzq-uc.a.run.app/api/health`.
 
