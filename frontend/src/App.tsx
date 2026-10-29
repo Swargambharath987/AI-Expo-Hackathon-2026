@@ -205,21 +205,32 @@ const EMPTY_PROFILE: SoldierProfile = {
   supervisor_name: "", supervisor_title: "",
 };
 
+// The profile lives only in this browser and is sent with each chat request,
+// so every user's forms carry their own details. Storage can be unavailable
+// (private windows, blocked site data) — the app still works, it just won't
+// remember the profile across reloads.
+const PROFILE_KEY = "dutyline_profile";
+
+function loadProfile(): SoldierProfile | null {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    return raw ? { ...EMPTY_PROFILE, ...JSON.parse(raw) } : null;
+  } catch { return null; }
+}
+
+function storeProfile(p: SoldierProfile) {
+  try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch {}
+}
+
 // ─── Landing Page ────────────────────────────────────────────────────────────
 
 function LandingPage({ onComplete }: { onComplete: (profile: SoldierProfile) => void }) {
   const [draft, setDraft] = useState<SoldierProfile>(EMPTY_PROFILE);
   const [step, setStep] = useState<"welcome" | "profile">("welcome");
 
-  async function handleStart() {
+  function handleStart() {
     if (!draft.name_last_first || !draft.rank) return;
-    try {
-      await fetch("/api/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
-      });
-    } catch {}
+    storeProfile(draft);
     onComplete(draft);
   }
 
@@ -329,9 +340,8 @@ export default function App() {
     const fetchHealth = () => fetch("/api/health").then(r => r.json()).then(setHealth).catch(() => {});
     fetchHealth();
     const t = setTimeout(fetchHealth, 4000);
-    fetch("/api/profile").then(r => r.json()).then((p) => {
-      if (p?.name_last_first) { setProfile(p); setProfileDraft(p); setPage("main"); }
-    }).catch(() => {});
+    const saved = loadProfile();
+    if (saved?.name_last_first) { setProfile(saved); setProfileDraft(saved); setPage("main"); }
     return () => clearTimeout(t);
   }, []);
 
@@ -341,16 +351,10 @@ export default function App() {
     setShowReasoning(prev => ({ ...prev, [id]: !prev[id] }));
   }, []);
 
-  async function saveProfile() {
+  function saveProfile() {
     setProfile(profileDraft);
     setEditingProfile(false);
-    try {
-      await fetch("/api/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileDraft),
-      });
-    } catch {}
+    storeProfile(profileDraft);
   }
 
   async function clearHistory() {
@@ -370,7 +374,7 @@ export default function App() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, tab }),
+        body: JSON.stringify({ message: text, tab, profile }),
       });
       if (res.status === 429) {
         const detail = (await res.json().catch(() => null))?.detail ?? "Too many requests — please wait a moment and try again.";
@@ -382,7 +386,7 @@ export default function App() {
       if (!res.ok) throw new Error(`${res.status}`);
       const data: ChatResponse = await res.json();
       if (data.error) {
-        setMessages(p => ({ ...p, [tab]: [...p[tab], { id: crypto.randomUUID(), role: "assistant", content: `Error: ${data.error}`, timestamp: new Date() }] }));
+        setMessages(p => ({ ...p, [tab]: [...p[tab], { id: crypto.randomUUID(), role: "assistant", content: data.response || `Error: ${data.error}`, timestamp: new Date() }] }));
         setStatus("error");
       } else {
         const msgId = crypto.randomUUID();

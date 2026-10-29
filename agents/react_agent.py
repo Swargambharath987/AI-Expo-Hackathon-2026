@@ -23,7 +23,6 @@ import json
 import logging
 import os
 import warnings
-from pathlib import Path
 from typing import Generator
 
 from dotenv import load_dotenv
@@ -34,6 +33,7 @@ from agents.tools import TOOL_SCHEMAS, execute_tool
 load_dotenv()
 
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "false")
+log = logging.getLogger("dutyline.agent")
 logging.getLogger("chromadb").setLevel(logging.ERROR)
 warnings.filterwarnings("ignore", message=".*existing embedding ID.*")
 
@@ -47,7 +47,6 @@ LLM_TIMEOUT    = float(os.getenv("LLM_TIMEOUT", "30"))   # seconds per LLM call
 MAX_ITERATIONS = 5      # max tool calls per turn before forcing a final answer
 HISTORY_WINDOW = 8      # max messages kept in context (sliding window)
 RAG_TOP_K      = 2      # chunks per search — keeps context under 4096 tokens
-PROFILE_FILE   = Path(__file__).parent.parent / "profile.json"
 
 # ---------------------------------------------------------------------------
 # System prompt — tells the model what it is, what docs exist, how to reason
@@ -118,27 +117,32 @@ class ReActAgent:
         self._client  = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY,
                                timeout=LLM_TIMEOUT, max_retries=1)
         self._history: list[dict] = []   # conversation turns
-        self._profile: dict       = self._load_profile()
+        self._profile: dict       = {}   # set per turn by chat()
         self.last_form: dict | None = None   # fill_form result from the latest turn
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
-    def chat(self, user_message: str) -> Generator[str, None, None]:
+    def chat(self, user_message: str, profile: dict | None = None) -> Generator[str, None, None]:
         """
         Process a user message. Yields response tokens as they stream.
         Yields tool observation lines (prefixed with ⚙) during reasoning.
+        profile is the requesting soldier's profile, used for context and form fills.
         """
-        # Enrich message with extracted structured fields before LLM sees it
+        self._profile  = profile or {}
         self.last_form = None
+        # Enrich message with extracted structured fields before LLM sees it
         enriched = self._enrich_message(user_message)
         self._add_message("user", enriched)
 
         try:
             yield from self._react_loop()
-        except Exception as e:
-            error_msg = f"\n[Error in reasoning loop: {e}]"
+        except Exception:
+            # Details go to the server log only — the raw exception can carry
+            # API error bodies or internals that shouldn't reach the browser.
+            log.exception("Error in reasoning loop")
+            error_msg = "\n[Error: the assistant hit a problem answering this. Please try again.]"
             self._add_message("assistant", error_msg)
             yield error_msg
 
@@ -182,13 +186,9 @@ class ReActAgent:
         return f"{message}\n[Extracted context: {', '.join(hints)}]"
 
     def reset(self):
-        """Clear conversation history, keep profile."""
+        """Clear conversation history."""
         self._history = []
         self.last_form = None
-
-    def update_profile(self, profile: dict):
-        """Swap in a newly saved profile without resetting the conversation."""
-        self._profile = profile
 
     def get_history(self) -> list[dict]:
         return list(self._history)
@@ -250,7 +250,7 @@ class ReActAgent:
                     yield observation_header
 
                     # Execute tool
-                    result_str = execute_tool(tool_name, tool_args)
+                    result_str = execute_tool(tool_name, tool_args, self._profile)
                     if tool_name == "fill_form":
                         try:
                             form = json.loads(result_str)
@@ -337,14 +337,6 @@ class ReActAgent:
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
-
-    def _load_profile(self) -> dict:
-        if PROFILE_FILE.exists():
-            try:
-                return json.loads(PROFILE_FILE.read_text())
-            except Exception:
-                pass
-        return {}
 
     def _stream_text(self, text: str) -> Generator[str, None, None]:
         """Simulate streaming by yielding the full text at once.

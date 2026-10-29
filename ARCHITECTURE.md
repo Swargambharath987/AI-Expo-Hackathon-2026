@@ -45,7 +45,7 @@ The output is always a **filled artifact** (form, cost breakdown, checklist) plu
 │  current_task     — TRAVEL | LEAVE | REGULATION | EVAL       │
 │  collected_fields — what we know so far from conversation    │
 │  missing_fields   — what we still need to complete the task  │
-│  soldier_profile  — pre-loaded from local profile.json       │
+│  soldier_profile  — sent by the browser with each request    │
 └──────────────────────┬───────────────────────────────────────┘
                        │
                        ▼
@@ -112,7 +112,7 @@ Adding a new domain = adding one tool function. No new agents, no new routing lo
 Soldiers fill their profile **once**. Every subsequent form is pre-populated.
 The system only asks for task-specific information (destination, dates, purpose).
 
-**`profile.json` (stored locally, never leaves the device):**
+**Soldier profile (stored in the browser's localStorage, sent with each chat request, never saved on the server):**
 ```json
 {
   "name_last_first": "Rivera, Maria J.",

@@ -38,7 +38,6 @@ VECTORSTORE   = ROOT / "vectorstore"
 GSA_CACHE     = ROOT / "data" / "gsa_cache.json"
 FORMS_DIR     = ROOT / "data" / "forms"
 OUTPUT_DIR    = ROOT / "output"
-PROFILE_FILE  = ROOT / "profile.json"
 
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -110,7 +109,6 @@ KNOWN_DISTANCES: dict[tuple[str, str], int] = {
 _embed_model  = None
 _collection   = None
 _gsa_cache    = None
-_profile      = None
 
 
 def _get_embed_and_collection():
@@ -141,17 +139,6 @@ def _get_gsa_cache() -> dict:
         return _gsa_cache
     _gsa_cache = json.loads(GSA_CACHE.read_text())
     return _gsa_cache
-
-
-def _get_profile() -> dict:
-    global _profile
-    if _profile is not None:
-        return _profile
-    if PROFILE_FILE.exists():
-        _profile = json.loads(PROFILE_FILE.read_text())
-    else:
-        _profile = {}
-    return _profile
 
 
 # ---------------------------------------------------------------------------
@@ -705,7 +692,7 @@ def _generate_reportlab_pdf(
 # Tool 4 — fill_form
 # ---------------------------------------------------------------------------
 
-def fill_form(form_name: str, field_values: dict) -> dict:
+def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -> dict:
     """
     Populate a military form with provided field values.
     Merges soldier profile for common fields (name, rank, unit, SSN-4).
@@ -717,6 +704,8 @@ def fill_form(form_name: str, field_values: dict) -> dict:
     Args:
         form_name:    One of: DD_1610, DA_31, DA_4856, DA_4187
         field_values: Dict of field names to values
+        profile:      The requesting soldier's profile (injected by
+                      execute_tool, never supplied by the LLM)
 
     Returns dict with pdf_path (always set), filled_fields, missing_fields, summary.
     """
@@ -732,8 +721,7 @@ def fill_form(form_name: str, field_values: dict) -> dict:
             }
 
         # Merge soldier profile into field_values (profile provides defaults)
-        profile = _get_profile()
-        merged  = {**profile, **field_values}   # field_values overrides profile
+        merged  = {**(profile or {}), **field_values}   # field_values overrides profile
 
         # Auto-populate date if not provided
         if not merged.get("date"):
@@ -996,7 +984,7 @@ TOOL_SCHEMAS = [
 # Tool dispatcher — called by the orchestrator with LLM's tool_call response
 # ---------------------------------------------------------------------------
 
-def execute_tool(name: str, arguments: dict) -> str:
+def execute_tool(name: str, arguments: dict, profile: dict | None = None) -> str:
     """
     Dispatch a tool call by name and return result as a string for LLM observation.
     Never raises — always returns something the LLM can reason about.
@@ -1011,6 +999,9 @@ def execute_tool(name: str, arguments: dict) -> str:
     fn = DISPATCH.get(name)
     if fn is None:
         return json.dumps({"success": False, "error": f"Unknown tool '{name}'. Available: {list(DISPATCH)}"})
+
+    if name == "fill_form":
+        arguments = {**arguments, "profile": profile}
 
     try:
         result = fn(**arguments)

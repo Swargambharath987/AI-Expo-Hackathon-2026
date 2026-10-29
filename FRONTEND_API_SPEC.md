@@ -20,7 +20,13 @@ Main chat endpoint. Runs the ReAct agent and returns a structured response.
 }
 ```
 `tab` values: `"travel"` | `"leave"` | `"regulation"` | `"eval"`
-`profile` is accepted and ignored — backend uses its own `profile.json`.
+`profile` is the soldier profile (same fields as `SoldierProfile`). It lives in the browser's
+localStorage and is sent with every request; the backend uses it for that request's context and
+form fills and never stores it. Invalid fields are dropped, not rejected (e.g. a non-4-digit
+`ssn_last4` becomes `""`).
+
+`error` in the response is a short code (`internal_error`, `agent_init_failed`, `timeout`) —
+never raw exception text. `response` always holds a user-facing message.
 
 **Response:**
 ```json
@@ -94,35 +100,6 @@ Download a generated form PDF or TXT.
 
 ---
 
-### POST `/api/profile`
-Persist soldier profile to local `profile.json`. Also reloads the running agent's profile immediately.
-
-**Request body — all fields optional, send only what changed:**
-```json
-{
-  "name_last_first": "Rivera, Maria J.",
-  "rank": "SPC",
-  "grade": "E-4",
-  "ssn_last4": "1234",
-  "dod_id": "1234567890",
-  "unit": "1-503 INF, 82nd ABN DIV",
-  "installation": "Fort Liberty",
-  "uic": "W4XXXX",
-  "supervisor_name": "SGT Johnson",
-  "supervisor_title": "Squad Leader"
-}
-```
-**Response:** `{"status": "saved"}`
-
----
-
-### GET `/api/profile`
-Load current saved profile. Call on mount to hydrate profile form.
-
-**Response:** Same shape as POST body, or `{}` if no profile saved yet.
-
----
-
 ### DELETE `/api/chat/history?tab=<tab>`
 Clear this session's conversation memory for one tab (omit `tab` to clear all tabs). Call when user clicks "New Conversation".
 Conversations are per browser session (httponly `dl_session` cookie) and per tab.
@@ -138,7 +115,7 @@ Conversations are per browser session (httponly `dl_session` cookie) and per tab
 - [x] `POST /api/chat` returns `429` + `Retry-After` when rate limited (10/min, 100/day per IP; 500/day total)
 - [x] `GET /api/health` — provider-agnostic LLM + ChromaDB + GSA status (`llm_provider`, `llm_ready`, `ollama` for backwards compat)
 - [x] `GET /api/forms/{filename}` — PDF download with path traversal protection
-- [x] `POST /api/profile` + `GET /api/profile` — persists to `profile.json`
+- [x] Soldier profile sent with each `POST /api/chat` (stored in browser localStorage; `/api/profile` endpoints removed)
 - [x] `DELETE /api/chat/history` — clears conversation
 - [x] Response shape matches frontend `ToolCallItem` / `FormOutput` types exactly
 - [x] `profile` field accepted in chat request (no 422 errors)
@@ -159,8 +136,6 @@ Conversations are per browser session (httponly `dl_session` cookie) and per tab
 - [x] `ToolCallItem` type matches backend response exactly
 
 ### Remaining ❌ (frontend wiring — check with team)
-- [ ] Profile "Save" button → `POST /api/profile` (verify it persists to backend, not just local state)
-- [ ] Profile mount → `GET /api/profile` to load saved profile on page load
 - [ ] "New conversation" / clear button → `DELETE /api/chat/history`
 - [ ] `error` field handling: show error state when `data.error !== null`
 

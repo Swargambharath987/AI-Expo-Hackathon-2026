@@ -41,7 +41,6 @@ log = logging.getLogger("dutyline")
 # ---------------------------------------------------------------------------
 ROOT           = Path(__file__).parent
 OUTPUT_DIR     = ROOT / "output"
-PROFILE_FILE   = ROOT / "profile.json"
 GSA_CACHE      = ROOT / "data" / "gsa_cache.json"
 VECTORSTORE    = ROOT / "vectorstore"
 FRONTEND_DIST  = ROOT / "frontend" / "dist"
@@ -186,10 +185,36 @@ def _rate_limit(ip: str) -> int | None:
 # Request / Response models
 # ---------------------------------------------------------------------------
 
+class ProfileModel(BaseModel):
+    name_last_first: str = ""
+    rank:            str = ""
+    grade:           str = ""
+    ssn_last4:       str = ""
+    dod_id:          str = ""
+    unit:            str = ""
+    installation:    str = ""
+    uic:             str = ""
+    supervisor_name: str = ""
+    supervisor_title: str = ""
+
+    # Lenient on purpose: the profile rides along with every chat request,
+    # so a bad field should be dropped, not turn every message into a 422.
+    @field_validator("*")
+    @classmethod
+    def cap_length(cls, v: str) -> str:
+        return v.strip()[:100]
+
+    @field_validator("ssn_last4")
+    @classmethod
+    def ssn_digits_only(cls, v: str) -> str:
+        return v if re.match(r"^\d{4}$", v) else ""
+
 class ChatRequest(BaseModel):
     message: str
     tab: str = "travel"
-    profile: dict | None = None   # accepted but ignored — backend uses profile.json
+    # The soldier profile lives in the user's browser and comes with every
+    # request, so each user's forms use their own details.
+    profile: ProfileModel | None = None
 
     @field_validator("message")
     @classmethod
@@ -221,25 +246,6 @@ class ChatResponse(BaseModel):
     form_output: dict | None
     error:       str | None
 
-
-class ProfileModel(BaseModel):
-    name_last_first: str = ""
-    rank:            str = ""
-    grade:           str = ""
-    ssn_last4:       str = ""
-    dod_id:          str = ""
-    unit:            str = ""
-    installation:    str = ""
-    uic:             str = ""
-    supervisor_name: str = ""
-    supervisor_title: str = ""
-
-    @field_validator("ssn_last4")
-    @classmethod
-    def ssn_digits_only(cls, v: str) -> str:
-        if v and not re.match(r"^\d{4}$", v):
-            raise ValueError("ssn_last4 must be exactly 4 digits")
-        return v
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -404,10 +410,10 @@ async def health():
     }
 
 
-def _run_turn(slot: _AgentSlot, message: str) -> tuple[str, dict | None]:
+def _run_turn(slot: _AgentSlot, message: str, profile: dict) -> tuple[str, dict | None]:
     """Run one agent turn. Blocking — call via the threadpool, never on the event loop."""
     with slot.lock:
-        raw = "".join(slot.agent.chat(message))
+        raw = "".join(slot.agent.chat(message, profile))
         return raw, slot.agent.last_form
 
 
@@ -431,13 +437,13 @@ async def chat(req: ChatRequest, request: Request):
 
     try:
         slot = await run_in_threadpool(_get_slot, request.state.session_id, req.tab)
-    except Exception as e:
-        log.error(f"Agent init failed: {e}")
+    except Exception:
+        log.exception("Agent init failed")
         return ChatResponse(
             response="The AI assistant failed to initialise. Make sure your LLM API key is set and the vector store exists (run ingest.py).",
             tool_calls=[],
             form_output=None,
-            error=str(e),
+            error="agent_init_failed",
         )
 
     if slot.lock.locked():
@@ -450,7 +456,8 @@ async def chat(req: ChatRequest, request: Request):
 
     try:
         raw, form = await asyncio.wait_for(
-            run_in_threadpool(_run_turn, slot, req.message),
+            run_in_threadpool(_run_turn, slot, req.message,
+                              req.profile.model_dump() if req.profile else {}),
             timeout=CHAT_TIMEOUT_SECS,
         )
         answer, tool_calls, form_output = _parse_agent_output(raw, form)
@@ -473,13 +480,14 @@ async def chat(req: ChatRequest, request: Request):
             error="timeout",
         )
 
-    except Exception as e:
-        log.error(f"Agent chat error: {e}", exc_info=True)
+    except Exception:
+        # Full details stay in the server log; the browser gets a generic code.
+        log.exception("Agent chat error")
         return ChatResponse(
             response="An error occurred while processing your request. Please try again.",
             tool_calls=[],
             form_output=None,
-            error=str(e),
+            error="internal_error",
         )
 
 
@@ -507,37 +515,6 @@ async def get_form(filename: str):
         media_type=media_type,
         filename=filename,
     )
-
-
-@app.get("/api/profile")
-async def get_profile():
-    """Load the saved soldier profile."""
-    if not PROFILE_FILE.exists():
-        return {}
-    try:
-        return json.loads(PROFILE_FILE.read_text())
-    except Exception as e:
-        log.error(f"Profile read error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to read profile")
-
-
-@app.post("/api/profile")
-async def save_profile(profile: ProfileModel):
-    """Save soldier profile to local file. Reloads the agent's profile."""
-    try:
-        data = profile.model_dump()
-        PROFILE_FILE.write_text(json.dumps(data, indent=2))
-
-        # Reload profile in running agents without resetting their conversations
-        with _agents_lock:
-            for slot in _agents.values():
-                slot.agent.update_profile(data)
-
-        log.info(f"Profile saved: {data.get('name_last_first')} {data.get('rank')}")
-        return {"status": "saved"}
-    except Exception as e:
-        log.error(f"Profile save error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.delete("/api/chat/history")
