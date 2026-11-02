@@ -7,3 +7,5 @@ pypdf==5.4.0
 fastapi==0.115.12
 uvicorn==0.34.0
 reportlab==4.4.10
+httpx==0.28.1         # pinned: agents/react_agent.py swaps httpcore's network backend for the custom-endpoint SSRF guard
+httpcore==1.0.9

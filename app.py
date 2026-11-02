@@ -20,8 +20,9 @@ import time
 import uuid
 from collections import OrderedDict, defaultdict, deque
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
+import httpx
 import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
@@ -29,7 +30,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
+
+from agents.react_agent import (UnsafeURLError, check_custom_base_url,
+                                custom_url_host, llm_http_client)
 
 load_dotenv()
 
@@ -50,13 +54,35 @@ LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.anthropic.com/v1")
 LLM_MODEL    = os.getenv("LLM_MODEL",    "claude-sonnet-4-6")
 LLM_API_KEY  = os.getenv("LLM_API_KEY",  "")
 
-# Providers a visitor may use with their own key. Base URLs are fixed here —
-# never taken from the request — so a user key can only go to its provider.
+# Providers a visitor may use with their own key. Preset base URLs are fixed
+# here — never taken from the request — so a preset key can only go to its
+# provider. All speak the OpenAI chat-completions API. An empty
+# default_model means "pick from the key check's model list" (the frontend
+# does this) — set only where a current tool-capable id is known.
+# "custom" is any OpenAI-compatible endpoint the visitor names; its URL is
+# SSRF-checked (see agents/react_agent.py check_custom_base_url).
 BYOK_PROVIDERS = {
-    "anthropic": {"base_url": "https://api.anthropic.com/v1", "default_model": "claude-sonnet-4-6"},
-    "openai":    {"base_url": "https://api.openai.com/v1",    "default_model": "gpt-4.1"},
+    "anthropic":  {"label": "Anthropic (Claude)", "base_url": "https://api.anthropic.com/v1",
+                   "default_model": "claude-sonnet-4-6", "key_placeholder": "sk-ant-..."},
+    "openai":     {"label": "OpenAI", "base_url": "https://api.openai.com/v1",
+                   "default_model": "gpt-4.1", "key_placeholder": "sk-..."},
     # One key for many vendors' models (Llama, Gemini, Mistral, Claude, GPT…)
-    "openrouter": {"base_url": "https://openrouter.ai/api/v1", "default_model": "anthropic/claude-sonnet-4.6"},
+    "openrouter": {"label": "OpenRouter", "base_url": "https://openrouter.ai/api/v1",
+                   "default_model": "anthropic/claude-sonnet-4.6", "key_placeholder": "sk-or-v1-..."},
+    "groq":       {"label": "Groq", "base_url": "https://api.groq.com/openai/v1",
+                   "default_model": "", "key_placeholder": "gsk_..."},
+    "mistral":    {"label": "Mistral", "base_url": "https://api.mistral.ai/v1",
+                   "default_model": "mistral-large-latest", "key_placeholder": "Mistral API key"},
+    "gemini":     {"label": "Google Gemini", "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+                   "default_model": "", "key_placeholder": "AIza..."},
+    "deepseek":   {"label": "DeepSeek", "base_url": "https://api.deepseek.com/v1",
+                   "default_model": "deepseek-chat", "key_placeholder": "sk-..."},
+    "xai":        {"label": "xAI (Grok)", "base_url": "https://api.x.ai/v1",
+                   "default_model": "", "key_placeholder": "xai-..."},
+    "together":   {"label": "Together AI", "base_url": "https://api.together.xyz/v1",
+                   "default_model": "", "key_placeholder": "Together API key"},
+    "custom":     {"label": "Custom (OpenAI-compatible)", "base_url": "",
+                   "default_model": "", "key_placeholder": "API key"},
 }
 
 # ---------------------------------------------------------------------------
@@ -227,8 +253,34 @@ class ProfileModel(BaseModel):
         return v if re.match(r"^\d{4}$", v) else ""
 
 class KeyCheckRequest(BaseModel):
-    provider: Literal["anthropic", "openai", "openrouter"]
+    provider: str
     api_key:  str
+    # Only used (and required) for provider "custom"; ignored for presets,
+    # whose URL always comes from BYOK_PROVIDERS.
+    base_url: str = ""
+
+    @field_validator("provider")
+    @classmethod
+    def known_provider(cls, v: str) -> str:
+        if v not in BYOK_PROVIDERS:
+            raise ValueError("unknown provider")
+        return v
+
+    @model_validator(mode="after")
+    def custom_url(self):
+        if self.provider == "custom":
+            # Syntax only here (runs on the event loop); the DNS check runs in
+            # a worker thread via _resolved_base_url().
+            try:
+                self.base_url = check_custom_base_url(self.base_url, resolve=False)
+            except UnsafeURLError as e:
+                raise ValueError(str(e)) from None
+        else:
+            self.base_url = ""
+        return self
+
+    def preset_or_custom_url(self) -> str:
+        return self.base_url if self.provider == "custom" else BYOK_PROVIDERS[self.provider]["base_url"]
 
     @field_validator("api_key")
     @classmethod
@@ -250,10 +302,16 @@ class LLMOverride(KeyCheckRequest):
             raise ValueError("invalid model name")
         return v
 
+    @model_validator(mode="after")
+    def model_known(self):
+        if not (self.model or BYOK_PROVIDERS[self.provider]["default_model"]):
+            raise ValueError("choose a model for this provider")
+        return self
+
     def resolved(self) -> dict:
         p = BYOK_PROVIDERS[self.provider]
-        return {"base_url": p["base_url"], "api_key": self.api_key,
-                "model": self.model or p["default_model"]}
+        return {"base_url": self.preset_or_custom_url(), "api_key": self.api_key,
+                "model": self.model or p["default_model"], "provider": self.provider}
 
 
 class ChatRequest(BaseModel):
@@ -290,11 +348,22 @@ class ToolCallItem(BaseModel):
     result_summary: str
 
 
+class Verification(BaseModel):
+    """Grounding check of the answer against this turn's tool results."""
+    checked:              bool
+    numbers_ok:           bool
+    unverified_numbers:   list[str]
+    citations_ok:         bool
+    unverified_citations: list[str]
+
+
 class ChatResponse(BaseModel):
-    response:    str
-    tool_calls:  list[ToolCallItem]   # frontend reads data.tool_calls
-    form_output: dict | None
-    error:       str | None
+    response:     str
+    tool_calls:   list[ToolCallItem]   # frontend reads data.tool_calls
+    form_output:  dict | None
+    error:        str | None
+    # None when the answer had nothing to check (no $ figures, no citations)
+    verification: Verification | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -399,44 +468,57 @@ def _check_ollama() -> bool:
 _NON_CHAT_MODEL = re.compile(r"embed|tts|whisper|dall-e|audio|realtime|image|transcribe|moderation|search|babbage|davinci")
 
 
-def _probe_llm_key(base_url: str, api_key: str) -> tuple[bool | None, list[str]]:
+def _probe_llm_key(base_url: str, api_key: str, custom: bool = False) -> tuple[bool | None, list[str]]:
     """
     Ask the provider whether a key works by listing models — free, no tokens.
     Returns (True, model_ids) if accepted, (False, []) if rejected,
     (None, []) if the provider couldn't be reached.
+    custom=True: a visitor-supplied URL — fetched only through the
+    public-only, no-redirect client, and never matched to a preset below.
     """
     if not api_key:
         return False, []
     base = base_url.rstrip("/")
     try:
-        if "anthropic" in base:
+        if custom:
+            with llm_http_client(custom=True, timeout=8) as c:
+                r = c.get(f"{base}/models", headers={"Authorization": f"Bearer {api_key}"})
+        elif "anthropic" in base:
             r = requests.get("https://api.anthropic.com/v1/models",
                              headers={"x-api-key": api_key, "anthropic-version": "2023-06-01"},
-                             params={"limit": 100}, timeout=8)
+                             params={"limit": 100}, timeout=8, allow_redirects=False)
         elif "openrouter.ai" in base:
             # OpenRouter's model list is public (accepts any key), so check
             # the key on /key, then list only models that support tool calls.
-            auth = requests.get(f"{base}/key", headers={"Authorization": f"Bearer {api_key}"}, timeout=8)
+            auth = requests.get(f"{base}/key", headers={"Authorization": f"Bearer {api_key}"},
+                                timeout=8, allow_redirects=False)
             if auth.status_code in (401, 403):
                 return False, []
-            if not auth.ok:
+            if not auth.ok or auth.is_redirect:
                 return None, []
-            r = requests.get(f"{base}/models", timeout=8)
-            if not r.ok:
+            r = requests.get(f"{base}/models", timeout=8, allow_redirects=False)
+            if not r.ok or r.is_redirect:
                 return None, []
             ids = sorted(m.get("id", "") for m in r.json().get("data", [])
                          if "tools" in (m.get("supported_parameters") or []))
             return True, [i for i in ids if i and not i.endswith(":batch")]
         else:
-            r = requests.get(f"{base}/models",
-                             headers={"Authorization": f"Bearer {api_key}"}, timeout=8)
-    except requests.RequestException:
+            r = requests.get(f"{base}/models", headers={"Authorization": f"Bearer {api_key}"},
+                             timeout=8, allow_redirects=False)
+    except (requests.RequestException, httpx.HTTPError):
         return None, []
     if r.status_code in (401, 403):
         return False, []
-    if not r.ok:
+    # Redirects are never followed — treat one as "couldn't check"
+    if not 200 <= r.status_code < 300:
         return None, []
-    ids = sorted(m.get("id", "") for m in r.json().get("data", []))
+    try:
+        body = r.json()
+    except ValueError:
+        return None, []
+    # Most providers return {"data": [...]}; Together returns a bare list
+    items = body.get("data", []) if isinstance(body, dict) else body if isinstance(body, list) else []
+    ids = sorted(str(m.get("id", "")) for m in items if isinstance(m, dict))
     return True, [i for i in ids if i and not _NON_CHAT_MODEL.search(i)]
 
 
@@ -504,11 +586,34 @@ async def health():
 
 
 def _run_turn(slot: _AgentSlot, message: str, profile: dict,
-              llm: dict | None) -> tuple[str, dict | None]:
+              llm: dict | None) -> tuple[str, dict | None, dict | None]:
     """Run one agent turn. Blocking — call via the threadpool, never on the event loop."""
     with slot.lock:
         raw = "".join(slot.agent.chat(message, profile, llm))
-        return raw, slot.agent.last_form
+        return raw, slot.agent.last_form, getattr(slot.agent, "last_verification", None)
+
+
+async def _check_custom_dns(req: KeyCheckRequest) -> JSONResponse | None:
+    """DNS half of the custom-URL check (blocking, so off the event loop).
+    Returns a 422 response if the endpoint isn't allowed, else None."""
+    if req.provider != "custom":
+        return None
+    try:
+        await run_in_threadpool(check_custom_base_url, req.base_url)
+    except UnsafeURLError as e:
+        log.warning(f"custom endpoint rejected | host={custom_url_host(req.base_url)} | {e}")
+        return JSONResponse(status_code=422, content={"detail": f"Custom endpoint not allowed: {e}"})
+    return None
+
+
+@app.get("/api/llm/providers")
+async def llm_providers():
+    """Providers a visitor can use with their own key (custom last)."""
+    return [
+        {"id": pid, "label": p["label"], "key_placeholder": p["key_placeholder"],
+         "default_model": p["default_model"], "needs_base_url": pid == "custom"}
+        for pid, p in sorted(BYOK_PROVIDERS.items(), key=lambda kv: kv[0] == "custom")
+    ]
 
 
 @app.post("/api/llm/check")
@@ -518,7 +623,12 @@ async def check_llm_key(req: KeyCheckRequest, request: Request):
     if retry_after is not None:
         return JSONResponse(status_code=429, content={"detail": "Too many requests — please wait a moment."},
                             headers={"Retry-After": str(retry_after)})
-    ok, models = await run_in_threadpool(_probe_llm_key, BYOK_PROVIDERS[req.provider]["base_url"], req.api_key)
+    if (rejected := await _check_custom_dns(req)) is not None:
+        return rejected
+    if req.provider == "custom":
+        ok, models = await run_in_threadpool(_probe_llm_key, req.base_url, req.api_key, True)
+    else:
+        ok, models = await run_in_threadpool(_probe_llm_key, req.preset_or_custom_url(), req.api_key)
     return {
         "valid":         ok,
         "models":        models,
@@ -544,7 +654,17 @@ async def chat(req: ChatRequest, request: Request):
             headers={"Retry-After": str(retry_after)},
         )
 
-    log.info(f"chat | tab={req.tab} | ip={ip} | own_key={req.llm.provider if req.llm else 'no'} | msg={req.message[:80]!r}")
+    own = "no"
+    if req.llm:
+        own = req.llm.provider
+        if req.llm.provider == "custom":
+            own += f"@{custom_url_host(req.llm.base_url)}"   # host only, never the full URL
+    log.info(f"chat | tab={req.tab} | ip={ip} | own_key={own} | msg={req.message[:80]!r}")
+
+    # Re-validated every turn (DNS may have changed since the key check);
+    # the agent's transport also re-checks each connection.
+    if req.llm and (rejected := await _check_custom_dns(req.llm)) is not None:
+        return rejected
 
     try:
         slot = await run_in_threadpool(_get_slot, request.state.session_id, req.tab)
@@ -566,7 +686,7 @@ async def chat(req: ChatRequest, request: Request):
         )
 
     try:
-        raw, form = await asyncio.wait_for(
+        raw, form, verification = await asyncio.wait_for(
             run_in_threadpool(_run_turn, slot, req.message,
                               req.profile.model_dump() if req.profile else {},
                               req.llm.resolved() if req.llm else None),
@@ -582,13 +702,15 @@ async def chat(req: ChatRequest, request: Request):
                 if form.get(key):
                     owned.add(Path(form[key]).name)
 
-        log.info(f"chat done | tools={[t['tool'] for t in tool_calls]} | answer_len={len(answer)}")
+        log.info(f"chat done | tools={[t['tool'] for t in tool_calls]} | answer_len={len(answer)}"
+                 f" | verified={'n/a' if not verification else verification['numbers_ok'] and verification['citations_ok']}")
 
         return ChatResponse(
             response=answer,
             tool_calls=[ToolCallItem(**t) for t in tool_calls],
             form_output=form_output,
             error=None,
+            verification=verification,
         )
 
     except asyncio.TimeoutError:
