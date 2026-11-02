@@ -1,21 +1,99 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* ── Duty Line brand palette ─────────────────────────────────────────────────
+   navy = primary surfaces and actions, crimson = calls to action and forms,
+   olive = confirmations. Use as bg-navy, text-crimson, border-olive/30, … */
 @theme {
+  --color-navy: #1e2540;
+  --color-navy-800: #283152;
+  --color-navy-900: #151a2e;
+  --color-crimson: #b91c33;
+  --color-crimson-700: #9a1729;
+  --color-olive: #445233;
   --color-olive-700: #333d29;
   --color-olive-600: #445233;
+  --color-ink: #0a0c0f;
+
   --font-mono: "SF Mono", "Consolas", "Liberation Mono", monospace;
+
+  --animate-typing: typing 1.2s ease-in-out infinite;
+  @keyframes typing {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(-3px); opacity: 1; }
+  }
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: #f8fafc;
-  color: #1e293b;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
+@theme inline {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-sans);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+/* shadcn/ui semantic tokens, mapped onto the brand palette (light theme only). */
+:root {
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --card: #ffffff;
+  --card-foreground: #1e293b;
+  --popover: #ffffff;
+  --popover-foreground: #1e293b;
+  --primary: #1e2540;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #1e2540;
+  --destructive: #b91c33;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #4b5785;
+  --radius: 0.625rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply m-0 bg-background text-foreground antialiased;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+}
