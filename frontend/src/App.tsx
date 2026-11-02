@@ -441,9 +441,10 @@ export default function App() {
     const fetchHealth = () => fetch("/api/health").then(r => r.json()).then(setHealth).catch(() => {});
     fetchHealth();
     const t = setTimeout(fetchHealth, 4000);
+    const poll = setInterval(fetchHealth, 120_000);   // so a key that breaks mid-session shows up
     const saved = loadProfile();
     if (saved?.name_last_first) { setProfile(saved); setProfileDraft(saved); setPage("main"); }
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); clearInterval(poll); };
   }, []);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, tab]);
@@ -505,7 +506,7 @@ export default function App() {
     } catch {
       setMessages(p => ({ ...p, [tab]: [...p[tab], {
         id: crypto.randomUUID(), role: "assistant", timestamp: new Date(),
-        content: "Backend not reachable. Run:\n  python -m uvicorn app:app --port 8000",
+        content: "Couldn't reach the server — check your connection and try again.",
       }] }));
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);

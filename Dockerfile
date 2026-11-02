@@ -14,6 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Bake the embedding model into the image. Otherwise every cold start
+# downloads it from Hugging Face, slowing the first search — and on Cloud Run
+# the download lands in the in-memory filesystem, eating into the 1Gi limit.
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-small-en-v1.5')"
+
 COPY . .
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 

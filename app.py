@@ -88,6 +88,13 @@ CHAT_TIMEOUT_SECS = float(os.getenv("CHAT_TIMEOUT", "120"))
 _SID_RE           = re.compile(r"^[0-9a-f]{32}$")
 
 
+# Generated form files each session may download — forms carry SSN-4 and
+# DoD ID, so a filename alone isn't enough to fetch one.
+# LRU-capped; the files themselves are deleted after an hour anyway.
+_session_files: OrderedDict[str, set[str]] = OrderedDict()
+MAX_FILE_SESSIONS = 2000
+
+
 class _AgentSlot:
     def __init__(self, agent):
         self.agent     = agent
@@ -549,6 +556,14 @@ async def chat(req: ChatRequest, request: Request):
             timeout=CHAT_TIMEOUT_SECS,
         )
         answer, tool_calls, form_output = _parse_agent_output(raw, form)
+        if form:
+            owned = _session_files.setdefault(request.state.session_id, set())
+            _session_files.move_to_end(request.state.session_id)
+            while len(_session_files) > MAX_FILE_SESSIONS:
+                _session_files.popitem(last=False)
+            for key in ("pdf_path", "txt_path", "acroform_pdf_path"):
+                if form.get(key):
+                    owned.add(Path(form[key]).name)
 
         log.info(f"chat done | tools={[t['tool'] for t in tool_calls]} | answer_len={len(answer)}")
 
@@ -580,7 +595,7 @@ async def chat(req: ChatRequest, request: Request):
 
 
 @app.get("/api/forms/{filename}")
-async def get_form(filename: str):
+async def get_form(filename: str, request: Request):
     """
     Download a generated form PDF or TXT.
     Validates path to prevent directory traversal.
@@ -594,7 +609,7 @@ async def get_form(filename: str):
         raise HTTPException(status_code=400, detail="Only PDF and TXT files are served")
 
     file_path = OUTPUT_DIR / filename
-    if not file_path.exists():
+    if filename not in _session_files.get(request.state.session_id, set()) or not file_path.exists():
         raise HTTPException(status_code=404, detail=f"Form '{filename}' not found")
 
     media_type = "application/pdf" if filename.endswith(".pdf") else "text/plain"

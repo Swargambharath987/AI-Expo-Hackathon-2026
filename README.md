@@ -256,6 +256,20 @@ gcloud run deploy duty-line --source . --region us-central1 \
 - A build takes ~5–10 minutes. Check it with
   `curl https://duty-line-nfkymvutzq-uc.a.run.app/api/health`.
 
+### Setting up on a new machine
+
+Everything needed to run and deploy is in this repo except two secrets/tools:
+
+1. **`.env`** — not in git (holds the API key). Copy it from your old machine,
+   or `cp .env.example .env` and add a key.
+2. **Google Cloud CLI** (only needed to deploy or rotate the key):
+   `brew install --cask google-cloud-sdk`, then `gcloud init` and pick the
+   `duty-line` project.
+
+Then follow [How to Run](#how-to-run). `venv/`, `frontend/node_modules/` and
+`frontend/dist/` are rebuilt by the setup steps; the vector store, GSA cache
+and form templates are already committed.
+
 ### Alternative: Render
 
 1. On [Render](https://render.com), New → Web Service → connect this repo.

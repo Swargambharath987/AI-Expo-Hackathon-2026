@@ -18,6 +18,9 @@ import json
 import logging
 import math
 import os
+import secrets
+import threading
+import time
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -109,9 +112,19 @@ KNOWN_DISTANCES: dict[tuple[str, str], int] = {
 _embed_model  = None
 _collection   = None
 _gsa_cache    = None
+# Agent turns run concurrently in a threadpool — without this, two first
+# searches would each load the embedding model (and can exhaust memory).
+_embed_lock   = threading.Lock()
+
+OUTPUT_MAX_AGE_SECS = 3600   # generated forms are deleted after an hour
 
 
 def _get_embed_and_collection():
+    with _embed_lock:
+        return _load_embed_and_collection()
+
+
+def _load_embed_and_collection():
     global _embed_model, _collection
     if _collection is not None:
         return _embed_model, _collection
@@ -692,6 +705,18 @@ def _generate_reportlab_pdf(
 # Tool 4 — fill_form
 # ---------------------------------------------------------------------------
 
+def _prune_output_dir():
+    """Delete generated forms older than OUTPUT_MAX_AGE_SECS. On Cloud Run the
+    filesystem is held in memory, so leftovers would slowly eat the 1Gi."""
+    cutoff = time.time() - OUTPUT_MAX_AGE_SECS
+    for f in OUTPUT_DIR.glob("*"):
+        try:
+            if f.is_file() and f.stat().st_mtime < cutoff:
+                f.unlink()
+        except OSError:
+            pass
+
+
 def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -> dict:
     """
     Populate a military form with provided field values.
@@ -743,8 +768,10 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
                 missing_labels.append(label)
 
         # ---- Primary output: reportlab PDF (always generated) ----
-        # Microseconds keep concurrent fills of the same form from colliding
-        ts          = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        _prune_output_dir()
+        # The random suffix makes filenames unguessable (forms hold SSN-4 /
+        # DoD ID) and keeps concurrent fills of the same form from colliding
+        ts          = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{secrets.token_hex(8)}"
         output_path = OUTPUT_DIR / f"{form_name}_{ts}.pdf"
         rl_ok       = _generate_reportlab_pdf(form_name, display_rows, missing_labels, output_path)
         if not rl_ok:

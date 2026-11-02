@@ -182,7 +182,7 @@ class ReActAgent:
         hints = []
 
         # Extract explicit mileage: "370 miles", "~370 mi"
-        miles_match = re.search(r"[~≈]?\s*(\d{2,4})\s*[-\s]?mi(?:les?)?", message, re.IGNORECASE)
+        miles_match = re.search(r"[~≈]?\s*\b(\d{2,4})\s*[-\s]?mi(?:les?)?\b", message, re.IGNORECASE)
         if miles_match:
             hints.append(f"one_way_miles={miles_match.group(1)}")
         else:
@@ -346,7 +346,11 @@ class ReActAgent:
                 system_content += f"\nSoldier: {json.dumps(compact)}"
 
         messages = [{"role": "system", "content": system_content}]
-        window = self._history[-HISTORY_WINDOW:] if len(self._history) > HISTORY_WINDOW else self._history
+        window = self._history[-HISTORY_WINDOW:]
+        # After an error or timeout the window can start mid-pair; the
+        # conversation sent to the model should open with a user turn.
+        while window and window[0]["role"] != "user":
+            window = window[1:]
         messages.extend(window)
         return messages
 

@@ -176,3 +176,54 @@ def test_key_check_endpoint_returns_models(monkeypatch):
     r = TestClient(appmod.app).post("/api/llm/check", json={"provider": "openai", "api_key": OWN_KEY["api_key"]}).json()
     assert r == {"valid": True, "models": ["gpt-a", "gpt-b"], "default_model": "gpt-4.1"}
     assert seen["url"] == "https://api.openai.com/v1"
+
+
+def test_forms_only_downloadable_by_the_session_that_made_them(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    monkeypatch.setattr(appmod, "OUTPUT_DIR", tmp_path)
+
+    def fake_chat(self, message, profile=None, llm=None):
+        self.last_form = fill_form("DA_31", {}, profile={"name_last_first": "DOE, JANE"})
+        yield "\n⚙ Filling DA_31...\n  → done\nYour form is ready."
+    monkeypatch.setattr(react_agent.ReActAgent, "chat", fake_chat)
+
+    owner, other = TestClient(appmod.app), TestClient(appmod.app)
+    url = chat(owner, "fill").json()["form_output"]["pdf_url"]
+    assert owner.get(url).status_code == 200
+    assert other.get(url).status_code == 404
+
+
+def test_form_filenames_are_unguessable(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    a = fill_form("DA_31", {})["pdf_path"]
+    b = fill_form("DA_31", {})["pdf_path"]
+    assert a != b and len(a.rsplit("_", 1)[-1]) >= len("0123456789abcdef.pdf")
+
+
+def test_old_generated_forms_are_pruned(monkeypatch, tmp_path):
+    import os
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    old = tmp_path / "DA_31_old.pdf"
+    old.write_text("x")
+    os.utime(old, (0, 0))
+    fill_form("DA_31", {})
+    assert not old.exists()
+
+
+def test_miles_hint_ignores_minutes():
+    agent = react_agent.ReActAgent.__new__(react_agent.ReActAgent)
+    assert "one_way_miles" not in agent._enrich_message("It's a 45 minute drive, 3 days")
+    assert "one_way_miles=370" in agent._enrich_message("driving 370 miles for 5 days")
+
+
+def test_history_window_starts_with_user_turn():
+    agent = react_agent.ReActAgent.__new__(react_agent.ReActAgent)
+    agent._profile = {}
+    agent._history = [{"role": "assistant", "content": "orphan"}] + [
+        {"role": r, "content": str(i)} for i, r in enumerate(["user", "assistant"] * 4)
+    ][1:]
+    roles = [m["role"] for m in agent._build_messages()[1:]]
+    assert roles[0] == "user"
