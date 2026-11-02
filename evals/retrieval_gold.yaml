@@ -1,0 +1,347 @@
+# Retrieval gold set for search_regulations.
+#
+# A retrieved chunk counts as RELEVANT when its metadata source_file equals
+# `source` AND its text matches `text_regex` (case-insensitive) for ANY entry
+# in `relevant`. Labels were written by reading the ChromaDB collection
+# (vectorstore/, collection "dutyline"), not by looking at what the retriever
+# returns. `verified_chunks` records the chunk ids the rules matched when the
+# set was written (Nov 2026 vectorstore); the eval re-derives the relevant set
+# from the rules every run and warns if it drifts (e.g. after re-ingest).
+#
+# Note: metadata section_title is almost always a running page header
+# ("AR 600–8–10 • 3 June 2020 9"), so it cannot be used as a label. The PDFs
+# use en-dashes in paragraph numbers ("2–3."), hence the [-–] classes.
+#
+# domain: the domain filter a well-behaved agent would pass (travel | leave |
+# regs | eval). The eval scores retrieval both without a filter (what happens
+# when the model omits `domain`) and with this filter.
+# difficulty: direct (keywords overlap the source) | paraphrase (lay wording)
+
+queries:
+  # ---------------- JTR (travel) ----------------
+  - id: R01
+    category: jtr_per_diem
+    difficulty: direct
+    domain: travel
+    query: "What is the per diem allowance and what does it cover?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "020102\\. Per Diem Allowance \\(See Current Per Diem Rates\\)"}
+      - {source: jtr.pdf, text_regex: "020301\\. Daily Allowances The Government pays per diem"}
+    verified_chunks: [chunk_21, chunk_52]
+
+  - id: R02
+    category: jtr_first_last_day
+    difficulty: direct
+    domain: travel
+    query: "M&IE rate on the departure day of TDY travel is 75 percent"
+    relevant:
+      - {source: jtr.pdf, text_regex: "M&IE for the departure day is 75%"}
+    verified_chunks: [chunk_67]
+
+  - id: R03
+    category: jtr_first_last_day
+    difficulty: paraphrase
+    domain: travel
+    query: "Do I get full meal money on the days I travel to and from my TDY?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "M&IE for the departure day is 75%"}
+    verified_chunks: [chunk_67]
+
+  - id: R04
+    category: jtr_gtcc
+    difficulty: direct
+    domain: travel
+    query: "Is the government travel charge card mandatory for TDY travel?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "require a traveler to use the individually billed GTCC"}
+    verified_chunks: [chunk_16]
+
+  - id: R05
+    category: jtr_gtcc
+    difficulty: paraphrase
+    domain: travel
+    query: "Do I have to put my hotel and expenses on the government credit card when I travel for work?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "require a traveler to use the individually billed GTCC"}
+    verified_chunks: [chunk_16]
+
+  - id: R06
+    category: jtr_pov_mileage
+    difficulty: direct
+    domain: travel
+    query: "POV mileage reimbursement rate for TDY travel by privately owned automobile"
+    relevant:
+      - {source: jtr.pdf, text_regex: "TDY mileage rate is different for automobiles"}
+      - {source: jtr.pdf, text_regex: "Table 2-10\\. Reimbursement for Privately Owned"}
+    verified_chunks: [chunk_44]
+
+  - id: R07
+    category: jtr_pov_mileage
+    difficulty: paraphrase
+    domain: travel
+    query: "If I drive my own car instead of flying, how much will I be reimbursed?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "airplane and uses a POV instead"}
+      - {source: jtr.pdf, text_regex: "constructed cost is the sum of the transportation ticket"}
+    verified_chunks: [chunk_45, chunk_46]
+
+  - id: R08
+    category: jtr_lodging
+    difficulty: direct
+    domain: travel
+    query: "Lodging reimbursement is limited to the lodging portion of the locality per diem rate"
+    relevant:
+      - {source: jtr.pdf, text_regex: "limited to the lodging portion of the locality per diem rate"}
+    verified_chunks: [chunk_52, chunk_62, chunk_67, chunk_69, chunk_158, chunk_170, chunk_171, chunk_187]
+
+  - id: R09
+    category: jtr_lodging
+    difficulty: paraphrase
+    domain: travel
+    query: "Am I required to stay in on-post government lodging when I go TDY?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "must use the Integrated Lodging Program"}
+      - {source: jtr.pdf, text_regex: "certificate of non-availability"}
+    verified_chunks: [chunk_53, chunk_54, chunk_55]
+
+  - id: R10
+    category: jtr_receipts
+    difficulty: direct
+    domain: travel
+    query: "Receipt requirements for lodging and expenses of $75 or more"
+    relevant:
+      - {source: jtr.pdf, text_regex: "itemized receipt for each lodging expense"}
+    verified_chunks: [chunk_19]
+
+  - id: R11
+    category: jtr_rental
+    difficulty: paraphrase
+    domain: travel
+    query: "What size rental car am I allowed to get on a work trip?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "least expensive compact car"}
+    verified_chunks: [chunk_40]
+
+  - id: R12
+    category: jtr_travel_time
+    difficulty: direct
+    domain: travel
+    query: "How many travel days are authorized when driving a POV? one day per 400 miles"
+    relevant:
+      - {source: jtr.pdf, text_regex: "one day of travel is authorized for every 400 miles"}
+    verified_chunks: [chunk_52]
+
+  - id: R13
+    category: jtr_per_diem
+    difficulty: paraphrase
+    domain: travel
+    query: "Can I get per diem if my trip only lasts 10 hours?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "12 hours or less,? Not applicable"}
+    verified_chunks: [chunk_66]
+
+  # ---------------- Army leave (AR 600-8-10) ----------------
+  - id: R14
+    category: army_leave_accrual
+    difficulty: direct
+    domain: leave
+    query: "How many days of leave do soldiers accrue per month of active duty?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "accrue leave at the rate of 2\\.5 calendar days"}
+    verified_chunks: [chunk_630]
+
+  - id: R15
+    category: army_leave_carryover
+    difficulty: direct
+    domain: leave
+    query: "Maximum leave carry over at the end of the fiscal year"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "carry forward up to 60 days leave"}
+      - {source: ar_600_8_10.pdf, text_regex: "Leave in excess of 60 days \\(75 days"}
+    verified_chunks: [chunk_630, chunk_638]
+
+  - id: R16
+    category: army_leave_carryover
+    difficulty: paraphrase
+    domain: leave
+    query: "What happens to my use-or-lose leave days over the cap on 1 October?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "carry forward up to 60 days leave"}
+      - {source: ar_600_8_10.pdf, text_regex: "Leave in excess of 60 days \\(75 days"}
+      - {source: afi_36_3003.pdf, text_regex: "use or lose"}
+    verified_chunks: [chunk_630, chunk_638, chunk_730, chunk_739, chunk_789]
+
+  - id: R17
+    category: army_leave_types
+    difficulty: direct
+    domain: leave
+    query: "Is emergency leave chargeable and who approves it?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "Emergency leave is a chargeable leave status"}
+      - {source: afi_36_3003.pdf, text_regex: "Emergency leave is chargeable leave granted"}
+    verified_chunks: [chunk_648, chunk_741]
+
+  - id: R18
+    category: army_leave_types
+    difficulty: direct
+    domain: leave
+    query: "Who can grant convalescent leave to a soldier?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "may grant convalescent leave to patients"}
+    verified_chunks: [chunk_664]
+
+  - id: R19
+    category: army_leave_types
+    difficulty: direct
+    domain: leave
+    query: "Advance leave rules when the soldier has no accrued leave"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "Advance leave is chargeable leave, and it may be granted only after"}
+      - {source: afi_36_3003.pdf, text_regex: "3\\.2\\.2\\. Advance Leave\\. Advance leave is leave granted"}
+    verified_chunks: [chunk_645, chunk_740]
+
+  - id: R20
+    category: army_pass
+    difficulty: direct
+    domain: leave
+    query: "What is the maximum length of a special pass?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "special pass may not, under any circumstances, exceed four days"}
+      - {source: afi_36_3003.pdf, text_regex: "4-day special pass limitation"}
+    verified_chunks: [chunk_695, chunk_773, chunk_774]
+
+  - id: R21
+    category: army_leave_charging
+    difficulty: paraphrase
+    domain: leave
+    query: "If my leave starts on a Saturday, is that Saturday charged as leave?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "For leave starting on a non-duty day, the day of departure will be charged"}
+    verified_chunks: [chunk_633]
+
+  - id: R22
+    category: army_leave_carryover
+    difficulty: direct
+    domain: leave
+    query: "Special leave accrual after deployment allows carrying forward 120 days"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "carry forward a maximum of 120 leave days"}
+      - {source: ar_600_8_10.pdf, text_regex: "intent of SLA is to provide relief"}
+    verified_chunks: [chunk_638, chunk_639]
+
+  - id: R23
+    category: army_leave_sellback
+    difficulty: paraphrase
+    domain: leave
+    query: "Can I get paid for leave I would lose above 120 days?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "3-5\\. One-time leave sell back a\\."}
+    verified_chunks: [chunk_641]
+
+  # ---------------- Navy / Air Force leave ----------------
+  - id: R24
+    category: navy_leave
+    difficulty: direct
+    domain: leave
+    query: "Navy leave day of departure and day of return, which days are charged"
+    relevant:
+      - {source: milpersman_1050.pdf, text_regex: "."}
+    verified_chunks: [chunk_727, chunk_728]
+
+  - id: R25
+    category: af_leave
+    difficulty: direct
+    domain: leave
+    query: "Air Force emergency leave approval authority and maximum initial period"
+    relevant:
+      - {source: afi_36_3003.pdf, text_regex: "Unit commanders approve initial emergency leave periods up to 30 days"}
+      - {source: afi_36_3003.pdf, text_regex: "Emergency leave is chargeable leave granted"}
+    verified_chunks: [chunk_741, chunk_742]
+
+  - id: R26
+    category: af_leave
+    difficulty: paraphrase
+    domain: leave
+    query: "As an airman, can I take leave before I've earned it?"
+    relevant:
+      - {source: afi_36_3003.pdf, text_regex: "Advance leave is leave granted based on a reasonable expectation"}
+    verified_chunks: [chunk_740]
+
+  # ---------------- Pay during / for leave (DoD FMR 7A) ----------------
+  - id: R27
+    category: pay_leave
+    difficulty: paraphrase
+    domain: regs
+    query: "Is there a limit to how much leave I can sell back over my career?"
+    relevant:
+      - {source: dod_fmr_vol7a.pdf, text_regex: "Career Leave Payment Limitation of 60 days|maximum of 60 days (of )?accrued leave during a military career"}
+      - {source: afi_36_3003.pdf, text_regex: "limits payment of accrued leave to 60 days in a military career"}
+    verified_chunks: [chunk_734, chunk_1585, chunk_1586, chunk_1604, chunk_1605, chunk_1607, chunk_1608]
+
+  - id: R28
+    category: pay_leave
+    difficulty: direct
+    domain: regs
+    query: "Am I entitled to pay and allowances while on excess leave?"
+    relevant:
+      - {source: dod_fmr_vol7a.pdf, text_regex: "on excess leave blank not entitled to pay and allowances"}
+      - {source: ar_600_8_10.pdf, text_regex: "Excess leave is without pay and allowances"}
+    verified_chunks: [chunk_646, chunk_647, chunk_676, chunk_677, chunk_1209]
+
+  # ---------------- Evaluations by branch ----------------
+  - id: R29
+    category: eval_af
+    difficulty: direct
+    domain: eval
+    query: "How many evaluators sign an Air Force enlisted performance brief (EPB)?"
+    relevant:
+      - {source: afi_36_2406.pdf, text_regex: "enlisted performance brief \\(EPB\\).{0,120}two evaluators|only two evaluators on the enlisted"}
+    verified_chunks: [chunk_968, chunk_1032]
+
+  - id: R30
+    category: eval_af
+    difficulty: direct
+    domain: eval
+    query: "Which form is used for an Air Force officer performance brief?"
+    relevant:
+      - {source: afi_36_2406.pdf, text_regex: "AF Form 715, Officer Performance Brief"}
+    verified_chunks: [chunk_961, chunk_1146, chunk_1152]
+
+  - id: R31
+    category: eval_navy
+    difficulty: direct
+    domain: eval
+    query: "Navy EVAL rater and senior rater responsibilities"
+    relevant:
+      - {source: bupersinst_1610_10f.pdf, text_regex: "Who are the Raters and Senior Raters"}
+    verified_chunks: [chunk_795]
+
+  - id: R32
+    category: eval_usmc
+    difficulty: paraphrase
+    domain: eval
+    query: "Which Marines get fitness reports, by rank?"
+    relevant:
+      - {source: mco_1610_7.pdf, text_regex: "fitness reports for Marines in the rank of sergeant through major general"}
+    verified_chunks: [chunk_1913]
+
+# Questions the corpus cannot answer (the system prompt advertises AR 623-3,
+# but it was never ingested). Not part of Recall/MRR; reported separately with
+# the top similarity score so you can see whether the retriever signals "no
+# good match" (it doesn't — there is no score threshold).
+out_of_corpus:
+  - id: X01
+    category: eval_army
+    domain: eval
+    query: "Army NCOER rating chain requirements under AR 623-3"
+    note: "AR 623-3 (Army evaluations) is listed in the system prompt but is not in the vectorstore."
+  - id: X02
+    category: eval_army
+    domain: eval
+    query: "When is an Army OER change-of-rater report required?"
+    note: "Army OER policy (AR 623-3) not ingested."
+  - id: X03
+    category: pay_bah
+    domain: regs
+    query: "What is the BAH rate for an E-5 with dependents at Fort Liberty?"
+    note: "BAH rate tables are not in the corpus."

@@ -1,0 +1,20 @@
+# Irrelevance detection (BFCL "irrelevance" category): no tool should be
+# called and no dollar figures or citations should appear.
+
+- id: chit_greeting
+  category: no_tool
+  tab: travel
+  turns:
+    - message: "Hey, good morning!"
+      expect:
+        no_tools: true
+        form: none
+
+- id: chit_off_topic_recipe
+  category: no_tool
+  tab: regulation
+  turns:
+    - message: "What's a good recipe for chili?"
+      expect:
+        no_tools: true
+        form: none

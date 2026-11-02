@@ -1,0 +1,161 @@
+# TDY cost cases. `tdy_total` is the canonical argument set; the harness calls
+# agents.tools.calculate_travel_cost with it to get the expected grand total,
+# so an equivalent-but-different city name (e.g. "Fort Moore" vs "Columbus")
+# still passes as long as it resolves to the same GSA rate.
+#
+# Matchers: eq (case-insensitive), num (±0.01), any_of (substring), regex,
+# contains; add `optional: true` to accept an omitted argument.
+
+- id: tdy_liberty_moore_pov
+  category: tdy_cost
+  tags: [tdy]
+  tab: travel
+  description: The demo scenario. Known installation pair (370 mi), POV, 5 days.
+  turns:
+    - message: "I need to send SPC Rivera to Fort Moore, Georgia for 5 days starting July 10. She's driving her POV from Fort Liberty."
+      expect:
+        tools_required: [calculate_travel_cost]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["moore", "columbus"]}
+            destination_state: {eq: GA}
+            travel_days: {num: 5}
+            travel_mode: {eq: POV}
+            one_way_miles: {num: 370}
+        tdy_total: {destination_city: Columbus, destination_state: GA, travel_days: 5, travel_mode: POV, one_way_miles: 370}
+        form: any
+        # The traveler is SPC Rivera, not the requesting user (SSG Carter).
+        # The form is optional here, but if one is produced it must be hers.
+        form_fields_if_any:
+          name_last_first: {contains: "Rivera"}
+          rank: {regex: "^SPC$"}
+
+- id: tdy_meade_liberty_explicit_miles
+  category: tdy_cost
+  tags: [tdy]
+  tab: travel
+  description: Explicit mileage in the message; destination resolves to Fayetteville rates.
+  turns:
+    - message: "Estimate the TDY cost from Fort Meade to Fort Liberty, NC: 4 days, driving my own car, it's 420 miles each way."
+      expect:
+        tools_required: [calculate_travel_cost]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["liberty", "fayetteville", "bragg"]}
+            destination_state: {eq: NC}
+            travel_days: {num: 4}
+            travel_mode: {eq: POV}
+            one_way_miles: {num: 420}
+        tdy_total: {destination_city: Fayetteville, destination_state: NC, travel_days: 4, travel_mode: POV, one_way_miles: 420}
+        form: any
+
+- id: tdy_plane_san_diego
+  category: tdy_cost
+  tags: [tdy]
+  tab: travel
+  description: Flying — no mileage; the answer must not invent an airfare dollar figure.
+  turns:
+    - message: "What will a 6-day TDY to San Diego, CA cost if I fly?"
+      expect:
+        tools_required: [calculate_travel_cost]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["san diego"]}
+            destination_state: {eq: CA}
+            travel_days: {num: 6}
+            travel_mode: {eq: PLANE}
+        tdy_total: {destination_city: San Diego, destination_state: CA, travel_days: 6, travel_mode: PLANE}
+        form: any
+
+- id: tdy_rental_cavazos_sam_houston
+  category: tdy_cost
+  tags: [tdy]
+  tab: travel
+  description: >
+    Rental car to Fort Sam Houston (JBSA, San Antonio). The correct per diem is
+    the San Antonio rate in the GSA cache; the cache keys installations as
+    "JBSA", so the installation name alone does not resolve.
+  turns:
+    - message: "I'm doing a 3-day TDY from Fort Cavazos to Fort Sam Houston, TX with a rental car. What will it cost?"
+      expect:
+        tools_required: [calculate_travel_cost]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["sam houston", "san antonio", "jbsa"]}
+            destination_state: {eq: TX}
+            travel_days: {num: 3}
+            travel_mode: {eq: RENTAL}
+        tdy_total: {destination_city: San Antonio, destination_state: TX, travel_days: 3, travel_mode: RENTAL}
+        form: any
+
+- id: tdy_jber_wainwright_pov
+  category: tdy_cost
+  tags: [tdy]
+  tab: travel
+  description: Alaska known pair (360 mi), 7 days, POV phrased as "driving".
+  turns:
+    - message: "Driving my POV from JBER to Fort Wainwright for a 7 day TDY next month. How much will the trip cost?"
+      expect:
+        tools_required: [calculate_travel_cost]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["wainwright", "fairbanks"]}
+            destination_state: {eq: AK}
+            travel_days: {num: 7}
+            travel_mode: {eq: POV}
+            one_way_miles: {num: 360}
+        tdy_total: {destination_city: Fairbanks, destination_state: AK, travel_days: 7, travel_mode: POV, one_way_miles: 360}
+        form: any
+
+- id: tdy_estimate_only_no_form
+  category: tdy_cost
+  tags: [tdy]
+  tab: travel
+  description: User explicitly does not want paperwork — no DD 1610 should be generated.
+  turns:
+    - message: "Just a rough estimate, I'm not submitting anything yet: a 2-day TDY from Fort Meade to Fort Belvoir, VA by POV."
+      expect:
+        tools_required: [calculate_travel_cost]
+        tools_forbidden: [fill_form]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["belvoir"]}
+            destination_state: {eq: VA}
+            travel_days: {num: 2}
+            travel_mode: {eq: POV}
+            one_way_miles: {num: 35}
+        tdy_total: {destination_city: Fort Belvoir, destination_state: VA, travel_days: 2, travel_mode: POV, one_way_miles: 35}
+        form: none
+
+- id: tdy_cost_then_dd1610
+  category: tdy_form
+  tags: [tdy, form]
+  tab: travel
+  description: Two turns — cost first, then the DD 1610 with details given in turn 2.
+  turns:
+    - message: "I'm going TDY from Fort Liberty to Fort Jackson, SC for 4 days, driving my POV. What's the cost?"
+      expect:
+        tools_required: [calculate_travel_cost]
+        args:
+          calculate_travel_cost:
+            destination_city: {any_of: ["jackson", "columbia"]}
+            destination_state: {eq: SC}
+            travel_days: {num: 4}
+            travel_mode: {eq: POV}
+            one_way_miles: {num: 420}
+        tdy_total: {destination_city: Fort Jackson, destination_state: SC, travel_days: 4, travel_mode: POV, one_way_miles: 420}
+        form: any
+    - message: "Great, fill out the DD 1610 for that trip. I depart 3 Aug 2026, purpose is Drill Sergeant School in-processing."
+      expect:
+        tools_required: [fill_form]
+        args:
+          fill_form:
+            form_name: {eq: DD_1610}
+        form: DD_1610
+        form_fields:
+          name_last_first: {contains: "Carter"}
+          destination: {any_of: ["jackson", "columbia"]}
+          travel_days: {num: 4}
+          departure_date: {regex: "(3|03)\\s*AUG|AUG\\w*\\s*0?3\\b|2026-08-03|08/03"}
+          purpose: {regex: "drill sergeant"}
+          cost_estimate: {regex: "1,?156"}
