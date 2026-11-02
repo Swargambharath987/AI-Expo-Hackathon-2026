@@ -1143,7 +1143,7 @@ TOOL_SCHEMAS = [
             "description": (
                 "Search military regulations and policy documents for relevant text. "
                 "Use for ANY question about rules, entitlements, eligibility, procedures, or policy. "
-                "Available domains: 'travel' (JTR), 'leave' (AR 600-8-10), 'regs' (general ARs), 'eval' (AR 623-3). "
+                "Available domains: 'travel' (JTR), 'leave' (AR 600-8-10), 'regs' (DoD FMR pay rules), 'eval' (Air Force, Navy and Marine evaluations; Army AR 623-3 is not in the library). "
                 "Always cite the source and section in your answer."
             ),
             "parameters": {

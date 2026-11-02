@@ -130,7 +130,7 @@ Conversations are per browser session (httponly `dl_session` cookie) and per tab
 - [x] `profile` field accepted in chat request (no 422 errors)
 - [x] **PDF always generated** — reportlab fallback for all forms (DA_31, DA_4856, DA_4187)
 - [x] **DD_1610 AcroForm filling** — uses actual PDF field names (`name`, `ssn`, `org_elem`, `pds`, `proc_date`, etc.) + reportlab summary PDF
-- [x] 2063 regulation chunks in ChromaDB (JTR, AR 600-8-10, AFI 36-3003, MILPERSMAN 1050, AR 623-3, AFI 36-2406, BUPERSINST 1610, DoD FMR Vol 7A, MCO 1610.7)
+- [x] 2063 regulation chunks in ChromaDB (JTR, AR 600-8-10, AFI 36-3003, MILPERSMAN 1050, AFI 36-2406, BUPERSINST 1610, DoD FMR Vol 7A, MCO 1610.7)
 - [x] 40 installation distance pairs (Fort Liberty↔Moore, Alaska, Hawaii, Texas, DC area, West Coast)
 - [x] `search_regulations` always called for policy/reg questions — no hallucinated answers
 

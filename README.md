@@ -63,7 +63,7 @@ All data sourced from SCSP-recommended public sources:
 |--------|------|--------------------|
 | [Joint Travel Regulations (JTR)](https://www.travel.dod.mil/Policy-Regulations/Joint-Travel-Regulations/) | PDF (1,000+ pages) | TDY entitlement rules — chunked and embedded into vector store |
 | [GSA Per Diem Rates FY2026](https://www.gsa.gov/travel/plan-book/per-diem-rates) | Spreadsheet → JSON cache | Pre-cached per diem lookup: 649 locations, 42,358 ZIP codes |
-| [Army Publishing Directorate](https://armypubs.army.mil/) | PDFs | AR 600-8-10 (leave), AR 623-3 (evals), DA forms (31, 1610, 4856, 4187) |
+| [Army Publishing Directorate](https://armypubs.army.mil/) | PDFs | AR 600-8-10 (leave), DA forms (31, 1610, 4856, 4187) |
 | [Air Force e-Publishing](https://www.e-publishing.af.mil) | PDFs | AFI 36-3003 (leave), AFI 36-2406 (evals) |
 | [Navy HR](https://www.mynavyhr.navy.mil/) | PDFs | MILPERSMAN 1050 (leave), BUPERSINST 1610.10F (evals) |
 | [Marines Publications](https://www.marines.mil/News/Publications/MCPEL/) | PDFs | MCO 1610.7 (evals) |
@@ -77,13 +77,15 @@ All data sourced from SCSP-recommended public sources:
 |----------|--------|--------|
 | Joint Travel Regulations (JTR) | DoD (all branches) | Travel / TDY |
 | AR 600-8-10 | Army | Leave |
-| AR 623-3 | Army | Evaluations |
 | AFI 36-3003 | Air Force | Leave |
 | AFI 36-2406 | Air Force | Evaluations |
 | MILPERSMAN 1050 | Navy | Leave |
 | BUPERSINST 1610.10F | Navy | Evaluations |
 | MCO 1610.7 | Marine Corps | Evaluations |
 | DoD FMR Vol 7A | DoD (all branches) | Pay |
+
+Army evaluations (AR 623-3, NCOER/OER) are not in the library yet; Duty Line
+says so instead of answering from memory.
 
 ---
 
@@ -359,7 +361,7 @@ AI-Expo-Hackathon-2026/
 │   ├── gsa_cache.json          # GSA FY2026 per diem (649 locations, 42K zips)
 │   ├── forms/                  # Fillable PDF templates (DD 1610, DA 31, DA 4856, DA 4187)
 │   ├── jtr/                    # Joint Travel Regulations
-│   ├── army_regs/              # AR 600-8-10, AR 623-3
+│   ├── army_regs/              # AR 600-8-10
 │   ├── navy_regs/              # MILPERSMAN 1050, BUPERSINST 1610.10F
 │   ├── af_regs/                # AFI 36-3003, AFI 36-2406
 │   ├── marine_regs/            # MCO 1610.7
