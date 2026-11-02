@@ -1,0 +1,123 @@
+# Form cases. The requesting user is always the eval PROFILE
+# (SSG James R. Carter, SSN-4 4821) — see evals/common.py.
+# form_fields keys are fill_form's semantic keys (agents/tools.py
+# FORM_DISPLAY_FIELDS), not display labels.
+
+- id: leave_da31_single_turn
+  category: leave_form
+  tags: [form]
+  tab: leave
+  description: Everything needed for a DA 31 in one message.
+  turns:
+    - message: "Fill out a DA 31 for me: annual leave from 15 Dec 2026 to 29 Dec 2026, 15 days. I'll be at 412 Oak St, Columbus, OH 43215, phone 614-555-0142."
+      expect:
+        tools_required: [fill_form]
+        args:
+          fill_form:
+            form_name: {eq: DA_31}
+        form: DA_31
+        form_fields:
+          name_last_first: {contains: "Carter"}
+          leave_type: {regex: "annual|ordinary"}
+          departure_date: {regex: "15\\s*DEC|DEC\\w*\\s*15|2026-12-15|12/15"}
+          return_date: {regex: "29\\s*DEC|DEC\\w*\\s*29|2026-12-29|12/29"}
+          num_days: {num: 15}
+          leave_address: {contains: "412 Oak"}
+          phone: {contains: "555-0142"}
+
+- id: leave_da31_two_turns
+  category: leave_form
+  tags: [form]
+  tab: leave
+  description: >
+    Turn 1 is underspecified (no dates) — the agent should ask, not fill a form
+    with invented dates. Turn 2 supplies dates/address and asks for the form.
+  turns:
+    - message: "I want to take some leave over Thanksgiving."
+      expect:
+        tools_forbidden: [fill_form]
+        form: none
+    - message: "From 25 Nov to 30 Nov 2026, staying at my parents' place, 88 Pine Rd, Dayton OH. Go ahead and fill out the leave form."
+      expect:
+        tools_required: [fill_form]
+        args:
+          fill_form:
+            form_name: {eq: DA_31}
+        form: DA_31
+        form_fields:
+          name_last_first: {contains: "Carter"}
+          departure_date: {regex: "25\\s*NOV|NOV\\w*\\s*25|2026-11-25|11/25"}
+          return_date: {regex: "30\\s*NOV|NOV\\w*\\s*30|2026-11-30|11/30"}
+          leave_address: {contains: "88 Pine"}
+
+- id: counseling_da4856_two_turns
+  category: counseling_form
+  tags: [form]
+  tab: eval
+  description: >
+    The user (SSG Carter) counsels PFC Ortiz. The soldier fields must be Ortiz,
+    the counselor fields Carter, and Carter's SSN must not appear anywhere.
+  turns:
+    - message: "I need to counsel one of my soldiers, PFC Daniel Ortiz, for being late to formation twice this week."
+      expect:
+        tools_forbidden: []
+        form: any
+    - message: "Key points: he was late on 2 Nov and 4 Nov; we discussed why accountability at formation matters. Plan of action: he sets two alarms and reports to me at 0615 daily for two weeks. Please fill out the DA 4856."
+      expect:
+        tools_required: [fill_form]
+        args:
+          fill_form:
+            form_name: {eq: DA_4856}
+        form: DA_4856
+        counseling_subject: {soldier: "Ortiz", soldier_rank: "PFC"}
+        form_fields:
+          soldier_name: {contains: "Ortiz"}
+          soldier_rank: {eq: "PFC"}
+          leader_name: {contains: "Carter"}
+          key_points: {regex: "late|formation"}
+          action_plan: {regex: "alarm|0615"}
+
+- id: counseling_da4856_single_turn
+  category: counseling_form
+  tags: [form]
+  tab: eval
+  description: Positive event-oriented counseling, everything in one message.
+  turns:
+    - message: "Fill out a counseling form for SPC Maria Lopez: event-oriented counseling for her outstanding performance at the range, she shot 40 out of 40. Plan of action: I'll recommend her for an Army Achievement Medal."
+      expect:
+        tools_required: [fill_form]
+        args:
+          fill_form:
+            form_name: {eq: DA_4856}
+        form: DA_4856
+        counseling_subject: {soldier: "Lopez", soldier_rank: "SPC"}
+        form_fields:
+          soldier_name: {contains: "Lopez"}
+          soldier_rank: {eq: "SPC"}
+          leader_name: {contains: "Carter"}
+
+- id: personnel_action_da4187_two_turns
+  category: personnel_action_form
+  tags: [form]
+  tab: regulation
+  description: >
+    Turn 1 is a bare request (no form yet — it doesn't say what action). Turn 2
+    gives the action, date and reason. The DA 4187 is the user's own request,
+    so profile name/SSN on it are expected.
+  turns:
+    - message: "I need to submit a personnel action request."
+      expect:
+        tools_forbidden: [fill_form]
+        form: none
+    - message: "It's a request for reassignment to the Airborne School cadre at Fort Moore, effective 1 Feb 2027, to pursue an instructor position. Fill out the DA 4187."
+      expect:
+        tools_required: [fill_form]
+        args:
+          fill_form:
+            form_name: {eq: DA_4187}
+        form: DA_4187
+        form_fields:
+          name_last_first: {contains: "Carter"}
+          action_requested: {regex: "reassign"}
+          effective_date: {regex: "(1|01)\\s*FEB\\w*\\s*2027|FEB\\w*\\s*0?1,?\\s*2027|2027-02-01|02/01/2027"}
+          reason: {regex: "instructor"}

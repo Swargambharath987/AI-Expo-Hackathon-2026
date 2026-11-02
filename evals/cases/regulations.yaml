@@ -1,0 +1,128 @@
+# Pure regulation questions: must call search_regulations, must NOT fill a
+# form, must not compute a TDY cost. Domain is scored only if the model passes
+# one (it's optional), and then it must be the right one.
+# answer_regex encodes the fact the answer must contain, taken from the
+# corpus passage labelled in retrieval_gold.yaml.
+
+- id: reg_gtcc_mandatory
+  category: regulation
+  tab: regulation
+  turns:
+    - message: "Is the government travel charge card mandatory for my TDY trip?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        args:
+          search_regulations:
+            domain: {eq: travel, optional: true}
+        form: none
+        answer_regex: ["^\\W*yes", "GTCC|travel charge card"]
+
+- id: reg_leave_accrual
+  category: regulation
+  tab: leave
+  turns:
+    - message: "How many days of leave do I accrue per month on active duty?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        args:
+          search_regulations:
+            domain: {eq: leave, optional: true}
+        form: none
+        answer_regex: ["2\\.5"]
+
+- id: reg_leave_carryover
+  category: regulation
+  tab: leave
+  turns:
+    - message: "What's the most leave I can carry over at the end of the fiscal year?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        args:
+          search_regulations:
+            domain: {eq: leave, optional: true}
+        form: none
+        answer_regex: ["\\b60\\b"]
+
+- id: reg_army_emergency_leave
+  category: regulation
+  tab: leave
+  turns:
+    - message: "Who can approve emergency leave for one of my soldiers, and for how many days?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        args:
+          search_regulations:
+            domain: {eq: leave, optional: true}
+        form: none
+        answer_regex: ["commander", "\\b30\\b"]
+
+- id: reg_af_epb_evaluators
+  category: regulation
+  tab: eval
+  turns:
+    - message: "How many evaluators are on an Air Force Enlisted Performance Brief?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        args:
+          search_regulations:
+            domain: {eq: eval, optional: true}
+        form: none
+        answer_regex: ["\\b(two|2)\\b"]
+
+- id: reg_receipt_threshold
+  category: regulation
+  tab: travel
+  description: A $40 taxi is under the $75 itemized-receipt threshold (lodging always needs one).
+  turns:
+    - message: "Do I need a receipt for a $40 taxi ride on TDY?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        args:
+          search_regulations:
+            domain: {eq: travel, optional: true}
+        form: none
+        answer_regex: ["^\\W*no", "\\$?75"]
+
+- id: reg_navy_departure_day
+  category: regulation
+  tab: leave
+  description: Navy leave counting — MILPERSMAN 1050-090 (2 chunks in the corpus).
+  turns:
+    - message: "I'm in the Navy. Is the day I depart on leave charged as a day of leave?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        form: none
+        answer_regex: ["MILPERSMAN|1050"]
+
+- id: reg_career_leave_sellback
+  category: regulation
+  tab: leave
+  turns:
+    - message: "What's the maximum number of leave days I can sell back over my whole career?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        form: none
+        answer_regex: ["\\b60\\b"]
+
+- id: reg_army_ncoer_out_of_corpus
+  category: regulation_unanswerable
+  tab: eval
+  description: >
+    AR 623-3 is advertised in the system prompt but was never ingested. The
+    honest answer says it can't find it; a paragraph citation of AR 623-3
+    would be fabricated (caught by the citation grounding check).
+  turns:
+    - message: "Per AR 623-3, who has to be in an NCOER rating chain for a sergeant?"
+      expect:
+        tools_required: [search_regulations]
+        tools_forbidden: [fill_form, calculate_travel_cost]
+        form: none
+        answer_regex: ["not (find|found|locate|available|in)|couldn.?t|could not|unable|don.?t have|do not have|no (specific|relevant|matching)|isn.?t (in|available)"]

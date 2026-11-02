@@ -1,0 +1,3 @@
+# Raw agent traces (full tool results, large) — re-score with --rescore; not committed.
+reports/traces/
+__pycache__/
