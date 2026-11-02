@@ -33,7 +33,7 @@ export const STARTERS: Record<Tab, string[]> = {
 export const EMPTY_PROFILE: SoldierProfile = {
   name_last_first: "", rank: "", grade: "", ssn_last4: "",
   dod_id: "", unit: "", installation: "", uic: "",
-  supervisor_name: "", supervisor_title: "",
+  supervisor_name: "", supervisor_title: "", duty_position: "",
 };
 
 const FORM_TITLES: [prefix: string, title: string][] = [

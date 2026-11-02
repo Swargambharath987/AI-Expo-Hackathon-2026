@@ -1,0 +1,6043 @@
+{
+ "stamp": "20261102T192004Z",
+ "command": "python -m evals.run --only agent --tags tdy,form --repeats 3 --concurrency 3",
+ "git": "09d8229",
+ "agent": {
+  "llm": {
+   "base_url": "https://api.anthropic.com/v1",
+   "model": "claude-sonnet-4-6"
+  },
+  "repeats": 3,
+  "seconds": 113.7,
+  "traces_file": "evals/reports/traces/20261102T192004Z.json"
+ },
+ "agent_scores": {
+  "summary": {
+   "case_runs": 36,
+   "unique_cases": 12,
+   "turns": 48,
+   "tool_selection_acc": 0.978,
+   "irrelevance_acc": null,
+   "arg_acc": 0.991,
+   "grounding": {
+    "dollars": {
+     "pass": 1.0,
+     "applicable_turns": 22
+    },
+    "citations": {
+     "pass": 1.0,
+     "applicable_turns": 7
+    },
+    "form_fields": {
+     "pass": 0.941,
+     "applicable_turns": 17
+    },
+    "counselee": {
+     "pass": 1.0,
+     "applicable_turns": 6
+    },
+    "pii": {
+     "pass": 1.0,
+     "applicable_turns": 48
+    },
+    "all_turns": 0.979
+   },
+   "task_success": 0.944,
+   "overall_pass": 0.917,
+   "llm_calls": 90,
+   "prompt_tokens": 304881,
+   "completion_tokens": 13016,
+   "agent_cost_usd": 1.11,
+   "llm_calls_per_turn": 1.875,
+   "fill_form_dropped_keys": [
+    "leave_da31_single_turn r0.0 t0: [\"DA_31.leave_phone='614-555-0142'\"]",
+    "personnel_action_da4187_two_turns r0.0 t1: [\"DA_4187.destination='Airborne School Cadre, Fort Moore, GA'\"]",
+    "tdy_cost_then_dd1610 r0.0 t1: [\"DD_1610.one_way_miles='420'\"]",
+    "personnel_action_da4187_two_turns r0.1 t1: [\"DA_4187.destination='Airborne School cadre, Fort Moore, GA'\"]",
+    "tdy_cost_then_dd1610 r0.1 t1: [\"DD_1610.one_way_miles='420'\"]",
+    "personnel_action_da4187_two_turns r0.2 t1: [\"DA_4187.destination='Fort Moore, GA'\"]"
+   ],
+   "harness_warnings": []
+  },
+  "categories": {
+   "counseling_form": {
+    "case_runs": 6,
+    "selection": 1.0,
+    "args": 1.0,
+    "grounding": 0.833,
+    "task": 1.0,
+    "pass": 0.833,
+    "llm_calls_per_turn": 1.667
+   },
+   "leave_form": {
+    "case_runs": 6,
+    "selection": 1.0,
+    "args": 1.0,
+    "grounding": 1.0,
+    "task": 1.0,
+    "pass": 1.0,
+    "llm_calls_per_turn": 2.0
+   },
+   "personnel_action_form": {
+    "case_runs": 3,
+    "selection": 1.0,
+    "args": 1.0,
+    "grounding": 1.0,
+    "task": 1.0,
+    "pass": 1.0,
+    "llm_calls_per_turn": 1.5
+   },
+   "tdy_cost": {
+    "case_runs": 18,
+    "selection": 1.0,
+    "args": 1.0,
+    "grounding": 1.0,
+    "task": 0.944,
+    "pass": 0.944,
+    "llm_calls_per_turn": 1.944
+   },
+   "tdy_form": {
+    "case_runs": 3,
+    "selection": 0.667,
+    "args": 0.944,
+    "grounding": 1.0,
+    "task": 0.667,
+    "pass": 0.667,
+    "llm_calls_per_turn": 2.167
+   }
+  },
+  "consistency": {
+   "k": 3,
+   "cases": 12,
+   "pass^k": 0.75,
+   "mean_pass": 0.917,
+   "pass^1_any": 1.0,
+   "per_case": {
+    "counseling_da4856_single_turn": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "counseling_da4856_two_turns": {
+     "k": 3,
+     "passes": 2,
+     "pass^k": false,
+     "mean": 0.667
+    },
+    "leave_da31_single_turn": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "leave_da31_two_turns": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "personnel_action_da4187_two_turns": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "tdy_cost_then_dd1610": {
+     "k": 3,
+     "passes": 2,
+     "pass^k": false,
+     "mean": 0.667
+    },
+    "tdy_estimate_only_no_form": {
+     "k": 3,
+     "passes": 2,
+     "pass^k": false,
+     "mean": 0.667
+    },
+    "tdy_jber_wainwright_pov": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "tdy_liberty_moore_pov": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "tdy_meade_liberty_explicit_miles": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "tdy_plane_san_diego": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    },
+    "tdy_rental_cavazos_sam_houston": {
+     "k": 3,
+     "passes": 3,
+     "pass^k": true,
+     "mean": 1.0
+    }
+   }
+  },
+  "case_runs": [
+   {
+    "id": "leave_da31_single_turn",
+    "category": "leave_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Fill out a DA 31 for me: annual leave from 15 Dec 2026 to 29 Dec 2026, 15 days. I'll be at 412 Oak St, Columbus, OH 43215, phone 614-555-0142.",
+      "response": "Your DA Form 31 (Request and Authority for Leave) is ready for download. Here's a summary of what was filled:\n\n- **Soldier:** SSG Carter, James R. \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Leave Type:** Annual\n- **Dates:** 15 Dec 2026 \u2013 29 Dec 2026 (15 days)\n- **Leave Address:** 412 Oak St, Columbus, OH 43215 | 614-555-0142\n- **Approving Official:** CPT Hayes, Daniel\n\nNo missing fields. Route to your chain of command for signature.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_31"
+         },
+         "actual": "DA_31"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 14
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_31",
+         "field_values": {
+          "leave_type": "Annual",
+          "departure_date": "15 Dec 2026",
+          "return_date": "29 Dec 2026",
+          "num_days": 15,
+          "leave_address": "412 Oak St, Columbus, OH 43215",
+          "leave_phone": "614-555-0142"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_31",
+       "filled_fields": {
+        "Name (Last, First, MI)": "Carter, James R.",
+        "Rank": "SSG",
+        "Grade": "E-6",
+        "SSN (Last 4)": "4821",
+        "DoD ID": "1234567890",
+        "Organization/Unit": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Installation": "Fort Liberty, NC",
+        "Type of Leave": "Annual",
+        "Date Leave Begins": "15 Dec 2026",
+        "Date Leave Ends": "29 Dec 2026",
+        "Number of Days": "15",
+        "Address During Leave": "412 Oak St, Columbus, OH 43215",
+        "Contact Phone": "614-555-0142",
+        "Approving Official": "CPT Hayes, Daniel"
+       }
+      },
+      "form_dropped_keys": [
+       "DA_31.leave_phone='614-555-0142'"
+      ],
+      "llm_calls": 2,
+      "prompt_tokens": 6693,
+      "completion_tokens": 300,
+      "seconds": 6.5,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "leave_da31_two_turns",
+    "category": "leave_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I want to take some leave over Thanksgiving.",
+      "response": "Happy to help you plan Thanksgiving leave, SSG Carter! Here's what you need to know:\n\n- Submit a **DA Form 31 (Request and Authority for Leave)** to your BN S1. You can submit up to one month before your departure date \u2014 or earlier if dates are firm (like a holiday). \u2014 AR 600-8-10, Chapter 12\n- Your unit commander (or designated approving authority) approves ordinary leave. \u2014 AR 600-8-10, Chapter 12\n- Leave begins and ends at Fort Liberty, NC, and you must be physically present on post at the start and end of leave.\n\nTo get your DA Form 31 filled out, just tell me:\n1. **Departure date** (e.g., 26 Nov)\n2. **Return date** (e.g., 30 Nov)\n3. **Leave address** (where you'll be spending Thanksgiving)",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "search_regulations"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "AR 600-8-10"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 1
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "search_regulations",
+        "args": {
+         "query": "leave request procedures DA 31",
+         "domain": "leave"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 9724,
+      "completion_tokens": 303,
+      "seconds": 14.5,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "From 25 Nov to 30 Nov 2026, staying at my parents' place, 88 Pine Rd, Dayton OH. Go ahead and fill out the leave form.",
+      "response": "Your **DA Form 31 (Request and Authority for Leave)** is ready for download.\n\n**Missing field:**\n- **Contact Phone** \u2014 provide a number where you can be reached during leave and add it before submitting.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_31"
+         },
+         "actual": "DA_31"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 1
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 13
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_31",
+         "field_values": {
+          "leave_type": "Ordinary Leave",
+          "departure_date": "25 Nov 2026",
+          "return_date": "30 Nov 2026",
+          "num_days": 5,
+          "leave_address": "88 Pine Rd, Dayton, OH"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_31",
+       "filled_fields": {
+        "Name (Last, First, MI)": "Carter, James R.",
+        "Rank": "SSG",
+        "Grade": "E-6",
+        "SSN (Last 4)": "4821",
+        "DoD ID": "1234567890",
+        "Organization/Unit": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Installation": "Fort Liberty, NC",
+        "Type of Leave": "Ordinary Leave",
+        "Date Leave Begins": "25 Nov 2026",
+        "Date Leave Ends": "30 Nov 2026",
+        "Number of Days": "5",
+        "Address During Leave": "88 Pine Rd, Dayton, OH",
+        "Approving Official": "CPT Hayes, Daniel"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 7076,
+      "completion_tokens": 190,
+      "seconds": 4.6,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "counseling_da4856_two_turns",
+    "category": "counseling_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to counsel one of my soldiers, PFC Daniel Ortiz, for being late to formation twice this week.",
+      "response": "I need a bit more information before I can fill the counseling form \u2014 specifically, the **key points** you want to document and any **action plan** you're giving PFC Ortiz. Could you provide:\n\n1. **Key points** \u2014 what exactly happened (dates/times of the two incidents, any prior counseling, impact on the unit)?\n2. **Action plan** \u2014 what you're directing PFC Ortiz to do going forward (e.g., report by a specific time, consequences if behavior continues)?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [],
+       "problems": [],
+       "scored": false
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2903,
+      "completion_tokens": 115,
+      "seconds": 3.6,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "Key points: he was late on 2 Nov and 4 Nov; we discussed why accountability at formation matters. Plan of action: he sets two alarms and reports to me at 0615 daily for two weeks. Please fill out the DA 4856.",
+      "response": "Your DA Form 4856 (Developmental Counseling Form) is ready for download. All fields are complete \u2014 no missing information.\n\n**Summary of what was filled:**\n- **Soldier:** PFC Ortiz, Daniel \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Counseling Type:** Event-Oriented\n- **Key Points:** Late to formation on 2 Nov and 4 Nov 2026; discussed importance of accountability.\n- **Plan of Action:** Soldier sets two alarms; reports to SSG Carter at 0615 daily for two weeks.\n- **Counselor:** SSG Carter, James R.\n\nHave PFC Ortiz sign the form; retain the original and provide him a copy.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4856"
+         },
+         "actual": "DA_4856"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 10
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": true
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4856",
+         "field_values": {
+          "soldier_name": "Ortiz, Daniel",
+          "soldier_rank": "PFC",
+          "counseling_type": "Event-Oriented",
+          "key_points": "Soldier was late to formation on 2 Nov and 4 Nov 2026. We discussed why accountability at formation matters.",
+          "action_plan": "Soldier will set two alarms and report to SSG Carter daily at 0615 for two weeks.",
+          "leader_position": "SSG, B Co, 1-505 PIR, 82nd ABN DIV"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4856",
+       "filled_fields": {
+        "Name of Soldier": "Ortiz, Daniel",
+        "Rank": "PFC",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Date": "02 NOV 2026",
+        "Purpose of Counseling": "Event-Oriented",
+        "Key Points of Discussion": "Soldier was late to formation on 2 Nov and 4 Nov 2026. We discussed why accountability at formation matters.",
+        "Plan of Action": "Soldier will set two alarms and report to SSG Carter daily at 0615 for two weeks.",
+        "Counselor Name": "Carter, James R.",
+        "Counselor Rank/Title": "SSG",
+        "Counselor Position": "SSG, B Co, 1-505 PIR, 82nd ABN DIV"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 7010,
+      "completion_tokens": 375,
+      "seconds": 7.3,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "counseling_da4856_single_turn",
+    "category": "counseling_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Fill out a counseling form for SPC Maria Lopez: event-oriented counseling for her outstanding performance at the range, she shot 40 out of 40. Plan of action: I'll recommend her for an Army Achievement Medal.",
+      "response": "Your DA Form 4856 (Developmental Counseling Form) is ready for download. Here's a summary of what was filled:\n\n- **Soldier:** SPC Lopez, Maria \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Counseling Type:** Event-Oriented\n- **Key Points:** SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.\n- **Plan of Action:** Recommend for Army Achievement Medal.\n- **Counselor:** SSG Carter, James R.\n\nNo missing fields. Have SPC Lopez sign the form after the counseling session.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4856"
+         },
+         "actual": "DA_4856"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 10
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": true
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4856",
+         "field_values": {
+          "soldier_name": "Lopez, Maria",
+          "soldier_rank": "SPC",
+          "counseling_type": "Event-Oriented",
+          "key_points": "SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.",
+          "action_plan": "I'll recommend her for an Army Achievement Medal.",
+          "leader_position": "SSG Carter, James R., B Co, 1-505 PIR, 82nd ABN DIV"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4856",
+       "filled_fields": {
+        "Name of Soldier": "Lopez, Maria",
+        "Rank": "SPC",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Date": "02 NOV 2026",
+        "Purpose of Counseling": "Event-Oriented",
+        "Key Points of Discussion": "SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.",
+        "Plan of Action": "I'll recommend her for an Army Achievement Medal.",
+        "Counselor Name": "Carter, James R.",
+        "Counselor Rank/Title": "SSG",
+        "Counselor Position": "SSG Carter, James R., B Co, 1-505 PIR, 82nd ABN DIV"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6646,
+      "completion_tokens": 340,
+      "seconds": 6.6,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "personnel_action_da4187_two_turns",
+    "category": "personnel_action_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to submit a personnel action request.",
+      "response": "I can help you fill out a DA Form 4187 (Personnel Action). Please provide the following details:\n\n1. **Action Requested** \u2014 What personnel action are you requesting? (e.g., promotion, reassignment, name change, etc.)\n2. **Effective Date** \u2014 When should the action take effect?\n3. **Reason** \u2014 Brief explanation for the request.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2887,
+      "completion_tokens": 87,
+      "seconds": 2.4,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "It's a request for reassignment to the Airborne School cadre at Fort Moore, effective 1 Feb 2027, to pursue an instructor position. Fill out the DA 4187.",
+      "response": "Your form is ready for download.\n\n**DA Form 4187 (Personnel Action) \u2014 Summary:**\n- **Name:** Carter, James R. | **Rank:** SSG | **Unit:** B Co, 1-505 PIR, 82nd ABN DIV\n- **Action Requested:** Reassignment to Airborne School cadre\n- **Effective Date:** 01 February 2027\n- **Reason:** To pursue an instructor position at the Airborne School, Fort Moore, GA\n\nNo missing fields. Route through your chain of command for signature and submission to S1.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4187"
+         },
+         "actual": "DA_4187"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 7
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4187",
+         "field_values": {
+          "action_requested": "Reassignment to Airborne School cadre",
+          "effective_date": "01 February 2027",
+          "reason": "To pursue an instructor position at the Airborne School, Fort Moore, GA",
+          "destination": "Airborne School Cadre, Fort Moore, GA"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4187",
+       "filled_fields": {
+        "Name": "Carter, James R.",
+        "Grade": "SSG",
+        "SSN (Last 4)": "4821",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Type of Requested Personnel Action": "Reassignment to Airborne School cadre",
+        "Effective Date": "01 February 2027",
+        "Reason for Requested Action": "To pursue an instructor position at the Airborne School, Fort Moore, GA"
+       }
+      },
+      "form_dropped_keys": [
+       "DA_4187.destination='Airborne School Cadre, Fort Moore, GA'"
+      ],
+      "llm_calls": 2,
+      "prompt_tokens": 6710,
+      "completion_tokens": 280,
+      "seconds": 5.9,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_liberty_moore_pov",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to send SPC Rivera to Fort Moore, Georgia for 5 days starting July 10. She's driving her POV from Fort Liberty.",
+      "response": "**TDY Cost \u2014 Fort Moore, GA (5 days, POV)**\n- Lodging: $416 (4 nights \u00d7 $104)\n- Meals: $288 (3 full days \u00d7 $64, 2 travel days \u00d7 $48)\n- Mileage: $518 (370 mi \u00d7 $0.70 \u00d7 2)\n- **Total: $1,222**\n\nWould you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for SPC Rivera? I'll need her full name and the purpose of the TDY to complete it.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "get_per_diem",
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "moore",
+           "columbus"
+          ]
+         },
+         "actual": "Fort Moore"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "GA"
+         },
+         "actual": "GA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 5
+         },
+         "actual": "5"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 370
+         },
+         "actual": "370"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         416.0,
+         104.0,
+         288.0,
+         64.0,
+         48.0,
+         518.0,
+         0.7,
+         1222.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "get_per_diem",
+        "args": {
+         "city": "Fort Moore",
+         "state": "GA",
+         "year": "2026"
+        }
+       },
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Moore",
+         "destination_state": "GA",
+         "travel_days": 5,
+         "origin": "Fort Liberty, NC",
+         "one_way_miles": 370,
+         "travel_mode": "POV"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6630,
+      "completion_tokens": 396,
+      "seconds": 7.0,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_meade_liberty_explicit_miles",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Estimate the TDY cost from Fort Meade to Fort Liberty, NC: 4 days, driving my own car, it's 420 miles each way.",
+      "response": "**TDY Cost \u2014 Fort Liberty, NC (4 days, POV)**\n- Lodging: $330 (3 nights \u00d7 $110)\n- Meals: $238 (2 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $588 (420 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,156**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "liberty",
+           "fayetteville",
+           "bragg"
+          ]
+         },
+         "actual": "Fort Liberty"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "NC"
+         },
+         "actual": "NC"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 4
+         },
+         "actual": "4"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 420
+         },
+         "actual": "420"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         110.0,
+         238.0,
+         68.0,
+         51.0,
+         588.0,
+         0.7,
+         1156.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Liberty",
+         "destination_state": "NC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420,
+         "origin": "Fort Meade"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6359,
+      "completion_tokens": 289,
+      "seconds": 5.2,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_plane_san_diego",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "What will a 6-day TDY to San Diego, CA cost if I fly?",
+      "response": "**TDY Cost \u2014 San Diego, CA (6 days, PLANE)**\n- Lodging: $1,000 (5 nights \u00d7 $200)\n- Meals: $434 (4 full days \u00d7 $79, 2 travel days \u00d7 $59 at 75%)\n- Mileage: $0 (N/A \u2014 flying)\n- Airfare: not estimated \u2014 use actual ticket price (reimbursed at cost)\n- **Subtotal (excl. airfare): $1,434**\n\nWould you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "san diego"
+          ]
+         },
+         "actual": "San Diego"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "CA"
+         },
+         "actual": "CA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 6
+         },
+         "actual": "6"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "PLANE"
+         },
+         "actual": "PLANE"
+        }
+       ],
+       "n": 4,
+       "n_ok": 4
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         1000.0,
+         200.0,
+         434.0,
+         79.0,
+         59.0,
+         0.0,
+         1434.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "San Diego",
+         "destination_state": "CA",
+         "travel_days": 6,
+         "travel_mode": "PLANE"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6258,
+      "completion_tokens": 272,
+      "seconds": 5.0,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 4,
+    "args_ok": 4,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_rental_cavazos_sam_houston",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I'm doing a 3-day TDY from Fort Cavazos to Fort Sam Houston, TX with a rental car. What will it cost?",
+      "response": "**TDY Cost \u2014 Fort Sam Houston, TX (3 days, Rental Car)**\n- Lodging: $262 (2 nights \u00d7 $131)\n- Meals: $170 (1 full day \u00d7 $68, 2 travel days \u00d7 $51)\n- Mileage: $0 (not applicable for rental)\n- **Total: $432**\n\nRental car costs are reimbursed separately with receipts per JTR policy. Need a DD Form 1610 (Request and Authorization for TDY Travel) filled out?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "sam houston",
+           "san antonio",
+           "jbsa"
+          ]
+         },
+         "actual": "Fort Sam Houston"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "TX"
+         },
+         "actual": "TX"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 3
+         },
+         "actual": "3"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "RENTAL"
+         },
+         "actual": "RENTAL"
+        }
+       ],
+       "n": 4,
+       "n_ok": 4
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         262.0,
+         131.0,
+         170.0,
+         68.0,
+         51.0,
+         0.0,
+         432.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "JTR"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Sam Houston",
+         "destination_state": "TX",
+         "travel_days": 3,
+         "travel_mode": "RENTAL",
+         "origin": "Fort Cavazos"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6305,
+      "completion_tokens": 270,
+      "seconds": 5.0,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 4,
+    "args_ok": 4,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_jber_wainwright_pov",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Driving my POV from JBER to Fort Wainwright for a 7 day TDY next month. How much will the trip cost?",
+      "response": "**TDY Cost \u2014 Fort Wainwright, AK (7 days, POV)**\n- Lodging: $660 (6 nights \u00d7 $110)\n- Meals: $442 (5 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $504 (360 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,606**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "wainwright",
+           "fairbanks"
+          ]
+         },
+         "actual": "Fort Wainwright"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "AK"
+         },
+         "actual": "AK"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 7
+         },
+         "actual": "7"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 360
+         },
+         "actual": "360"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         660.0,
+         110.0,
+         442.0,
+         68.0,
+         51.0,
+         504.0,
+         0.7,
+         1606.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Wainwright",
+         "destination_state": "AK",
+         "travel_days": 7,
+         "travel_mode": "POV",
+         "one_way_miles": 360,
+         "origin": "JBER"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6384,
+      "completion_tokens": 296,
+      "seconds": 5.4,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_estimate_only_no_form",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Just a rough estimate, I'm not submitting anything yet: a 2-day TDY from Fort Meade to Fort Belvoir, VA by POV.",
+      "response": "**TDY Cost \u2014 Fort Belvoir, VA (2 days, POV)**\n- Lodging: $110 (1 night \u00d7 $110)\n- Meals: $102 (2 travel days \u00d7 $51 at 75% per JTR)\n- Mileage: $49 (35 mi \u00d7 2 \u00d7 $0.70)\n- **Total: ~$261**",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "belvoir"
+          ]
+         },
+         "actual": "Fort Belvoir"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "VA"
+         },
+         "actual": "VA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 2
+         },
+         "actual": "2"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 35
+         },
+         "actual": "35"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         110.0,
+         110.0,
+         102.0,
+         51.0,
+         49.0,
+         0.7,
+         261.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "JTR"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Belvoir",
+         "destination_state": "VA",
+         "travel_days": 2,
+         "travel_mode": "POV",
+         "one_way_miles": 35
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6365,
+      "completion_tokens": 239,
+      "seconds": 4.4,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_cost_then_dd1610",
+    "category": "tdy_form",
+    "tags": [
+     "tdy",
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I'm going TDY from Fort Liberty to Fort Jackson, SC for 4 days, driving my POV. What's the cost?",
+      "response": "**TDY Cost \u2014 Fort Jackson, SC (4 days, POV)**\n- Lodging: $330 (3 nights \u00d7 $110)\n- Meals: $238 (2 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $588 (420 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,156**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "jackson",
+           "columbia"
+          ]
+         },
+         "actual": "Fort Jackson"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "SC"
+         },
+         "actual": "SC"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 4
+         },
+         "actual": "4"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 420
+         },
+         "actual": "420"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         110.0,
+         238.0,
+         68.0,
+         51.0,
+         588.0,
+         0.7,
+         1156.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Jackson",
+         "destination_state": "SC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420,
+         "origin": "Fort Liberty, NC"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6369,
+      "completion_tokens": 289,
+      "seconds": 4.9,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "Great, fill out the DD 1610 for that trip. I depart 3 Aug 2026, purpose is Drill Sergeant School in-processing.",
+      "response": "Your DD Form 1610 (Request and Authorization for TDY Travel) is ready for download. The following fields still need to be added before submission:\n\n- **Per Diem Estimate** \u2014 Lodging $330 / Meals $238 / Mileage $588\n- **Order/Authorization Number** \u2014 assigned by your S1/G1\n- **Remarks** \u2014 any additional notes (optional)",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost",
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DD_1610"
+         },
+         "actual": "DD_1610"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         238.0,
+         588.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 11
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Jackson",
+         "destination_state": "SC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420
+        }
+       },
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DD_1610",
+         "field_values": {
+          "destination": "Fort Jackson, SC",
+          "purpose": "Drill Sergeant School in-processing",
+          "travel_mode": "POV",
+          "travel_days": 4,
+          "departure_date": "03 Aug 2026",
+          "return_date": "06 Aug 2026",
+          "cost_estimate": 1156.0,
+          "one_way_miles": 420
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DD_1610",
+       "filled_fields": {
+        "Traveler Name": "Carter, James R.",
+        "Grade/Rank": "SSG",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Permanent Duty Station": "Fort Liberty, NC",
+        "Proceed Date": "03 Aug 2026",
+        "Return Date": "06 Aug 2026",
+        "Destination/Itinerary": "Fort Jackson, SC",
+        "Purpose of Travel": "Drill Sergeant School in-processing",
+        "TDY Days": "4",
+        "Mode of Transportation": "POV",
+        "Total Estimated Cost": "1156.0"
+       }
+      },
+      "form_dropped_keys": [
+       "DD_1610.one_way_miles='420'"
+      ],
+      "llm_calls": 3,
+      "prompt_tokens": 11208,
+      "completion_tokens": 395,
+      "seconds": 8.1,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 6,
+    "args_ok": 6,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 0,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "leave_da31_single_turn",
+    "category": "leave_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Fill out a DA 31 for me: annual leave from 15 Dec 2026 to 29 Dec 2026, 15 days. I'll be at 412 Oak St, Columbus, OH 43215, phone 614-555-0142.",
+      "response": "Your DA Form 31 (Request and Authority for Leave) is ready for download. Here's a summary of what was filled:\n\n- **Soldier:** SSG Carter, James R. \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Leave Type:** Annual\n- **Dates:** 15 Dec 2026 \u2013 29 Dec 2026 (15 days)\n- **Leave Address:** 412 Oak St, Columbus, OH 43215 | 614-555-0142\n\nNo missing fields. Route to your chain of command for signature.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_31"
+         },
+         "actual": "DA_31"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 14
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_31",
+         "field_values": {
+          "leave_type": "Annual",
+          "departure_date": "15 Dec 2026",
+          "return_date": "29 Dec 2026",
+          "num_days": 15,
+          "leave_address": "412 Oak St, Columbus, OH 43215",
+          "phone": "614-555-0142"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_31",
+       "filled_fields": {
+        "Name (Last, First, MI)": "Carter, James R.",
+        "Rank": "SSG",
+        "Grade": "E-6",
+        "SSN (Last 4)": "4821",
+        "DoD ID": "1234567890",
+        "Organization/Unit": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Installation": "Fort Liberty, NC",
+        "Type of Leave": "Annual",
+        "Date Leave Begins": "15 Dec 2026",
+        "Date Leave Ends": "29 Dec 2026",
+        "Number of Days": "15",
+        "Address During Leave": "412 Oak St, Columbus, OH 43215",
+        "Contact Phone": "614-555-0142",
+        "Approving Official": "CPT Hayes, Daniel"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6691,
+      "completion_tokens": 285,
+      "seconds": 6.1,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "leave_da31_two_turns",
+    "category": "leave_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I want to take some leave over Thanksgiving.",
+      "response": "To take Thanksgiving leave, you'll need to submit a **DA Form 31 (Request and Authority for Leave)**. Here's what you need to know:\n\n- Submit your DA Form 31 no earlier than **one month before** your departure date (holiday leave dates are considered firm, so earlier submission is acceptable).\n- Your **unit commander or designated approver** is the approval authority.\n- You must be physically present at Fort Liberty at the **start and end** of your leave period.\n\n\u2014 AR 600-8-10, Chapter 12\n\n**To get started, just tell me:**\n1. What dates do you want to take leave? (e.g., 25 Nov \u2013 30 Nov)\n2. Where will you be spending your leave?\n3. What type of leave? (Ordinary/Chargeable is standard)\n\nI can fill out your DA Form 31 (Request and Authority for Leave) once I have those details!",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "search_regulations"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "AR 600-8-10"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 1
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "search_regulations",
+        "args": {
+         "query": "leave request procedures DA 31",
+         "domain": "leave"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 9724,
+      "completion_tokens": 308,
+      "seconds": 8.7,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "From 25 Nov to 30 Nov 2026, staying at my parents' place, 88 Pine Rd, Dayton OH. Go ahead and fill out the leave form.",
+      "response": "Your form is ready for download.\n\n**DA Form 31 (Request and Authority for Leave) \u2014 Summary**\n- **Soldier:** SSG Carter, James R. | B Co, 1-505 PIR, 82nd ABN DIV\n- **Leave Type:** Ordinary/Chargeable\n- **Dates:** 25 Nov \u2013 30 Nov 2026 **(5 days)**\n- **Leave Address:** 88 Pine Rd, Dayton, OH\n\n**Missing field:** Contact phone number during leave. Add it before submitting to your approving official.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_31"
+         },
+         "actual": "DA_31"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 1
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 13
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_31",
+         "field_values": {
+          "leave_type": "Ordinary/Chargeable",
+          "departure_date": "25 Nov 2026",
+          "return_date": "30 Nov 2026",
+          "num_days": 5,
+          "leave_address": "88 Pine Rd, Dayton, OH"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_31",
+       "filled_fields": {
+        "Name (Last, First, MI)": "Carter, James R.",
+        "Rank": "SSG",
+        "Grade": "E-6",
+        "SSN (Last 4)": "4821",
+        "DoD ID": "1234567890",
+        "Organization/Unit": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Installation": "Fort Liberty, NC",
+        "Type of Leave": "Ordinary/Chargeable",
+        "Date Leave Begins": "25 Nov 2026",
+        "Date Leave Ends": "30 Nov 2026",
+        "Number of Days": "5",
+        "Address During Leave": "88 Pine Rd, Dayton, OH",
+        "Approving Official": "CPT Hayes, Daniel"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 7088,
+      "completion_tokens": 279,
+      "seconds": 5.9,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "counseling_da4856_two_turns",
+    "category": "counseling_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to counsel one of my soldiers, PFC Daniel Ortiz, for being late to formation twice this week.",
+      "response": "I need a bit more information before I can fill the counseling form \u2014 specifically, the **key points** you want to document and any **action plan** you're giving PFC Ortiz. Could you provide:\n\n1. **Key points** \u2014 what exactly happened (dates/times of the two incidents, any prior counseling, impact on the unit)?\n2. **Action plan** \u2014 what you're directing PFC Ortiz to do going forward (e.g., report by a specific time, consequences if behavior continues)?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [],
+       "problems": [],
+       "scored": false
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2903,
+      "completion_tokens": 115,
+      "seconds": 3.9,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "Key points: he was late on 2 Nov and 4 Nov; we discussed why accountability at formation matters. Plan of action: he sets two alarms and reports to me at 0615 daily for two weeks. Please fill out the DA 4856.",
+      "response": "Your DA Form 4856 (Developmental Counseling Form) is ready for download. All fields are complete \u2014 no missing information. Have PFC Ortiz sign the form after the counseling session and retain a copy for your records.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4856"
+         },
+         "actual": "DA_4856"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 10
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": true
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4856",
+         "field_values": {
+          "soldier_name": "Ortiz, Daniel",
+          "soldier_rank": "PFC",
+          "counseling_type": "Event-Oriented",
+          "key_points": "Soldier was late to formation on 2 Nov and 4 Nov 2026. We discussed why accountability at formation matters.",
+          "action_plan": "Soldier will set two alarms and report to SSG Carter daily at 0615 for two weeks.",
+          "leader_position": "SSG, B Co, 1-505 PIR, 82nd ABN DIV"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4856",
+       "filled_fields": {
+        "Name of Soldier": "Ortiz, Daniel",
+        "Rank": "PFC",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Date": "02 NOV 2026",
+        "Purpose of Counseling": "Event-Oriented",
+        "Key Points of Discussion": "Soldier was late to formation on 2 Nov and 4 Nov 2026. We discussed why accountability at formation matters.",
+        "Plan of Action": "Soldier will set two alarms and report to SSG Carter daily at 0615 for two weeks.",
+        "Counselor Name": "Carter, James R.",
+        "Counselor Rank/Title": "SSG",
+        "Counselor Position": "SSG, B Co, 1-505 PIR, 82nd ABN DIV"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 7010,
+      "completion_tokens": 254,
+      "seconds": 5.4,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "counseling_da4856_single_turn",
+    "category": "counseling_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Fill out a counseling form for SPC Maria Lopez: event-oriented counseling for her outstanding performance at the range, she shot 40 out of 40. Plan of action: I'll recommend her for an Army Achievement Medal.",
+      "response": "Your DA Form 4856 (Developmental Counseling Form) is ready for download. Here's what was filled in:\n\n- **Soldier:** SPC Lopez, Maria \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Date:** 02 NOV 2026\n- **Counseling Type:** Event-Oriented\n- **Key Points:** SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.\n- **Plan of Action:** Recommend for Army Achievement Medal.\n- **Counselor:** SSG Carter, James R.\n\nNo missing fields. Have SPC Lopez sign the form to acknowledge the counseling session.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4856"
+         },
+         "actual": "DA_4856"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 10
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": true
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4856",
+         "field_values": {
+          "soldier_name": "Lopez, Maria",
+          "soldier_rank": "SPC",
+          "counseling_type": "Event-Oriented",
+          "key_points": "SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.",
+          "action_plan": "I'll recommend her for an Army Achievement Medal.",
+          "leader_position": "SSG Carter, James R., B Co, 1-505 PIR, 82nd ABN DIV"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4856",
+       "filled_fields": {
+        "Name of Soldier": "Lopez, Maria",
+        "Rank": "SPC",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Date": "02 NOV 2026",
+        "Purpose of Counseling": "Event-Oriented",
+        "Key Points of Discussion": "SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.",
+        "Plan of Action": "I'll recommend her for an Army Achievement Medal.",
+        "Counselor Name": "Carter, James R.",
+        "Counselor Rank/Title": "SSG",
+        "Counselor Position": "SSG Carter, James R., B Co, 1-505 PIR, 82nd ABN DIV"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6652,
+      "completion_tokens": 352,
+      "seconds": 6.7,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "personnel_action_da4187_two_turns",
+    "category": "personnel_action_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to submit a personnel action request.",
+      "response": "I can help you fill out a DA Form 4187 (Personnel Action). Please provide the following details:\n\n1. **Action Requested** \u2014 What personnel action are you requesting? (e.g., promotion, reassignment, name change, etc.)\n2. **Effective Date** \u2014 When should the action take effect?\n3. **Reason** \u2014 Brief explanation for the request.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2887,
+      "completion_tokens": 87,
+      "seconds": 2.5,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "It's a request for reassignment to the Airborne School cadre at Fort Moore, effective 1 Feb 2027, to pursue an instructor position. Fill out the DA 4187.",
+      "response": "Your form is ready for download. Here's a summary of what was filled:\n\n**DA Form 4187 (Personnel Action)**\n- **Name:** Carter, James R. | **Grade:** SSG\n- **Unit:** B Co, 1-505 PIR, 82nd ABN DIV\n- **Action Requested:** Reassignment to Airborne School cadre\n- **Effective Date:** 01 February 2027\n- **Reason:** To pursue an instructor position at the Airborne School, Fort Moore, GA\n\nNo missing fields. Route through your chain of command for signature and submission to S1.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4187"
+         },
+         "actual": "DA_4187"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 7
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4187",
+         "field_values": {
+          "action_requested": "Reassignment to Airborne School cadre",
+          "effective_date": "01 February 2027",
+          "reason": "To pursue an instructor position at the Airborne School, Fort Moore, GA",
+          "destination": "Airborne School cadre, Fort Moore, GA"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4187",
+       "filled_fields": {
+        "Name": "Carter, James R.",
+        "Grade": "SSG",
+        "SSN (Last 4)": "4821",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Type of Requested Personnel Action": "Reassignment to Airborne School cadre",
+        "Effective Date": "01 February 2027",
+        "Reason for Requested Action": "To pursue an instructor position at the Airborne School, Fort Moore, GA"
+       }
+      },
+      "form_dropped_keys": [
+       "DA_4187.destination='Airborne School cadre, Fort Moore, GA'"
+      ],
+      "llm_calls": 2,
+      "prompt_tokens": 6715,
+      "completion_tokens": 285,
+      "seconds": 5.5,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_liberty_moore_pov",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to send SPC Rivera to Fort Moore, Georgia for 5 days starting July 10. She's driving her POV from Fort Liberty.",
+      "response": "**TDY Cost \u2014 Fort Moore, GA (5 days, POV)**\n- Lodging: $416 (4 nights \u00d7 $104)\n- Meals: $288 (3 full days \u00d7 $64, 2 travel days \u00d7 $48)\n- Mileage: $518 (370 mi \u00d7 $0.70 \u00d7 2)\n- **Total: $1,222**\n\nWould you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for SPC Rivera? If so, what's the purpose of the TDY?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "get_per_diem",
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "moore",
+           "columbus"
+          ]
+         },
+         "actual": "Fort Moore"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "GA"
+         },
+         "actual": "GA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 5
+         },
+         "actual": "5"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 370
+         },
+         "actual": "370"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         416.0,
+         104.0,
+         288.0,
+         64.0,
+         48.0,
+         518.0,
+         0.7,
+         1222.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "get_per_diem",
+        "args": {
+         "city": "Fort Moore",
+         "state": "GA",
+         "year": "2026"
+        }
+       },
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Moore",
+         "destination_state": "GA",
+         "travel_days": 5,
+         "origin": "Fort Liberty, NC",
+         "one_way_miles": 370,
+         "travel_mode": "POV"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6630,
+      "completion_tokens": 391,
+      "seconds": 7.5,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_meade_liberty_explicit_miles",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Estimate the TDY cost from Fort Meade to Fort Liberty, NC: 4 days, driving my own car, it's 420 miles each way.",
+      "response": "**TDY Cost \u2014 Fort Liberty, NC (4 days, POV)**\n- Lodging: $330 (3 nights \u00d7 $110)\n- Meals: $238 (2 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $588 (420 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,156**\n\nNeed a DD Form 1610 (Request and Authorization for TDY Travel) filled out for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "liberty",
+           "fayetteville",
+           "bragg"
+          ]
+         },
+         "actual": "Fort Liberty"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "NC"
+         },
+         "actual": "NC"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 4
+         },
+         "actual": "4"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 420
+         },
+         "actual": "420"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         110.0,
+         238.0,
+         68.0,
+         51.0,
+         588.0,
+         0.7,
+         1156.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Liberty",
+         "destination_state": "NC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420,
+         "origin": "Fort Meade"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6359,
+      "completion_tokens": 287,
+      "seconds": 6.0,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_plane_san_diego",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "What will a 6-day TDY to San Diego, CA cost if I fly?",
+      "response": "**TDY Cost \u2014 San Diego, CA (6 days, PLANE)**\n- Lodging: $1,000 (5 nights \u00d7 $200)\n- Meals: $434 (4 full days \u00d7 $79, 2 travel days \u00d7 $59 at 75%)\n- Mileage: $0 (airfare not estimated \u2014 use actual ticket price)\n- **Total (excl. airfare): $1,434**\n\nAdd your actual round-trip airfare to get the full reimbursable amount. Want me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "san diego"
+          ]
+         },
+         "actual": "San Diego"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "CA"
+         },
+         "actual": "CA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 6
+         },
+         "actual": "6"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "PLANE"
+         },
+         "actual": "PLANE"
+        }
+       ],
+       "n": 4,
+       "n_ok": 4
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         1000.0,
+         200.0,
+         434.0,
+         79.0,
+         59.0,
+         0.0,
+         1434.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "San Diego",
+         "destination_state": "CA",
+         "travel_days": 6,
+         "travel_mode": "PLANE"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6258,
+      "completion_tokens": 269,
+      "seconds": 5.3,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 4,
+    "args_ok": 4,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_rental_cavazos_sam_houston",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I'm doing a 3-day TDY from Fort Cavazos to Fort Sam Houston, TX with a rental car. What will it cost?",
+      "response": "**TDY Cost \u2014 Fort Sam Houston, TX (3 days, Rental Car)**\n- Lodging: $262 (2 nights \u00d7 $131)\n- Meals: $170 (1 full day \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $0 (not applicable for rental car)\n- **Total: $432**\n\nRental car costs are reimbursed separately with receipts per JTR policy. Would you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "sam houston",
+           "san antonio",
+           "jbsa"
+          ]
+         },
+         "actual": "Fort Sam Houston"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "TX"
+         },
+         "actual": "TX"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 3
+         },
+         "actual": "3"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "RENTAL"
+         },
+         "actual": "RENTAL"
+        }
+       ],
+       "n": 4,
+       "n_ok": 4
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         262.0,
+         131.0,
+         170.0,
+         68.0,
+         51.0,
+         0.0,
+         432.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "JTR"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Sam Houston",
+         "destination_state": "TX",
+         "travel_days": 3,
+         "travel_mode": "RENTAL",
+         "origin": "Fort Cavazos"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6305,
+      "completion_tokens": 282,
+      "seconds": 5.8,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 4,
+    "args_ok": 4,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_jber_wainwright_pov",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Driving my POV from JBER to Fort Wainwright for a 7 day TDY next month. How much will the trip cost?",
+      "response": "**TDY Cost \u2014 Fort Wainwright, AK (7 days, POV)**\n- Lodging: $660 (6 nights \u00d7 $110)\n- Meals: $442 (5 full days \u00d7 $68, 2 travel days \u00d7 $51)\n- Mileage: $504 (360 mi \u00d7 $0.70 \u00d7 2)\n- **Total: $1,606**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "wainwright",
+           "fairbanks"
+          ]
+         },
+         "actual": "Fort Wainwright"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "AK"
+         },
+         "actual": "AK"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 7
+         },
+         "actual": "7"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 360
+         },
+         "actual": "360"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         660.0,
+         110.0,
+         442.0,
+         68.0,
+         51.0,
+         504.0,
+         0.7,
+         1606.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Wainwright",
+         "destination_state": "AK",
+         "travel_days": 7,
+         "travel_mode": "POV",
+         "one_way_miles": 360,
+         "origin": "JBER"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6384,
+      "completion_tokens": 290,
+      "seconds": 5.7,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_estimate_only_no_form",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Just a rough estimate, I'm not submitting anything yet: a 2-day TDY from Fort Meade to Fort Belvoir, VA by POV.",
+      "response": "**TDY Cost Estimate \u2014 Fort Belvoir, VA (2 days, POV)**\n- Lodging: $110 (1 night \u00d7 $110)\n- Meals: $102 (2 travel days \u00d7 $51 at 75%)\n- Mileage: $49 (35 mi \u00d7 2 \u00d7 $0.70)\n- **Total: ~$261**",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "belvoir"
+          ]
+         },
+         "actual": "Fort Belvoir"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "VA"
+         },
+         "actual": "VA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 2
+         },
+         "actual": "2"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 35
+         },
+         "actual": "35"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         110.0,
+         110.0,
+         102.0,
+         51.0,
+         49.0,
+         0.7,
+         261.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Belvoir",
+         "destination_state": "VA",
+         "travel_days": 2,
+         "travel_mode": "POV",
+         "one_way_miles": 35,
+         "origin": "Fort Meade"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6385,
+      "completion_tokens": 256,
+      "seconds": 7.4,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_cost_then_dd1610",
+    "category": "tdy_form",
+    "tags": [
+     "tdy",
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I'm going TDY from Fort Liberty to Fort Jackson, SC for 4 days, driving my POV. What's the cost?",
+      "response": "**TDY Cost \u2014 Fort Jackson, SC (4 days, POV)**\n- Lodging: $330 (3 nights \u00d7 $110)\n- Meals: $238 (2 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $588 (420 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,156**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "jackson",
+           "columbia"
+          ]
+         },
+         "actual": "Fort Jackson"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "SC"
+         },
+         "actual": "SC"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 4
+         },
+         "actual": "4"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 420
+         },
+         "actual": "420"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         110.0,
+         238.0,
+         68.0,
+         51.0,
+         588.0,
+         0.7,
+         1156.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Jackson",
+         "destination_state": "SC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420,
+         "origin": "Fort Liberty, NC"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6369,
+      "completion_tokens": 289,
+      "seconds": 5.0,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "Great, fill out the DD 1610 for that trip. I depart 3 Aug 2026, purpose is Drill Sergeant School in-processing.",
+      "response": "Your form is ready for download. **DD Form 1610 (Request and Authorization for TDY Travel)** is filled with:\n- **Traveler:** SSG Carter, James R. \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Trip:** Fort Liberty, NC \u2192 Fort Jackson, SC | 03\u201306 Aug 2026 | POV\n- **Purpose:** Drill Sergeant School in-processing | **Est. Cost:** $1,156\n\nMissing fields to complete before submission:\n- **Per Diem Estimate** (lodging $330 + meals $238)\n- **Order/Authorization Number** (assigned by your S1/G1)\n- **Remarks** (optional)",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost",
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DD_1610"
+         },
+         "actual": "DD_1610"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         1156.0,
+         330.0,
+         238.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 11
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Jackson",
+         "destination_state": "SC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420
+        }
+       },
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DD_1610",
+         "field_values": {
+          "destination": "Fort Jackson, SC",
+          "travel_days": 4,
+          "departure_date": "03 Aug 2026",
+          "return_date": "06 Aug 2026",
+          "travel_mode": "POV",
+          "purpose": "Drill Sergeant School in-processing",
+          "cost_estimate": 1156.0,
+          "one_way_miles": 420
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DD_1610",
+       "filled_fields": {
+        "Traveler Name": "Carter, James R.",
+        "Grade/Rank": "SSG",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Permanent Duty Station": "Fort Liberty, NC",
+        "Proceed Date": "03 Aug 2026",
+        "Return Date": "06 Aug 2026",
+        "Destination/Itinerary": "Fort Jackson, SC",
+        "Purpose of Travel": "Drill Sergeant School in-processing",
+        "TDY Days": "4",
+        "Mode of Transportation": "POV",
+        "Total Estimated Cost": "1156.0"
+       }
+      },
+      "form_dropped_keys": [
+       "DD_1610.one_way_miles='420'"
+      ],
+      "llm_calls": 4,
+      "prompt_tokens": 14295,
+      "completion_tokens": 647,
+      "seconds": 11.4,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 6,
+    "args_ok": 6,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 1,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "leave_da31_single_turn",
+    "category": "leave_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Fill out a DA 31 for me: annual leave from 15 Dec 2026 to 29 Dec 2026, 15 days. I'll be at 412 Oak St, Columbus, OH 43215, phone 614-555-0142.",
+      "response": "Your DA Form 31 (Request and Authority for Leave) is ready for download. Here's a summary of what was filled:\n\n- **Soldier:** SSG Carter, James R. \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Leave Type:** Annual\n- **Dates:** 15 Dec 2026 \u2013 29 Dec 2026 (15 days)\n- **Leave Address:** 412 Oak St, Columbus, OH 43215 | 614-555-0142\n- **Approving Official:** CPT Hayes, Daniel\n\nNo missing fields. Submit to your orderly room for commander signature.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_31"
+         },
+         "actual": "DA_31"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 14
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_31",
+         "field_values": {
+          "leave_type": "Annual",
+          "departure_date": "15 Dec 2026",
+          "return_date": "29 Dec 2026",
+          "num_days": 15,
+          "leave_address": "412 Oak St, Columbus, OH 43215",
+          "phone": "614-555-0142"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_31",
+       "filled_fields": {
+        "Name (Last, First, MI)": "Carter, James R.",
+        "Rank": "SSG",
+        "Grade": "E-6",
+        "SSN (Last 4)": "4821",
+        "DoD ID": "1234567890",
+        "Organization/Unit": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Installation": "Fort Liberty, NC",
+        "Type of Leave": "Annual",
+        "Date Leave Begins": "15 Dec 2026",
+        "Date Leave Ends": "29 Dec 2026",
+        "Number of Days": "15",
+        "Address During Leave": "412 Oak St, Columbus, OH 43215",
+        "Contact Phone": "614-555-0142",
+        "Approving Official": "CPT Hayes, Daniel"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6689,
+      "completion_tokens": 299,
+      "seconds": 6.0,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "leave_da31_two_turns",
+    "category": "leave_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I want to take some leave over Thanksgiving.",
+      "response": "Great! To get your DA Form 31 (Request and Authority for Leave) filled out, I'll need a few details:\n\n1. **Departure date** \u2014 When do you want to start leave?\n2. **Return date** \u2014 When do you plan to return?\n3. **Leave address** \u2014 Where will you be spending your leave?\n4. **Leave type** \u2014 Ordinary leave (standard chargeable)?\n\nThanksgiving is 26 November, so a common block would be something like **25 Nov \u2013 30 Nov** (6 days). Let me know your dates and destination and I'll get the form ready for you!",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "search_regulations"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 1
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "search_regulations",
+        "args": {
+         "query": "leave request procedures DA 31",
+         "domain": "leave"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 9724,
+      "completion_tokens": 239,
+      "seconds": 7.1,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "From 25 Nov to 30 Nov 2026, staying at my parents' place, 88 Pine Rd, Dayton OH. Go ahead and fill out the leave form.",
+      "response": "Your DA Form 31 (Request and Authority for Leave) is ready for download.\n\n- **Leave:** Ordinary Leave, 25 Nov \u2013 30 Nov 2026 (5 days)\n- **Leave Address:** 88 Pine Rd, Dayton, OH\n\n**Missing field:** Contact phone number during leave \u2014 add that before submitting.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_31"
+         },
+         "actual": "DA_31"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 1
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 13
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_31",
+         "field_values": {
+          "leave_type": "Ordinary Leave",
+          "departure_date": "25 Nov 2026",
+          "return_date": "30 Nov 2026",
+          "num_days": 5,
+          "leave_address": "88 Pine Rd, Dayton, OH"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_31",
+       "filled_fields": {
+        "Name (Last, First, MI)": "Carter, James R.",
+        "Rank": "SSG",
+        "Grade": "E-6",
+        "SSN (Last 4)": "4821",
+        "DoD ID": "1234567890",
+        "Organization/Unit": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Installation": "Fort Liberty, NC",
+        "Type of Leave": "Ordinary Leave",
+        "Date Leave Begins": "25 Nov 2026",
+        "Date Leave Ends": "30 Nov 2026",
+        "Number of Days": "5",
+        "Address During Leave": "88 Pine Rd, Dayton, OH",
+        "Approving Official": "CPT Hayes, Daniel"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6940,
+      "completion_tokens": 221,
+      "seconds": 5.2,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "counseling_da4856_two_turns",
+    "category": "counseling_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to counsel one of my soldiers, PFC Daniel Ortiz, for being late to formation twice this week.",
+      "response": "I need a bit more information before I can fill the counseling form. Specifically:\n\n1. **Key Points** \u2014 What do you want documented? (e.g., dates/times of the two incidents, what was said to the soldier)\n2. **Action Plan** \u2014 What is the soldier required to do going forward? (e.g., report 15 minutes prior to formation, no further incidents)\n\nYou don't need to write it perfectly \u2014 just give me the details in your own words and I'll put it together.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [],
+       "problems": [],
+       "scored": false
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2903,
+      "completion_tokens": 117,
+      "seconds": 3.6,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "Key points: he was late on 2 Nov and 4 Nov; we discussed why accountability at formation matters. Plan of action: he sets two alarms and reports to me at 0615 daily for two weeks. Please fill out the DA 4856.",
+      "response": "Your DA Form 4856 (Developmental Counseling Form) is ready for download. All fields are complete \u2014 no missing information.\n\n**Summary:**\n- **Soldier:** PFC Ortiz, Daniel \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Counseling Type:** Event-Oriented\n- **Key Points:** Late to formation on 2 Nov and 4 Nov 2026; discussed importance of accountability.\n- **Plan of Action:** Soldier sets two alarms and reports to SSG Carter at 0615 daily for two weeks.\n- **Counselor:** SSG Carter, James R.\n\nHave both you and PFC Ortiz sign and date the form. Retain the original and provide him a copy.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4856"
+         },
+         "actual": "DA_4856"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": false,
+        "untraced": [
+         {
+          "field": "leader_position",
+          "value": "Squad Leader",
+          "why": "tokens not in sources: ['squad', 'leader']"
+         }
+        ],
+        "n_fields": 10
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": true
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": false
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4856",
+         "field_values": {
+          "soldier_name": "Ortiz, Daniel",
+          "soldier_rank": "PFC",
+          "counseling_type": "Event-Oriented",
+          "key_points": "Soldier was late to formation on 2 Nov and 4 Nov 2026. We discussed why accountability at formation matters.",
+          "action_plan": "Soldier will set two alarms and report to SSG Carter at 0615 daily for two weeks.",
+          "leader_position": "Squad Leader"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4856",
+       "filled_fields": {
+        "Name of Soldier": "Ortiz, Daniel",
+        "Rank": "PFC",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Date": "02 NOV 2026",
+        "Purpose of Counseling": "Event-Oriented",
+        "Key Points of Discussion": "Soldier was late to formation on 2 Nov and 4 Nov 2026. We discussed why accountability at formation matters.",
+        "Plan of Action": "Soldier will set two alarms and report to SSG Carter at 0615 daily for two weeks.",
+        "Counselor Name": "Carter, James R.",
+        "Counselor Rank/Title": "SSG",
+        "Counselor Position": "Squad Leader"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6955,
+      "completion_tokens": 359,
+      "seconds": 7.8,
+      "harness_warning": null,
+      "ok": false
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": false,
+    "task_ok": true,
+    "ok": false,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "counseling_da4856_single_turn",
+    "category": "counseling_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Fill out a counseling form for SPC Maria Lopez: event-oriented counseling for her outstanding performance at the range, she shot 40 out of 40. Plan of action: I'll recommend her for an Army Achievement Medal.",
+      "response": "Your DA Form 4856 (Developmental Counseling Form) is ready for download. Here's what was filled:\n\n- **Soldier:** SPC Lopez, Maria \u2014 B Co, 1-505 PIR, 82nd ABN DIV\n- **Counseling Type:** Event-Oriented\n- **Key Points:** SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.\n- **Plan of Action:** SSG Carter will recommend SPC Lopez for an Army Achievement Medal.\n- **Counselor:** SSG Carter, James R.\n\nNo missing fields. Both you and SPC Lopez will need to sign the form upon counseling.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4856"
+         },
+         "actual": "DA_4856"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 10
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": true
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4856",
+         "field_values": {
+          "soldier_name": "Lopez, Maria",
+          "soldier_rank": "SPC",
+          "counseling_type": "Event-Oriented",
+          "key_points": "SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.",
+          "action_plan": "SSG Carter will recommend SPC Lopez for an Army Achievement Medal.",
+          "leader_position": "SSG Carter, B Co, 1-505 PIR, 82nd ABN DIV"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4856",
+       "filled_fields": {
+        "Name of Soldier": "Lopez, Maria",
+        "Rank": "SPC",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Date": "02 NOV 2026",
+        "Purpose of Counseling": "Event-Oriented",
+        "Key Points of Discussion": "SPC Lopez demonstrated outstanding performance at the range, shooting 40 out of 40.",
+        "Plan of Action": "SSG Carter will recommend SPC Lopez for an Army Achievement Medal.",
+        "Counselor Name": "Carter, James R.",
+        "Counselor Rank/Title": "SSG",
+        "Counselor Position": "SSG Carter, B Co, 1-505 PIR, 82nd ABN DIV"
+       }
+      },
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6649,
+      "completion_tokens": 348,
+      "seconds": 7.7,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "personnel_action_da4187_two_turns",
+    "category": "personnel_action_form",
+    "tags": [
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to submit a personnel action request.",
+      "response": "I can help you fill out a DA Form 4187 (Personnel Action). Please provide the following details:\n\n1. **Action Requested** \u2014 What personnel action are you requesting? (e.g., promotion, reassignment, name change, etc.)\n2. **Effective Date** \u2014 When should the action take effect?\n3. **Reason** \u2014 Brief explanation for the request.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [],
+       "n": 0,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2887,
+      "completion_tokens": 87,
+      "seconds": 2.5,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "It's a request for reassignment to the Airborne School cadre at Fort Moore, effective 1 Feb 2027, to pursue an instructor position. Fill out the DA 4187.",
+      "response": "Your form is ready for download.\n\n**DA Form 4187 (Personnel Action) \u2014 Summary:**\n- **Name:** Carter, James R. | **Rank:** SSG | **Unit:** B Co, 1-505 PIR, 82nd ABN DIV\n- **Action Requested:** Reassignment to Airborne School cadre\n- **Effective Date:** 01 February 2027\n- **Reason:** To pursue an instructor position at the Airborne School cadre\n\nNo missing fields. Route through your chain of command for signature and submission to S1.",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "fill_form"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": true,
+         "expected": {
+          "eq": "DA_4187"
+         },
+         "actual": "DA_4187"
+        }
+       ],
+       "n": 1,
+       "n_ok": 1
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 7
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "fill_form",
+        "args": {
+         "form_name": "DA_4187",
+         "field_values": {
+          "action_requested": "Reassignment to Airborne School cadre",
+          "effective_date": "01 February 2027",
+          "destination": "Fort Moore, GA",
+          "reason": "To pursue an instructor position at the Airborne School cadre"
+         }
+        }
+       }
+      ],
+      "form": {
+       "form_name": "DA_4187",
+       "filled_fields": {
+        "Name": "Carter, James R.",
+        "Grade": "SSG",
+        "SSN (Last 4)": "4821",
+        "Organization": "B Co, 1-505 PIR, 82nd ABN DIV",
+        "Type of Requested Personnel Action": "Reassignment to Airborne School cadre",
+        "Effective Date": "01 February 2027",
+        "Reason for Requested Action": "To pursue an instructor position at the Airborne School cadre"
+       }
+      },
+      "form_dropped_keys": [
+       "DA_4187.destination='Fort Moore, GA'"
+      ],
+      "llm_calls": 2,
+      "prompt_tokens": 6693,
+      "completion_tokens": 266,
+      "seconds": 5.3,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 1,
+    "args_ok": 1,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_liberty_moore_pov",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I need to send SPC Rivera to Fort Moore, Georgia for 5 days starting July 10. She's driving her POV from Fort Liberty.",
+      "response": "**TDY Cost \u2014 Fort Moore, GA (5 days, POV)**\n- Lodging: $416 (4 nights \u00d7 $104)\n- Meals: $288 (2 travel days \u00d7 $48, 3 full days \u00d7 $64)\n- Mileage: $518 (370 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,222**\n\nWould you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for SPC Rivera? If so, what's the purpose of the TDY?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "get_per_diem",
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "moore",
+           "columbus"
+          ]
+         },
+         "actual": "Fort Moore"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "GA"
+         },
+         "actual": "GA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 5
+         },
+         "actual": "5"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 370
+         },
+         "actual": "370"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         416.0,
+         104.0,
+         288.0,
+         48.0,
+         64.0,
+         518.0,
+         0.7,
+         1222.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "get_per_diem",
+        "args": {
+         "city": "Fort Moore",
+         "state": "GA",
+         "year": "2026"
+        }
+       },
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Moore",
+         "destination_state": "GA",
+         "travel_days": 5,
+         "origin": "Fort Liberty, NC",
+         "one_way_miles": 370,
+         "travel_mode": "POV"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6630,
+      "completion_tokens": 393,
+      "seconds": 6.7,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_meade_liberty_explicit_miles",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Estimate the TDY cost from Fort Meade to Fort Liberty, NC: 4 days, driving my own car, it's 420 miles each way.",
+      "response": "**TDY Cost \u2014 Fort Liberty, NC (4 days, POV)**\n- Lodging: $330 (3 nights \u00d7 $110)\n- Meals: $238 (2 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $588 (420 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,156**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "liberty",
+           "fayetteville",
+           "bragg"
+          ]
+         },
+         "actual": "Fort Liberty"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "NC"
+         },
+         "actual": "NC"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 4
+         },
+         "actual": "4"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 420
+         },
+         "actual": "420"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         110.0,
+         238.0,
+         68.0,
+         51.0,
+         588.0,
+         0.7,
+         1156.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Liberty",
+         "destination_state": "NC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420,
+         "origin": "Fort Meade"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6359,
+      "completion_tokens": 289,
+      "seconds": 6.1,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_plane_san_diego",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "What will a 6-day TDY to San Diego, CA cost if I fly?",
+      "response": "**TDY Cost \u2014 San Diego, CA (6 days, PLANE)**\n- Lodging: $1,000 (5 nights \u00d7 $200)\n- Meals: $434 (4 full days \u00d7 $79, 2 travel days \u00d7 $59 at 75%)\n- Mileage: $0 (airfare not estimated \u2014 use actual ticket price)\n- **Total: $1,434 + airfare**\n\nAirfare is reimbursed at actual cost; book through DTS using your Government Travel Charge Card. \u2014 JTR, Ch. 2\n\nWould you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "san diego"
+          ]
+         },
+         "actual": "San Diego"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "CA"
+         },
+         "actual": "CA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 6
+         },
+         "actual": "6"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "PLANE"
+         },
+         "actual": "PLANE"
+        }
+       ],
+       "n": 4,
+       "n_ok": 4
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         1000.0,
+         200.0,
+         434.0,
+         79.0,
+         59.0,
+         0.0,
+         1434.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "JTR"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "San Diego",
+         "destination_state": "CA",
+         "travel_days": 6,
+         "travel_mode": "PLANE"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6258,
+      "completion_tokens": 285,
+      "seconds": 7.4,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 4,
+    "args_ok": 4,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_rental_cavazos_sam_houston",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I'm doing a 3-day TDY from Fort Cavazos to Fort Sam Houston, TX with a rental car. What will it cost?",
+      "response": "**TDY Cost \u2014 Fort Sam Houston, TX (3 days, Rental Car)**\n- Lodging: $262 (2 nights \u00d7 $131)\n- Meals: $170 (1 full day \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $0 (not applicable for rental car)\n- **Total: $432**\n\nRental car costs are reimbursed separately with receipts per JTR policy. Would you like me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) for this trip?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "sam houston",
+           "san antonio",
+           "jbsa"
+          ]
+         },
+         "actual": "Fort Sam Houston"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "TX"
+         },
+         "actual": "TX"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 3
+         },
+         "actual": "3"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "RENTAL"
+         },
+         "actual": "RENTAL"
+        }
+       ],
+       "n": 4,
+       "n_ok": 4
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         262.0,
+         131.0,
+         170.0,
+         68.0,
+         51.0,
+         0.0,
+         432.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [
+         "JTR"
+        ],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Sam Houston",
+         "destination_state": "TX",
+         "travel_days": 3,
+         "travel_mode": "RENTAL",
+         "origin": "Fort Cavazos"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6305,
+      "completion_tokens": 282,
+      "seconds": 8.2,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 4,
+    "args_ok": 4,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_jber_wainwright_pov",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Driving my POV from JBER to Fort Wainwright for a 7 day TDY next month. How much will the trip cost?",
+      "response": "**TDY Cost \u2014 Fort Wainwright, AK (7 days, POV)**\n- Lodging: $660 (6 nights \u00d7 $110)\n- Meals: $442 (5 full days \u00d7 $68, 2 travel days \u00d7 $51)\n- Mileage: $504 (360 mi \u00d7 $0.70 \u00d7 2)\n- **Total: $1,606**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "wainwright",
+           "fairbanks"
+          ]
+         },
+         "actual": "Fort Wainwright"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "AK"
+         },
+         "actual": "AK"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 7
+         },
+         "actual": "7"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 360
+         },
+         "actual": "360"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         660.0,
+         110.0,
+         442.0,
+         68.0,
+         51.0,
+         504.0,
+         0.7,
+         1606.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Wainwright",
+         "destination_state": "AK",
+         "travel_days": 7,
+         "travel_mode": "POV",
+         "one_way_miles": 360,
+         "origin": "JBER"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6384,
+      "completion_tokens": 290,
+      "seconds": 5.2,
+      "harness_warning": null,
+      "ok": true
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": true,
+    "ok": true,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_estimate_only_no_form",
+    "category": "tdy_cost",
+    "tags": [
+     "tdy"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "Just a rough estimate, I'm not submitting anything yet: a 2-day TDY from Fort Meade to Fort Belvoir, VA by POV.",
+      "response": "[Error: the assistant hit a problem answering this. Please try again.]",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "belvoir"
+          ]
+         },
+         "actual": "Fort Belvoir"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "VA"
+         },
+         "actual": "VA"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 2
+         },
+         "actual": "2"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 35
+         },
+         "actual": "35"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": false,
+       "problems": [
+        "answer does not state the expected total $261.00"
+       ]
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Belvoir",
+         "destination_state": "VA",
+         "travel_days": 2,
+         "travel_mode": "POV",
+         "one_way_miles": 35
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 1,
+      "prompt_tokens": 2954,
+      "completion_tokens": 140,
+      "seconds": 23.6,
+      "harness_warning": null,
+      "ok": false
+     }
+    ],
+    "selection_ok": true,
+    "args_n": 5,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": false,
+    "ok": false,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   },
+   {
+    "id": "tdy_cost_then_dd1610",
+    "category": "tdy_form",
+    "tags": [
+     "tdy",
+     "form"
+    ],
+    "turns": [
+     {
+      "index": 0,
+      "message": "I'm going TDY from Fort Liberty to Fort Jackson, SC for 4 days, driving my POV. What's the cost?",
+      "response": "**TDY Cost \u2014 Fort Jackson, SC (4 days, POV)**\n- Lodging: $330 (3 nights \u00d7 $110)\n- Meals: $238 (2 full days \u00d7 $68, 2 travel days \u00d7 $51 at 75%)\n- Mileage: $588 (420 mi \u00d7 2 \u00d7 $0.70/mile)\n- **Total: $1,156**\n\nWant me to fill out a DD Form 1610 (Request and Authorization for TDY Travel) with these details?",
+      "error": null,
+      "selection": {
+       "ok": true,
+       "called": [
+        "calculate_travel_cost"
+       ],
+       "problems": [],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_city",
+         "ok": true,
+         "expected": {
+          "any_of": [
+           "jackson",
+           "columbia"
+          ]
+         },
+         "actual": "Fort Jackson"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "destination_state",
+         "ok": true,
+         "expected": {
+          "eq": "SC"
+         },
+         "actual": "SC"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_days",
+         "ok": true,
+         "expected": {
+          "num": 4
+         },
+         "actual": "4"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "travel_mode",
+         "ok": true,
+         "expected": {
+          "eq": "POV"
+         },
+         "actual": "POV"
+        },
+        {
+         "tool": "calculate_travel_cost",
+         "arg": "one_way_miles",
+         "ok": true,
+         "expected": {
+          "num": 420
+         },
+         "actual": "420"
+        }
+       ],
+       "n": 5,
+       "n_ok": 5
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [
+         330.0,
+         110.0,
+         238.0,
+         68.0,
+         51.0,
+         588.0,
+         0.7,
+         1156.0
+        ],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": true,
+       "problems": []
+      },
+      "tool_calls": [
+       {
+        "name": "calculate_travel_cost",
+        "args": {
+         "destination_city": "Fort Jackson",
+         "destination_state": "SC",
+         "travel_days": 4,
+         "travel_mode": "POV",
+         "one_way_miles": 420,
+         "origin": "Fort Liberty, NC"
+        }
+       }
+      ],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 2,
+      "prompt_tokens": 6369,
+      "completion_tokens": 289,
+      "seconds": 5.0,
+      "harness_warning": null,
+      "ok": true
+     },
+     {
+      "index": 1,
+      "message": "Great, fill out the DD 1610 for that trip. I depart 3 Aug 2026, purpose is Drill Sergeant School in-processing.",
+      "response": "[Error: the assistant hit a problem answering this. Please try again.]",
+      "error": null,
+      "selection": {
+       "ok": false,
+       "called": [],
+       "problems": [
+        "required tool not called: fill_form"
+       ],
+       "scored": true
+      },
+      "args": {
+       "items": [
+        {
+         "tool": "fill_form",
+         "arg": "form_name",
+         "ok": false,
+         "expected": {
+          "eq": "DD_1610"
+         },
+         "actual": "<tool not called>"
+        }
+       ],
+       "n": 1,
+       "n_ok": 0
+      },
+      "grounding": {
+       "dollars": {
+        "ok": true,
+        "amounts": [],
+        "derived": [],
+        "ungrounded": []
+       },
+       "citations": {
+        "ok": true,
+        "docs_cited": [],
+        "sections_cited": [],
+        "ungrounded_docs": [],
+        "ungrounded_sections": [],
+        "n_searches": 0
+       },
+       "form_fields": {
+        "ok": true,
+        "untraced": [],
+        "n_fields": 0
+       },
+       "counselee": {
+        "ok": true,
+        "problems": [],
+        "applied": false
+       },
+       "pii": {
+        "ok": true,
+        "problems": []
+       },
+       "ok": true
+      },
+      "task": {
+       "ok": false,
+       "problems": [
+        "expected form DD_1610, none filled"
+       ]
+      },
+      "tool_calls": [],
+      "form": null,
+      "form_dropped_keys": [],
+      "llm_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 0.2,
+      "harness_warning": null,
+      "ok": false
+     }
+    ],
+    "selection_ok": false,
+    "args_n": 6,
+    "args_ok": 5,
+    "grounding_ok": true,
+    "task_ok": false,
+    "ok": false,
+    "repeat": 2,
+    "batch": 0,
+    "batch_repeats": 3
+   }
+  ]
+ }
+}

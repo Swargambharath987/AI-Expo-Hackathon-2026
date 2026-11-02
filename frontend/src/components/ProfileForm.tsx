@@ -19,6 +19,7 @@ export const profileSchema = z.object({
   uic:              optional,
   supervisor_name:  optional,
   supervisor_title: optional,
+  duty_position: optional,
 }) satisfies z.ZodType<SoldierProfile>;
 
 type FieldSpec = {
@@ -38,6 +39,7 @@ const FIELDS: FieldSpec[] = [
   { name: "grade",            label: "Grade",                 placeholder: "E-4" },
   { name: "unit",             label: "Unit",                  placeholder: "1-503 IN, 82nd ABN", wide: true },
   { name: "installation",     label: "Installation",          placeholder: "Fort Liberty" },
+  { name: "duty_position",    label: "Your duty position",    placeholder: "Team Leader" },
   { name: "uic",              label: "UIC",                   placeholder: "W4XXXX" },
   { name: "supervisor_name",  label: "Supervisor name",       placeholder: "SSG Doe, John" },
   { name: "supervisor_title", label: "Supervisor title",      placeholder: "Squad Leader" },

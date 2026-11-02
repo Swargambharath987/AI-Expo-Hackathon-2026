@@ -68,6 +68,7 @@ export interface SoldierProfile {
   uic: string;
   supervisor_name: string;
   supervisor_title: string;
+  duty_position: string;
 }
 
 /** Visitor's own LLM key — lives only in this browser. */

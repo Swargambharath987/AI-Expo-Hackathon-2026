@@ -411,3 +411,28 @@ def test_chat_response_includes_verification(monkeypatch):
 def test_chat_response_verification_null_when_nothing_to_check(echo_agent):
     body = chat(TestClient(appmod.app)).json()
     assert "verification" in body and body["verification"] is None
+
+
+def test_billing_refusal_is_explained_and_flips_health(monkeypatch):
+    import openai
+    from fastapi.testclient import TestClient
+    import app as appmod
+    import agents.react_agent as ra
+
+    err = openai.BadRequestError(
+        "Error code: 400 - Your credit balance is too low to access the Anthropic API.",
+        response=type("R", (), {"status_code": 400, "headers": {}, "request": None})(), body=None)
+
+    def boom(self):
+        raise err
+        yield  # pragma: no cover
+    monkeypatch.setattr(ra.ReActAgent, "_react_loop", boom)
+    monkeypatch.setattr(appmod, "LLM_BASE_URL", "https://api.anthropic.com/v1")
+    monkeypatch.setattr(appmod, "_probe_llm_key", lambda url, key: (True, ["m"]))
+    appmod._key_status.update(ok=None, checked=0.0)
+    ra.SERVER_LLM_ISSUE.update(reason=None, at=0.0)
+    c = TestClient(appmod.app)
+    body = c.post("/api/chat", json={"message": "hi", "tab": "travel"}).json()
+    assert "out of credit" in body["response"] and "own API key" in body["response"]
+    assert c.get("/api/health").json()["llm_ready"] is False
+    ra.SERVER_LLM_ISSUE.update(reason=None, at=0.0)

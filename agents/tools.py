@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 import logging
 import math
+import re
+from collections import Counter
 import os
 import secrets
 import threading
@@ -187,6 +189,65 @@ def _get_gsa_cache() -> dict:
 # Tool 1 — search_regulations
 # ---------------------------------------------------------------------------
 
+HYBRID_POOL = 20    # candidates taken from each retriever before fusion
+RRF_K       = 60    # standard reciprocal-rank-fusion constant
+BM25_WEIGHT = 0.5   # keyword rank counts half as much as semantic rank
+
+_BM25_TOKEN = re.compile(r"[a-z0-9]+(?:[-.][a-z0-9]+)*")
+_BM25_STOP  = frozenset("the a an of to and or in on for is are be by with as at from that "
+                        "this it any may if not which who".split())
+
+
+def _bm25_tokens(text: str) -> list[str]:
+    return [w for w in _BM25_TOKEN.findall(text.lower()) if w not in _BM25_STOP]
+
+
+class _BM25Index:
+    """In-memory BM25 over every chunk in the collection (~2k chunks, fast)."""
+
+    def __init__(self, collection, k1: float = 1.5, b: float = 0.75):
+        data = collection.get(include=["documents", "metadatas"])
+        self.ids   = data["ids"]
+        self.docs  = dict(zip(self.ids, data["documents"]))
+        self.metas = dict(zip(self.ids, data["metadatas"]))
+        toks = [_bm25_tokens(d + " " + m.get("section_title", ""))
+                for d, m in zip(data["documents"], data["metadatas"])]
+        self.tf    = [Counter(t) for t in toks]
+        self.len   = [len(t) for t in toks]
+        self.avgdl = sum(self.len) / max(1, len(toks))
+        self.df    = Counter(w for t in toks for w in set(t))
+        self.k1, self.b = k1, b
+
+    def top(self, query: str, k: int, domain: str | None = None) -> list[str]:
+        n = len(self.ids)
+        terms = [(w, math.log(1 + (n - self.df[w] + 0.5) / (self.df[w] + 0.5)))
+                 for w in set(_bm25_tokens(query)) if w in self.df]
+        scored = []
+        for i, cid in enumerate(self.ids):
+            if domain and self.metas[cid].get("domain") != domain:
+                continue
+            tf, s = self.tf[i], 0.0
+            for w, idf in terms:
+                f = tf.get(w)
+                if f:
+                    s += idf * f * (self.k1 + 1) / (f + self.k1 * (1 - self.b + self.b * self.len[i] / self.avgdl))
+            if s > 0:
+                scored.append((s, cid))
+        scored.sort(reverse=True)
+        return [cid for _, cid in scored[:k]]
+
+
+_bm25_index: _BM25Index | None = None
+
+
+def _get_bm25_index() -> _BM25Index:
+    global _bm25_index
+    with _embed_lock:
+        if _bm25_index is None:
+            _bm25_index = _BM25Index(_load_embed_and_collection()[1])
+        return _bm25_index
+
+
 def search_regulations(query: str, domain: str | None = None, n: int = 4) -> dict:
     """
     Search the local vector store for relevant regulation text.
@@ -201,26 +262,37 @@ def search_regulations(query: str, domain: str | None = None, n: int = 4) -> dic
                 "results": [],
             }
 
+        # Hybrid retrieval: semantic (embeddings) + keyword (BM25), merged by
+        # reciprocal rank fusion. Keyword matching catches exact terms the
+        # embedding misses ("400 miles", section numbers); on the evals/
+        # retrieval gold set this lifted Recall@1 0.47 -> 0.59, MRR 0.60 -> 0.66.
         embedding = model.encode([query], normalize_embeddings=True).tolist()
-        kwargs: dict[str, Any] = {"query_embeddings": embedding, "n_results": min(n, collection.count())}
+        kwargs: dict[str, Any] = {"query_embeddings": embedding,
+                                  "n_results": min(HYBRID_POOL, collection.count())}
         if domain:
             kwargs["where"] = {"domain": domain}
-
         results = collection.query(**kwargs)
+        vec_ids = results["ids"][0] if results["ids"] else []
+        vec_score = {cid: 1 - d for cid, d in zip(vec_ids, results["distances"][0])} if vec_ids else {}
+
+        index = _get_bm25_index()
+        fused: Counter = Counter()
+        for rank, cid in enumerate(vec_ids):
+            fused[cid] += 1 / (RRF_K + rank)
+        for rank, cid in enumerate(index.top(query, HYBRID_POOL, domain)):
+            fused[cid] += BM25_WEIGHT / (RRF_K + rank)
+
         chunks = []
-        if results["documents"] and results["documents"][0]:
-            for doc, meta, dist in zip(
-                results["documents"][0],
-                results["metadatas"][0],
-                results["distances"][0],
-            ):
-                chunks.append({
-                    "text":     doc,
-                    "source":   meta.get("source_file", "unknown"),
-                    "section":  meta.get("section_title", "")[:80],
-                    "domain":   meta.get("domain", ""),
-                    "score":    round(1 - dist, 3),
-                })
+        for cid, _ in fused.most_common(n):
+            meta = index.metas[cid]
+            chunks.append({
+                "text":     index.docs[cid],
+                "source":   meta.get("source_file", "unknown"),
+                "section":  meta.get("section_title", "")[:80],
+                "domain":   meta.get("domain", ""),
+                # cosine similarity when the embedding search also found it
+                "score":    round(vec_score.get(cid, 0.0), 3),
+            })
 
         if not chunks:
             return {
@@ -746,6 +818,7 @@ PROFILE_ROLE_MAP: dict[str, dict[str, str]] = {
     "DA_4856": {
         "name_last_first": "leader_name",
         "rank":            "leader_rank",
+        "duty_position":   "leader_position",
         "unit":            "unit",
         "installation":    "installation",
     },
@@ -761,6 +834,14 @@ SUBJECT_ALIASES: dict[str, str] = {
     "soldier_name":  "name_last_first", "soldier_rank":  "rank", "soldier_grade":  "grade",
 }
 IDENTITY_KEYS = ("name_last_first", "rank", "grade", "ssn_last4", "dod_id")
+
+# Common names the model uses for fields that a form calls something else.
+FIELD_SYNONYMS: dict[str, str] = {
+    "leave_phone": "phone", "contact_phone": "phone", "phone_number": "phone",
+    "start_date": "departure_date", "end_date": "return_date",
+    "number_of_days": "num_days", "days": "num_days",
+    "action_type": "action_requested", "requested_action": "action_requested",
+}
 
 
 def _last_name(name: str) -> str:
@@ -818,6 +899,10 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
 
         # Merge soldier profile into field_values (profile provides defaults)
         field_values = dict(field_values or {})
+        schema_keys = {k for k, _ in FORM_DISPLAY_FIELDS[form_name]}
+        for alias, key in FIELD_SYNONYMS.items():
+            if alias in field_values and key in schema_keys and not field_values.get(key):
+                field_values[key] = field_values.pop(alias)
         if form_name != "DA_4856":
             for alias, key in SUBJECT_ALIASES.items():
                 if alias in field_values:

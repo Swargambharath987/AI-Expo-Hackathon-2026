@@ -239,6 +239,7 @@ class ProfileModel(BaseModel):
     uic:             str = ""
     supervisor_name: str = ""
     supervisor_title: str = ""
+    duty_position:   str = ""
 
     # Lenient on purpose: the profile rides along with every chat request,
     # so a bad field should be dropped, not turn every message into a 422.
@@ -568,6 +569,11 @@ async def health():
     else:
         ollama_ok = False
         llm_ready = await run_in_threadpool(_server_key_ready)
+        # A key with no credit still lists models, so also honour a recent
+        # billing refusal seen on a real chat (cleared after 5 minutes).
+        from agents.react_agent import SERVER_LLM_ISSUE
+        if SERVER_LLM_ISSUE["reason"] and time.time() - SERVER_LLM_ISSUE["at"] < 300:
+            llm_ready = False
 
     offline_ready = provider == "ollama" and llm_ready and chunk_count > 0 and gsa_ok
 

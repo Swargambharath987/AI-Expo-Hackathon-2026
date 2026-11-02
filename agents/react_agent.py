@@ -83,11 +83,12 @@ Army evaluations (AR 623-3, NCOER/OER) are NOT in the library.
 
 ## Response rules:
 1. Regulation answers: call search_regulations → read the result → answer from it. Never answer regulation questions from memory.
-   If the results don't contain the answer (or the regulation isn't in the library), say so plainly and suggest the official source — do not fill the gap from memory.
+   If the results don't contain the answer (or the regulation isn't in the library), say so plainly and point to the official source — and stop there. Do not add a "generally…" summary or any other content from memory.
 2. YES/NO questions: first call the relevant tool, then answer "Yes" or "No" on line 1. One sentence of citation.
 3. TDY cost: show a brief dollar breakdown (lodging / meals / mileage / total). Never estimate.
 4. Forms: only call fill_form when the user asks for a form. Then say "Your form is ready for download." and list any fields still missing.
-   Form content must come ONLY from what the user said, their profile, or tool results. Never invent or embellish: no added titles/positions, no added consequences or UCMJ warnings, no praise the user didn't give. If something the form needs is missing (e.g. counseling key points), ask for it before filling.
+   Form content must come ONLY from what the user said, their profile, or tool results. Never invent or embellish: no added titles/positions, no added consequences or UCMJ warnings, no praise or reasoning the user didn't give. Use the user's own wording for narrative fields (fix grammar only).
+   Fill with what you have and list the missing fields afterwards. Ask first ONLY when the form's core content is entirely absent (e.g. a counseling request with no reason or key points at all) — never ask about optional fields.
    If the form is about someone other than the user (e.g. sending a soldier on TDY), pass that person as subject_name / subject_rank.
    When filling DD_1610 after a cost estimate, pass every known trip detail: destination, travel_days, departure/return dates, travel_mode, cost_estimate.
 5. Citations: end every regulation answer with "— [document name], [section]", using only section numbers that appear in this turn's search results. Never cite a section from memory.
@@ -197,6 +198,21 @@ def custom_url_host(url: str) -> str:
         return urlsplit(url).hostname or "?"
     except ValueError:
         return "?"
+
+
+# Last time the SERVER's key was refused for billing/quota (out of credit).
+# /api/health reports the AI as unavailable for a while after this.
+SERVER_LLM_ISSUE: dict = {"reason": None, "at": 0.0}
+_BILLING_MARKERS = ("credit balance", "insufficient_quota", "insufficient credits",
+                    "billing", "exceeded your current quota", "payment required")
+
+
+def is_billing_error(exc: Exception) -> bool:
+    """Provider refused because the account is out of credit / over quota."""
+    status = getattr(exc, "status_code", None)
+    if status == 402:
+        return True
+    return status in (400, 403, 429) and any(m in str(exc).lower() for m in _BILLING_MARKERS)
 
 
 class _PublicOnlyBackend(httpcore.NetworkBackend):
@@ -435,6 +451,21 @@ class ReActAgent:
             self._add_message("assistant", error_msg)
             yield error_msg
         except Exception as exc:
+            if is_billing_error(exc):
+                # A valid key with no credit still passes the health check's
+                # model listing — record it so /api/health shows the outage.
+                log.warning(f"LLM provider refused for billing/quota reasons | own_key={self._own_key}")
+                if not self._own_key:
+                    SERVER_LLM_ISSUE.update(reason="billing", at=time.time())
+                self.last_verification = None
+                error_msg = ("\n[Error: the AI service is out of credit or over its quota right now. "
+                             "Please try again later — or use your own API key in AI settings.]"
+                             if not self._own_key else
+                             "\n[Error: your AI provider refused the request for billing or quota reasons. "
+                             "Check your account with that provider.]")
+                self._add_message("assistant", error_msg)
+                yield error_msg
+                return
             # Details go to the server log only — the raw exception can carry
             # API error bodies or internals that shouldn't reach the browser.
             # A custom endpoint's URL can carry secrets in its path, so for
@@ -450,6 +481,7 @@ class ReActAgent:
 
     def _use_llm(self, llm: dict | None):
         """Select the client and model for this turn."""
+        self._own_key = llm is not None
         cfg = llm or {"base_url": LLM_BASE_URL, "api_key": LLM_API_KEY, "model": LLM_MODEL}
         # Visitor-supplied endpoints go through the public-only transport.
         # app.py has already validated the URL (incl. DNS) for this turn; the

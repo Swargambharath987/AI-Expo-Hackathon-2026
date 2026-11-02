@@ -217,6 +217,40 @@ pip install -r requirements-dev.txt
 python3 -m pytest tests
 ```
 
+### Evaluation
+
+`evals/` measures the system layer by layer against the real model — see
+[evals/README.md](evals/README.md) for the method:
+
+1. **Retrieval** — hand-labelled gold queries → Recall@k / MRR (no LLM, free)
+2. **Tool calls** — right tool, right arguments (BFCL-style exact match)
+3. **Grounding** — every $ figure, citation and form field traceable to tool
+   output, the user's words or their profile; no PII on someone else's form
+4. **Task success** — exact TDY totals, correct form, no unrequested forms
+5. **Consistency** — pass^k over repeated runs
+
+| Metric | Baseline | After fixes |
+|---|---|---|
+| Retrieval Recall@1 / Recall@4 / MRR | 46.9% / 75.0% / 0.596 | 56.2% / 78.1% / 0.654 (hybrid BM25 + vector) |
+| Tool selection / argument accuracy | 100% / 100% | 96.2% / 100% |
+| Citations grounded in retrieved text | 74.3% | 91.7% |
+| Form fields traceable to a source | 55.2% | 85.7% |
+| Task success | 79.7% | 100% |
+| **Overall pass** (all of the above) | **57.6%** | **91.3%** |
+
+Reports: `evals/reports/20261102T190733Z.md` (baseline) and
+`20261102T191728Z.md` / `20261102T192350Z.md` (after). Samples are small
+(23 cases), so treat differences under ~10 points as noise. In the repeat run
+`20261102T192004Z.md`, 2 of the 3 failed runs were the API account running
+out of credit mid-run, not app errors. Known remaining issue: the counseling
+form sometimes still invents the counselor's duty position when the profile
+doesn't have one.
+
+```bash
+python -m evals.run --only retrieval     # free
+python -m evals.run                      # all layers, ~$0.70 per run
+```
+
 ### Usage Limits
 
 The public deployment spends real Claude API credit, so `/api/chat` is
