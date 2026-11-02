@@ -224,10 +224,15 @@ function storeProfile(p: SoldierProfile) {
 
 // Optional "use your own key": kept only in this browser, sent with each chat
 // request, and used instead of the server's key for that request.
-type Provider = "anthropic" | "openai";
+type Provider = "anthropic" | "openai" | "openrouter";
 interface OwnKey { provider: Provider; api_key: string; model: string; }
 const OWN_KEY_KEY = "dutyline_own_key";
-const PROVIDER_LABEL: Record<Provider, string> = { anthropic: "Anthropic (Claude)", openai: "OpenAI" };
+const PROVIDER_LABEL: Record<Provider, string> = {
+  anthropic:  "Anthropic (Claude)",
+  openai:     "OpenAI (GPT)",
+  openrouter: "OpenRouter (Llama, Gemini, Mistral, …)",
+};
+const KEY_PLACEHOLDER: Record<Provider, string> = { anthropic: "sk-ant-…", openai: "sk-…", openrouter: "sk-or-…" };
 
 function loadOwnKey(): OwnKey | null {
   try {
@@ -289,7 +294,7 @@ function AiSettingsModal({ current, onSave, onClose }: {
           onChange={e => { setProvider(e.target.value as Provider); setModels([]); setModel(""); setState("idle"); }}>
           {(Object.keys(PROVIDER_LABEL) as Provider[]).map(p => <option key={p} value={p}>{PROVIDER_LABEL[p]}</option>)}
         </select>
-        <input type="password" autoComplete="off" placeholder={provider === "anthropic" ? "sk-ant-…" : "sk-…"} style={input}
+        <input type="password" autoComplete="off" placeholder={KEY_PLACEHOLDER[provider]} style={input}
           value={apiKey} onChange={e => { setApiKey(e.target.value); setState("idle"); }} />
         {state === "valid" && models.length > 0 && (
           <select value={model} onChange={e => setModel(e.target.value)} style={input}>

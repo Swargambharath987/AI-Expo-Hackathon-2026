@@ -55,6 +55,8 @@ LLM_API_KEY  = os.getenv("LLM_API_KEY",  "")
 BYOK_PROVIDERS = {
     "anthropic": {"base_url": "https://api.anthropic.com/v1", "default_model": "claude-sonnet-4-6"},
     "openai":    {"base_url": "https://api.openai.com/v1",    "default_model": "gpt-4.1"},
+    # One key for many vendors' models (Llama, Gemini, Mistral, Claude, GPT…)
+    "openrouter": {"base_url": "https://openrouter.ai/api/v1", "default_model": "anthropic/claude-sonnet-4.6"},
 }
 
 # ---------------------------------------------------------------------------
@@ -225,7 +227,7 @@ class ProfileModel(BaseModel):
         return v if re.match(r"^\d{4}$", v) else ""
 
 class KeyCheckRequest(BaseModel):
-    provider: Literal["anthropic", "openai"]
+    provider: Literal["anthropic", "openai", "openrouter"]
     api_key:  str
 
     @field_validator("api_key")
@@ -405,13 +407,28 @@ def _probe_llm_key(base_url: str, api_key: str) -> tuple[bool | None, list[str]]
     """
     if not api_key:
         return False, []
+    base = base_url.rstrip("/")
     try:
-        if "anthropic" in base_url:
+        if "anthropic" in base:
             r = requests.get("https://api.anthropic.com/v1/models",
                              headers={"x-api-key": api_key, "anthropic-version": "2023-06-01"},
                              params={"limit": 100}, timeout=8)
+        elif "openrouter.ai" in base:
+            # OpenRouter's model list is public (accepts any key), so check
+            # the key on /key, then list only models that support tool calls.
+            auth = requests.get(f"{base}/key", headers={"Authorization": f"Bearer {api_key}"}, timeout=8)
+            if auth.status_code in (401, 403):
+                return False, []
+            if not auth.ok:
+                return None, []
+            r = requests.get(f"{base}/models", timeout=8)
+            if not r.ok:
+                return None, []
+            ids = sorted(m.get("id", "") for m in r.json().get("data", [])
+                         if "tools" in (m.get("supported_parameters") or []))
+            return True, [i for i in ids if i and not i.endswith(":batch")]
         else:
-            r = requests.get(f"{base_url.rstrip('/')}/models",
+            r = requests.get(f"{base}/models",
                              headers={"Authorization": f"Bearer {api_key}"}, timeout=8)
     except requests.RequestException:
         return None, []

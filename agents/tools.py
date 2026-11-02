@@ -464,10 +464,12 @@ FORM_DISPLAY_FIELDS: dict[str, list] = {
         ("phone",           "Contact Phone"),
         ("supervisor_name", "Approving Official"),
     ],
+    # The person filling this out is the counselor, not the soldier being
+    # counseled — soldier_* fields come from the conversation, leader_* from
+    # the user's profile (see PROFILE_ROLE_MAP).
     "DA_4856": [
-        ("name_last_first",  "Name of Soldier"),
-        ("rank",             "Rank"),
-        ("ssn_last4",        "SSN (Last 4)"),
+        ("soldier_name",     "Name of Soldier"),
+        ("soldier_rank",     "Rank"),
         ("unit",             "Organization"),
         ("date",             "Date"),
         ("counseling_type",  "Purpose of Counseling"),
@@ -475,7 +477,7 @@ FORM_DISPLAY_FIELDS: dict[str, list] = {
         ("action_plan",      "Plan of Action"),
         ("leader_name",      "Counselor Name"),
         ("leader_rank",      "Counselor Rank/Title"),
-        ("supervisor_title", "Counselor Position"),
+        ("leader_position",  "Counselor Position"),
     ],
     "DA_4187": [
         ("name_last_first",  "Name"),
@@ -705,6 +707,28 @@ def _generate_reportlab_pdf(
 # Tool 4 — fill_form
 # ---------------------------------------------------------------------------
 
+# Forms where the profile owner isn't the form's subject: maps profile keys
+# onto the form fields that describe the user. Profile keys not listed are
+# not used for that form (e.g. the counselor's SSN must never land on the
+# counseled soldier's form).
+PROFILE_ROLE_MAP: dict[str, dict[str, str]] = {
+    "DA_4856": {
+        "name_last_first": "leader_name",
+        "rank":            "leader_rank",
+        "unit":            "unit",
+        "installation":    "installation",
+    },
+}
+
+
+def _profile_for_form(form_name: str, profile: dict | None) -> dict:
+    profile = profile or {}
+    role_map = PROFILE_ROLE_MAP.get(form_name)
+    if role_map is None:
+        return dict(profile)
+    return {dst: profile[src] for src, dst in role_map.items() if profile.get(src)}
+
+
 def _prune_output_dir():
     """Delete generated forms older than OUTPUT_MAX_AGE_SECS. On Cloud Run the
     filesystem is held in memory, so leftovers would slowly eat the 1Gi."""
@@ -746,7 +770,7 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
             }
 
         # Merge soldier profile into field_values (profile provides defaults)
-        merged  = {**(profile or {}), **field_values}   # field_values overrides profile
+        merged  = {**_profile_for_form(form_name, profile), **field_values}   # field_values overrides profile
 
         # Auto-populate date if not provided
         if not merged.get("date"):
@@ -978,7 +1002,8 @@ TOOL_SCHEMAS = [
             "name": "fill_form",
             "description": (
                 "Populate a military form (DA or DD form) with the provided information. "
-                "Automatically uses the soldier's profile for name, rank, unit, and SSN-4. "
+                "Automatically uses the user's profile for their own name, rank, unit, and SSN-4 "
+                "(on DA_4856 the user is the counselor; give the counseled soldier as soldier_name/soldier_rank). "
                 "Generates a filled PDF if the form template is available, otherwise a structured text summary. "
                 "Use after collecting all needed information from the conversation."
             ),
@@ -996,7 +1021,8 @@ TOOL_SCHEMAS = [
                             "Dict of field values. Common fields: "
                             "departure_date, return_date, destination, purpose, travel_mode, cost_estimate (DD_1610); "
                             "leave_type, num_days, leave_address (DA_31); "
-                            "counseling_type, key_points, action_plan, leader_name (DA_4856)"
+                            "soldier_name, soldier_rank, counseling_type, key_points, action_plan, leader_position (DA_4856); "
+                            "action_requested, effective_date, reason (DA_4187)"
                         ),
                     },
                 },

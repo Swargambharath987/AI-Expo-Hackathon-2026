@@ -114,15 +114,18 @@ Simple RAG answers questions. Duty Line **completes tasks**. A soldier doesn't w
 
 The agent connects to any OpenAI-compatible API through a single environment variable. No code changes, no redeployment — just swap the endpoint:
 
-| Provider | Config | Cost (per 1M tokens) |
-|----------|--------|----------------------|
-| **Claude API (default)** | `LLM_BASE_URL=https://api.anthropic.com/v1` | ~$3–15 input / $15–75 output |
-| OpenAI | `LLM_BASE_URL=https://api.openai.com/v1`, `LLM_MODEL=gpt-4.1` | varies by model |
-| OpenRouter (Llama 3.1 70B) | `LLM_BASE_URL=https://openrouter.ai/api/v1` | ~$0.40 input / $0.40 output |
-| Ollama (optional) | `LLM_BASE_URL=http://localhost:11434/v1` | $0 — requires local GPU |
+| Provider | Config | Cost |
+|----------|--------|------|
+| **Claude API (default)** | `LLM_BASE_URL=https://api.anthropic.com/v1` | Varies by model — [pricing](https://www.anthropic.com/pricing#api) |
+| OpenAI | `LLM_BASE_URL=https://api.openai.com/v1` | Varies by model — [pricing](https://openai.com/api/pricing/) |
+| OpenRouter (Llama, Gemini, Mistral, …) | `LLM_BASE_URL=https://openrouter.ai/api/v1` | Varies by model — [pricing](https://openrouter.ai/models) |
+| Ollama (local) | `LLM_BASE_URL=http://localhost:11434/v1` | Free — runs on your own hardware |
+
+Set `LLM_MODEL` to the provider's model id (e.g. `claude-sonnet-4-6`, `gpt-4.1`,
+`anthropic/claude-sonnet-4.6` on OpenRouter). The model must support tool calling.
 
 Visitors can also **use their own key**: *AI settings* in the sidebar lets
-them pick Anthropic or OpenAI, paste a key (checked against the provider's
+them pick Anthropic, OpenAI or OpenRouter, paste a key (checked against the provider's
 free model-list endpoint, then they choose a model), and their requests go to
 that provider instead of the server's. The key stays in their browser's
 localStorage and is only ever sent to the fixed provider URL — the request
@@ -255,20 +258,6 @@ gcloud run deploy duty-line --source . --region us-central1 \
   the "AI Model" status light turns red if the key is revoked.
 - A build takes ~5–10 minutes. Check it with
   `curl https://duty-line-nfkymvutzq-uc.a.run.app/api/health`.
-
-### Setting up on a new machine
-
-Everything needed to run and deploy is in this repo except two secrets/tools:
-
-1. **`.env`** — not in git (holds the API key). Copy it from your old machine,
-   or `cp .env.example .env` and add a key.
-2. **Google Cloud CLI** (only needed to deploy or rotate the key):
-   `brew install --cask google-cloud-sdk`, then `gcloud init` and pick the
-   `duty-line` project.
-
-Then follow [How to Run](#how-to-run). `venv/`, `frontend/node_modules/` and
-`frontend/dist/` are rebuilt by the setup steps; the vector store, GSA cache
-and form templates are already committed.
 
 ### Alternative: Render
 

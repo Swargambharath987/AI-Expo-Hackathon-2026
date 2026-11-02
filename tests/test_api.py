@@ -227,3 +227,20 @@ def test_history_window_starts_with_user_turn():
     ][1:]
     roles = [m["role"] for m in agent._build_messages()[1:]]
     assert roles[0] == "user"
+
+
+def test_openrouter_key_goes_to_openrouter():
+    key = {"provider": "openrouter", "api_key": "sk-or-v1-" + "x" * 30}
+    reply = chat(TestClient(appmod.app), "hi", llm=key).json()["response"]
+    assert "llm=https://openrouter.ai/api/v1|anthropic/claude-sonnet-4.6" in reply
+
+
+def test_counseling_form_puts_user_as_counselor_not_soldier(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    r = fill_form("DA_4856", {"soldier_name": "SMITH, JOHN", "soldier_rank": "PFC"},
+                  profile={"name_last_first": "RIVERA, MARIA J", "rank": "SSG", "ssn_last4": "1234", "unit": "1-503 IN"})
+    f = r["filled_fields"]
+    assert f["Name of Soldier"] == "SMITH, JOHN" and f["Rank"] == "PFC"
+    assert f["Counselor Name"] == "RIVERA, MARIA J" and f["Counselor Rank/Title"] == "SSG"
+    assert "1234" not in r["summary"]          # counselor's SSN never on the soldier's form
