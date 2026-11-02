@@ -26,8 +26,8 @@ from collections import defaultdict
 from evals.common import PROFILE, REPORTS_DIR, load_cases, utc_stamp, wilson
 
 # Claude Sonnet list price (USD per million tokens); override via env.
-PRICE_IN = float(os.getenv("EVAL_PRICE_IN_PER_M", "3"))
-PRICE_OUT = float(os.getenv("EVAL_PRICE_OUT_PER_M", "15"))
+PRICE_IN = float(os.getenv("EVAL_PRICE_IN_PER_M", "2"))     # claude-sonnet-5-5
+PRICE_OUT = float(os.getenv("EVAL_PRICE_OUT_PER_M", "10"))
 # Planning estimates per turn (calibrated on the first baseline run).
 EST_CALLS_PER_TURN = 1.9
 EST_IN_TOKENS_PER_CALL = 3650

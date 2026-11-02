@@ -19,19 +19,28 @@ jobs:
           cache: pip
           cache-dependency-path: |
             requirements.txt
+            requirements-ingest.txt
             requirements-dev.txt
       - name: Install (CPU-only torch keeps the download small)
         run: |
           pip install torch --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements-dev.txt
+          pip install -r requirements-dev.txt -r requirements-ingest.txt
       - uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
           key: hf-bge-small-en-v1.5
+      - uses: actions/cache@v4
+        id: index
+        with:
+          path: vectorstore
+          key: index-${{ hashFiles('ingest.py', 'data/**/*.pdf', 'requirements-ingest.txt') }}
+      - name: Build the search index from the PDFs
+        if: steps.index.outputs.cache-hit != 'true'
+        run: python ingest.py
       - name: Unit tests
         run: python -m pytest -q tests
       - name: Retrieval eval (real embeddings + vectorstore, no LLM)
-        # Gate a little under the current 0.670 so small label edits don't fail CI
+        # Gate a little under the current 0.660 so small label edits don't fail CI
         run: python -m evals.run --only retrieval --min-mrr 0.64
       - uses: actions/upload-artifact@v4
         if: always()
@@ -54,3 +63,13 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  docker:
+    # The deployable image builds (including the search index) — nothing is pushed
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t duty-line:ci .
+      - name: Index was built into the image
+        run: docker run --rm duty-line:ci python -c "import chromadb; print(chromadb.PersistentClient(path='vectorstore').get_collection('dutyline').count())" | tail -1 | grep -x 2063

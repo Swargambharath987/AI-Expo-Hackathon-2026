@@ -70,8 +70,8 @@ arguments, grounding and task all pass.
 
 ## Cost
 
-Measured on the baseline run with claude-sonnet-4-6 at $3/M input and $15/M
-output; override with `EVAL_PRICE_IN_PER_M` / `EVAL_PRICE_OUT_PER_M`:
+Priced for claude-sonnet-5-5 at $2/M input and $10/M output (the baseline
+runs used claude-sonnet-4-6 at $3/$15); override with `EVAL_PRICE_IN_PER_M` / `EVAL_PRICE_OUT_PER_M`:
 
 - About 1.9 LLM calls per turn, averaging about 3.6k input and 140 output
   tokens per call. A turn that searches carries 4 regulation chunks of about
@@ -181,8 +181,10 @@ a check, with no new API spend.
 - **Ambiguous expectations.** Some are policy choices; for example, whether
   an unrequested DD 1610 on a cost question is acceptable (it is `form: any`
   except in `tdy_estimate_only_no_form`).
-- **Single model.** Results describe one model at temperature 0.1 on the
-  date of the run.
+- **Single model.** Results describe one model on the date of the run. The
+  committed reports so far are claude-sonnet-4-6 (temperature 0.1); Sonnet 5.5
+  thinks before answering and takes no temperature, so re-baseline before
+  comparing numbers across the switch.
 
 ## Baseline
 

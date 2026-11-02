@@ -134,7 +134,7 @@ def test_own_key_is_routed_to_the_fixed_provider_url():
 def test_own_key_defaults_model_and_cannot_set_base_url():
     r = chat(TestClient(appmod.app), "hi", llm={"provider": "anthropic", "api_key": "k" * 30,
                                                  "base_url": "https://evil.example"}).json()
-    assert "llm=https://api.anthropic.com/v1|claude-sonnet-4-6" in r["response"]
+    assert "llm=https://api.anthropic.com/v1|claude-sonnet-5-5" in r["response"]
 
 
 def test_unknown_provider_or_malformed_key_rejected():
@@ -232,7 +232,7 @@ def test_history_window_starts_with_user_turn():
 def test_openrouter_key_goes_to_openrouter():
     key = {"provider": "openrouter", "api_key": "sk-or-v1-" + "x" * 30}
     reply = chat(TestClient(appmod.app), "hi", llm=key).json()["response"]
-    assert "llm=https://openrouter.ai/api/v1|anthropic/claude-sonnet-4.6" in reply
+    assert "llm=https://openrouter.ai/api/v1|anthropic/claude-sonnet-5.5" in reply
 
 
 def test_counseling_form_puts_user_as_counselor_not_soldier(monkeypatch, tmp_path):

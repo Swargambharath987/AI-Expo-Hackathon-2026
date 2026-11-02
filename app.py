@@ -51,7 +51,7 @@ FRONTEND_DIST  = ROOT / "frontend" / "dist"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.anthropic.com/v1")
-LLM_MODEL    = os.getenv("LLM_MODEL",    "claude-sonnet-4-6")
+LLM_MODEL    = os.getenv("LLM_MODEL",    "claude-sonnet-5-5")
 LLM_API_KEY  = os.getenv("LLM_API_KEY",  "")
 
 # Providers a visitor may use with their own key. Preset base URLs are fixed
@@ -63,12 +63,12 @@ LLM_API_KEY  = os.getenv("LLM_API_KEY",  "")
 # SSRF-checked (see agents/react_agent.py check_custom_base_url).
 BYOK_PROVIDERS = {
     "anthropic":  {"label": "Anthropic (Claude)", "base_url": "https://api.anthropic.com/v1",
-                   "default_model": "claude-sonnet-4-6", "key_placeholder": "sk-ant-..."},
+                   "default_model": "claude-sonnet-5-5", "key_placeholder": "sk-ant-..."},
     "openai":     {"label": "OpenAI", "base_url": "https://api.openai.com/v1",
                    "default_model": "gpt-4.1", "key_placeholder": "sk-..."},
     # One key for many vendors' models (Llama, Gemini, Mistral, Claude, GPT…)
     "openrouter": {"label": "OpenRouter", "base_url": "https://openrouter.ai/api/v1",
-                   "default_model": "anthropic/claude-sonnet-4.6", "key_placeholder": "sk-or-v1-..."},
+                   "default_model": "anthropic/claude-sonnet-5.5", "key_placeholder": "sk-or-v1-..."},
     "groq":       {"label": "Groq", "base_url": "https://api.groq.com/openai/v1",
                    "default_model": "", "key_placeholder": "gsk_..."},
     "mistral":    {"label": "Mistral", "base_url": "https://api.mistral.ai/v1",
@@ -112,7 +112,7 @@ app.add_middleware(
 SESSION_COOKIE    = "dl_session"
 SESSION_IDLE_SECS = 60 * 60   # drop conversations idle for an hour
 MAX_AGENTS        = 500       # hard cap on live (session, tab) agents
-CHAT_TIMEOUT_SECS = float(os.getenv("CHAT_TIMEOUT", "120"))
+CHAT_TIMEOUT_SECS = float(os.getenv("CHAT_TIMEOUT", "180"))
 _SID_RE           = re.compile(r"^[0-9a-f]{32}$")
 
 

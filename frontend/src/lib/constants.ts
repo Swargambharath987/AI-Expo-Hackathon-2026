@@ -63,7 +63,7 @@ export function formSubtitle(title: string): string | undefined {
 
 /** Used when the backend doesn't expose GET /api/llm/providers. */
 export const FALLBACK_PROVIDERS: LlmProvider[] = [
-  { id: "anthropic",  label: "Anthropic (Claude)", key_placeholder: "sk-ant-…", default_model: "claude-sonnet-4-6", needs_base_url: false },
+  { id: "anthropic",  label: "Anthropic (Claude)", key_placeholder: "sk-ant-…", default_model: "claude-sonnet-5-5", needs_base_url: false },
   { id: "openai",     label: "OpenAI (GPT)",       key_placeholder: "sk-…",     default_model: "gpt-4.1",           needs_base_url: false },
-  { id: "openrouter", label: "OpenRouter (Llama, Gemini, Mistral, …)", key_placeholder: "sk-or-…", default_model: "anthropic/claude-sonnet-4.6", needs_base_url: false },
+  { id: "openrouter", label: "OpenRouter (Llama, Gemini, Mistral, …)", key_placeholder: "sk-or-…", default_model: "anthropic/claude-sonnet-5.5", needs_base_url: false },
 ];

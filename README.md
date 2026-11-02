@@ -121,8 +121,8 @@ The agent connects to any OpenAI-compatible API through a single environment var
 | OpenRouter (Llama, Gemini, Mistral, …) | `LLM_BASE_URL=https://openrouter.ai/api/v1` | Varies by model — [pricing](https://openrouter.ai/models) |
 | Ollama (local) | `LLM_BASE_URL=http://localhost:11434/v1` | Free — runs on your own hardware |
 
-Set `LLM_MODEL` to the provider's model id (e.g. `claude-sonnet-4-6`, `gpt-4.1`,
-`anthropic/claude-sonnet-4.6` on OpenRouter). The model must support tool calling.
+Set `LLM_MODEL` to the provider's model id (e.g. `claude-sonnet-5-5`, `gpt-4.1`,
+`anthropic/claude-sonnet-5.5` on OpenRouter). The model must support tool calling.
 
 Visitors can also **use their own key**: *AI settings* in the sidebar offers
 Anthropic, OpenAI, OpenRouter, Groq, Mistral, Google Gemini, DeepSeek, xAI and
@@ -183,17 +183,14 @@ git clone https://github.com/Swargambharath987/AI-Expo-Hackathon-2026.git
 cd AI-Expo-Hackathon-2026
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-ingest.txt   # runtime deps + pdfplumber
 
 # 2. Configure LLM provider
 cp .env.example .env
 # Edit .env — add your Claude API key (or OpenRouter key)
 
-# 3. (Optional) Rebuild the vector store — only needed if you're changing
-#    the source regulations. A pre-built vectorstore/ ships in the repo,
-#    so most setups can skip straight to step 4.
-#    Needs pdfplumber, which isn't in the runtime requirements:
-pip install -r requirements-ingest.txt
+# 3. Build the search index from the regulation PDFs in data/ (~3 min, once;
+#    again only if a PDF or ingest.py changes). Docker does this itself.
 python3 ingest.py
 
 # 4. Start the backend (Terminal 1)
@@ -250,15 +247,15 @@ Agent results (23 cases, real model):
 Retrieval (48 hand-labelled queries; the 16 held-out ones were never used
 for tuning):
 
-| | Embeddings only | + keyword (BM25) hybrid | + chunk headers, query instruction, lay terms |
+| | Embeddings only | + keyword (BM25) hybrid | + chunk headers, query instruction |
 |---|---|---|---|
-| Dev MRR / Recall@4 (32) | 0.596 / 75.0% | 0.654 / 78.1% | 0.729 / 81.2% |
-| Held-out MRR / Recall@4 (16) | — | 0.469 / 50.0% | 0.552 / 62.5% |
+| Dev MRR / Recall@4 (32) | 0.596 / 75.0% | 0.654 / 78.1% | 0.719 / 81.2% |
+| Held-out MRR / Recall@4 (16) | — | 0.469 / 50.0% | 0.542 / 62.5% |
 
 Reports in `evals/reports/`: `20261102T190733Z.md` (baseline),
 `20261102T204418Z.md` (after; re-graded from the `191728Z` run once a grading
 bug that failed a correct "that document isn't in my library" answer was
-fixed), `20261102T212042Z.md` (retrieval). Samples are small, so the 95%
+fixed), `20261102T221304Z.md` (retrieval). Samples are small, so the 95%
 intervals are wide — read differences under ~10 points as noise. The one
 remaining failure (an invented counselor position) is now blocked by the
 form check above; that fix and 15 new cases (`evals/cases/variants.yaml`:
@@ -372,7 +369,7 @@ AI-Expo-Hackathon-2026/
 │   ├── src/AnimatedBackground.tsx
 │   ├── src/index.css           # Military color scheme + classification banner
 │   └── vite.config.ts          # Proxies /api/* -> localhost:8000
-├── vectorstore/                # ChromaDB persistent store (gitignored)
+├── vectorstore/                # ChromaDB index built by ingest.py (gitignored)
 ├── output/                     # Generated form PDFs (gitignored)
 ├── ARCHITECTURE.md             # Detailed design decisions
 └── FRONTEND_API_SPEC.md        # Full API contract for frontend/backend

@@ -241,27 +241,6 @@ class _BM25Index:
         return [cid for _, cid in scored[:k]]
 
 
-# Everyday wording → the terms the regulations use, added to the keyword
-# (BM25) query only. Written from the misses on the evals/ retrieval dev set;
-# check any addition against the held-out split, not just the dev queries.
-LAY_TERMS: list[tuple[re.Pattern, str]] = [(re.compile(p, re.I), t) for p, t in [
-    (r"\bmeal money\b|\bfood\b",                     "M&IE meals"),
-    (r"\bhotel\b",                                    "lodging"),
-    (r"\b(?:government |gov )?credit card\b",          "GTCC travel charge card"),
-    (r"\bmy (?:own|personal) (?:car|truck|vehicle)\b", "POV privately owned vehicle mileage"),
-    (r"\bwork trip\b|\btravel for work\b",            "TDY"),
-    (r"\buse[- ]or[- ]lose\b|\bover the cap\b",       "excess leave lost 60 days carry forward"),
-    (r"\bcarry (?:it )?over\b",                        "carry forward"),
-    (r"\b(?:get )?paid for (?:my |unused )?leave\b|\bcash (?:in|out)\b", "sell back leave"),
-    (r"(?:n't|not|before \w+(?:'ve)?) (?:yet )?earned", "advance leave"),
-]]
-
-
-def expand_lay_terms(query: str) -> str:
-    extra = [t for p, t in LAY_TERMS if p.search(query)]
-    return f"{query} {' '.join(extra)}" if extra else query
-
-
 _bm25_index: _BM25Index | None = None
 
 
@@ -292,8 +271,8 @@ def search_regulations(query: str, domain: str | None = None, n: int = 4) -> dic
         # embedding misses ("400 miles", section numbers). Chunks are embedded
         # and indexed with a document/chapter header (ingest.py --reembed).
         # evals/ retrieval, no filter: dev MRR 0.60 (embeddings only) -> 0.65
-        # (hybrid) -> 0.73 (headers, query instruction, lay terms); held-out
-        # MRR 0.47 -> 0.55, Recall@4 0.50 -> 0.62.
+        # (hybrid) -> 0.72 (headers, query instruction); held-out MRR
+        # 0.47 -> 0.54, Recall@4 0.50 -> 0.62.
         embedding = model.encode([QUERY_INSTRUCTION + query], normalize_embeddings=True).tolist()
         kwargs: dict[str, Any] = {"query_embeddings": embedding,
                                   "n_results": min(HYBRID_POOL, collection.count())}
@@ -307,7 +286,7 @@ def search_regulations(query: str, domain: str | None = None, n: int = 4) -> dic
         fused: Counter = Counter()
         for rank, cid in enumerate(vec_ids):
             fused[cid] += 1 / (RRF_K + rank)
-        for rank, cid in enumerate(index.top(expand_lay_terms(query), HYBRID_POOL, domain)):
+        for rank, cid in enumerate(index.top(query, HYBRID_POOL, domain)):
             fused[cid] += BM25_WEIGHT / (RRF_K + rank)
 
         chunks = []

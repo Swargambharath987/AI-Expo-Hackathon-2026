@@ -1,7 +1,7 @@
 {
- "stamp": "20261102T212042Z",
+ "stamp": "20261102T221304Z",
  "command": "python -m evals.run --only retrieval",
- "git": "4c674c8",
+ "git": "fb5cac3",
  "retrieval": {
   "settings": {
    "n": 4,
@@ -16,16 +16,16 @@
   "summary": {
    "no_filter": {
     "n": 48,
-    "MRR": 0.67,
+    "MRR": 0.66,
     "Recall@1": 0.604,
-    "Recall@2": 0.708,
+    "Recall@2": 0.667,
     "Recall@4": 0.75
    },
    "domain_filter": {
     "n": 48,
-    "MRR": 0.663,
-    "Recall@1": 0.583,
-    "Recall@2": 0.688,
+    "MRR": 0.635,
+    "Recall@1": 0.542,
+    "Recall@2": 0.667,
     "Recall@4": 0.771
    }
   },
@@ -81,16 +81,16 @@
    "difficulty:paraphrase": {
     "no_filter": {
      "n": 28,
-     "MRR": 0.542,
+     "MRR": 0.524,
      "Recall@1": 0.429,
-     "Recall@2": 0.607,
+     "Recall@2": 0.536,
      "Recall@4": 0.679
     },
     "domain_filter": {
      "n": 28,
-     "MRR": 0.565,
-     "Recall@1": 0.429,
-     "Recall@2": 0.607,
+     "MRR": 0.518,
+     "Recall@1": 0.357,
+     "Recall@2": 0.571,
      "Recall@4": 0.75
     }
    },
@@ -113,16 +113,16 @@
    "jtr": {
     "no_filter": {
      "n": 16,
-     "MRR": 0.802,
+     "MRR": 0.771,
      "Recall@1": 0.688,
-     "Recall@2": 0.875,
+     "Recall@2": 0.75,
      "Recall@4": 0.938
     },
     "domain_filter": {
      "n": 16,
-     "MRR": 0.802,
-     "Recall@1": 0.688,
-     "Recall@2": 0.875,
+     "MRR": 0.719,
+     "Recall@1": 0.562,
+     "Recall@2": 0.812,
      "Recall@4": 0.938
     }
    },
@@ -177,15 +177,15 @@
    "split:dev": {
     "no_filter": {
      "n": 32,
-     "MRR": 0.729,
+     "MRR": 0.719,
      "Recall@1": 0.656,
-     "Recall@2": 0.781,
+     "Recall@2": 0.75,
      "Recall@4": 0.812
     },
     "domain_filter": {
      "n": 32,
-     "MRR": 0.693,
-     "Recall@1": 0.625,
+     "MRR": 0.674,
+     "Recall@1": 0.594,
      "Recall@2": 0.719,
      "Recall@4": 0.781
     }
@@ -193,16 +193,16 @@
    "split:holdout": {
     "no_filter": {
      "n": 16,
-     "MRR": 0.552,
+     "MRR": 0.542,
      "Recall@1": 0.5,
-     "Recall@2": 0.562,
+     "Recall@2": 0.5,
      "Recall@4": 0.625
     },
     "domain_filter": {
      "n": 16,
-     "MRR": 0.604,
-     "Recall@1": 0.5,
-     "Recall@2": 0.625,
+     "MRR": 0.557,
+     "Recall@1": 0.438,
+     "Recall@2": 0.562,
      "Recall@4": 0.75
     }
    }
@@ -367,18 +367,12 @@
     "split": "dev",
     "n_relevant_in_corpus": 1,
     "no_filter": {
-     "first_relevant_rank": 2,
-     "rr": 0.5,
-     "hit@1": false,
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
      "hit@2": true,
      "hit@4": true,
      "top": [
-      {
-       "source": "jtr.pdf",
-       "score": 0.72,
-       "relevant": false,
-       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
-      },
       {
        "source": "jtr.pdf",
        "score": 0.706,
@@ -387,15 +381,21 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.701,
+       "score": 0.72,
        "relevant": false,
-       "snippet": "020301. Daily Allowances The Government pays per diem on a daily basis, for whole days. This does not include "
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
       },
       {
        "source": "jtr.pdf",
        "score": 0.681,
        "relevant": false,
        "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.718,
+       "relevant": false,
+       "snippet": "032403. Traveler in the Financial Assistance Program for SROTC Cadets or Midshipmen A. Eligibility. A cadet an"
       }
      ]
     },
@@ -420,15 +420,15 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.701,
+       "score": 0.688,
        "relevant": false,
-       "snippet": "020301. Daily Allowances The Government pays per diem on a daily basis, for whole days. This does not include "
+       "snippet": "030102. TDY Before Reporting to the First Permanent Duty Station (PDS) When the Service or DoD Component spons"
       },
       {
        "source": "jtr.pdf",
-       "score": 0.681,
+       "score": 0.694,
        "relevant": false,
-       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+       "snippet": "051203. PCS with TDY at a Location Near, but Outside the Limits of, the Old or New PDS A. Eligibility. This pa"
       }
      ]
     }
@@ -517,18 +517,12 @@
     "split": "dev",
     "n_relevant_in_corpus": 1,
     "no_filter": {
-     "first_relevant_rank": 3,
-     "rr": 0.3333333333333333,
+     "first_relevant_rank": 4,
+     "rr": 0.25,
      "hit@1": false,
      "hit@2": false,
      "hit@4": true,
      "top": [
-      {
-       "source": "jtr.pdf",
-       "score": 0.728,
-       "relevant": false,
-       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
-      },
       {
        "source": "jtr.pdf",
        "score": 0.705,
@@ -537,31 +531,31 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.69,
-       "relevant": true,
-       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
+       "score": 0.728,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
       },
       {
        "source": "jtr.pdf",
-       "score": 0.678,
+       "score": 0.681,
        "relevant": false,
-       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Automatic teller machine fees in locations OCO"
+       "snippet": "020208. Reimbursement for Government 3 Gov Auto - Fuel, Oil, or Charging Transportation  020208. Reimbursement"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.69,
+       "relevant": true,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
       }
      ]
     },
     "domain_filter": {
-     "first_relevant_rank": 3,
-     "rr": 0.3333333333333333,
+     "first_relevant_rank": 4,
+     "rr": 0.25,
      "hit@1": false,
      "hit@2": false,
      "hit@4": true,
      "top": [
-      {
-       "source": "jtr.pdf",
-       "score": 0.728,
-       "relevant": false,
-       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
-      },
       {
        "source": "jtr.pdf",
        "score": 0.705,
@@ -570,15 +564,21 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.69,
-       "relevant": true,
-       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
+       "score": 0.728,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
       },
       {
        "source": "jtr.pdf",
-       "score": 0.678,
+       "score": 0.681,
        "relevant": false,
-       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Automatic teller machine fees in locations OCO"
+       "snippet": "020208. Reimbursement for Government 3 Gov Auto - Fuel, Oil, or Charging Transportation  020208. Reimbursement"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.69,
+       "relevant": true,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
       }
      ]
     }
@@ -667,24 +667,12 @@
     "split": "dev",
     "n_relevant_in_corpus": 2,
     "no_filter": {
-     "first_relevant_rank": 1,
-     "rr": 1.0,
-     "hit@1": true,
-     "hit@2": true,
+     "first_relevant_rank": 4,
+     "rr": 0.25,
+     "hit@1": false,
+     "hit@2": false,
      "hit@4": true,
      "top": [
-      {
-       "source": "jtr.pdf",
-       "score": 0.694,
-       "relevant": true,
-       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
-      },
-      {
-       "source": "jtr.pdf",
-       "score": 0.672,
-       "relevant": false,
-       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
-      },
       {
        "source": "jtr.pdf",
        "score": 0.696,
@@ -693,19 +681,37 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.67,
+       "score": 0.663,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle A. Selecting a Rental Vehicle. If a traveler is authorized or approved the use of a ren"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.702,
+       "relevant": false,
+       "snippet": "020208. Reimbursement for Government Transportation A. Reimbursement for Government Plane, Ship, or Bus. An AO"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.694,
        "relevant": true,
-       "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
       }
      ]
     },
     "domain_filter": {
-     "first_relevant_rank": 1,
-     "rr": 1.0,
-     "hit@1": true,
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
      "hit@2": true,
      "hit@4": true,
      "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.696,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle driver fee, the AO determines that a Service member or civilian employee between the ag"
+      },
       {
        "source": "jtr.pdf",
        "score": 0.694,
@@ -714,15 +720,9 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.672,
+       "score": 0.678,
        "relevant": false,
-       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
-      },
-      {
-       "source": "jtr.pdf",
-       "score": 0.696,
-       "relevant": false,
-       "snippet": "020209. Rental Vehicle driver fee, the AO determines that a Service member or civilian employee between the ag"
+       "snippet": "020209. Rental Vehicle the nearest compatible charging station has no charge points open and available, the mi"
       },
       {
        "source": "jtr.pdf",
@@ -981,12 +981,6 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.66,
-       "relevant": false,
-       "snippet": "020211. Car Ferry Transportation Only a passenger automobile, light truck, or similar vehicle used primarily f"
-      },
-      {
-       "source": "jtr.pdf",
        "score": 0.688,
        "relevant": false,
        "snippet": "020209. Rental Vehicle Note: See DTMO Rental Car Agreement, and DTR 4500.9-R, Part I (Passenger Movement) for "
@@ -996,6 +990,12 @@
        "score": 0.65,
        "relevant": false,
        "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle driver fee, the AO determines that a Service member or civilian employee between the ag"
       }
      ]
     },
@@ -1014,12 +1014,6 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.66,
-       "relevant": false,
-       "snippet": "020211. Car Ferry Transportation Only a passenger automobile, light truck, or similar vehicle used primarily f"
-      },
-      {
-       "source": "jtr.pdf",
        "score": 0.688,
        "relevant": false,
        "snippet": "020209. Rental Vehicle Note: See DTMO Rental Car Agreement, and DTR 4500.9-R, Part I (Passenger Movement) for "
@@ -1029,6 +1023,12 @@
        "score": 0.65,
        "relevant": false,
        "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle driver fee, the AO determines that a Service member or civilian employee between the ag"
       }
      ]
     }
@@ -1325,10 +1325,10 @@
        "snippet": "Chapter 7 In such cases, the activity having responsibility for the member when TDY or hospitalization occurs "
       },
       {
-       "source": "afi_36_3003.pdf",
-       "score": 0.7,
+       "source": "ar_600_8_10.pdf",
+       "score": 0.694,
        "relevant": false,
-       "snippet": "Chapter 7 Members must settle their leave balances using the DAF Form 1089A prior to tour end date indicating "
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 2  1-10. Standards of service a. The Leaves and Passes Program is a wartime and peac"
       }
      ]
     }
@@ -1355,12 +1355,6 @@
        "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
       },
       {
-       "source": "afi_36_3003.pdf",
-       "score": 0.647,
-       "relevant": false,
-       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
-      },
-      {
        "source": "ar_600_8_10.pdf",
        "score": 0.675,
        "relevant": false,
@@ -1371,6 +1365,12 @@
        "score": 0.659,
        "relevant": false,
        "snippet": "AR 600-8-10 \u2022 3 June 2020 44 (2) If school instruction is suspended and the Soldier must continue training aft"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.659,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18 If the TDY is from 15 October to 15 November, for example, the first DA Form 31 c"
       }
      ]
     },
@@ -1388,22 +1388,22 @@
        "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
       },
       {
-       "source": "afi_36_3003.pdf",
-       "score": 0.647,
+       "source": "ar_600_8_10.pdf",
+       "score": 0.659,
        "relevant": false,
-       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18 If the TDY is from 15 October to 15 November, for example, the first DA Form 31 c"
       },
       {
-       "source": "afi_36_3003.pdf",
+       "source": "ar_600_8_10.pdf",
        "score": 0.636,
        "relevant": false,
-       "snippet": "DAFMAN 36-2102, Base-Level Relocation Procedures. The FSO computes leave for authorized absences in excess of "
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18  (4) New warrant officers completing warrant officer candidate training will norm"
       },
       {
        "source": "afi_36_3003.pdf",
-       "score": 0.634,
+       "score": 0.635,
        "relevant": false,
-       "snippet": "Chapter 2 MANAGING THE LEAVE PROGRAM 2.1. Military Leave Program. 2.1.1. Annual Leave Program. Annual leave pr"
+       "snippet": "Chapter 3 Exception: Commanders may authorize leave on Monday without charging leave for Saturday and Sunday i"
       }
      ]
     }
@@ -1874,28 +1874,28 @@
      "hit@4": false,
      "top": [
       {
-       "source": "afi_36_3003.pdf",
-       "score": 0.655,
-       "relevant": false,
-       "snippet": "Chapter 6 for SLA provisions. 2.4.3. Payment for Accrued Leave. 37 USC \u00a7 501, Payments for Unused Accrued Leav"
-      },
-      {
        "source": "dod_fmr_vol7a.pdf",
        "score": 0.664,
        "relevant": false,
        "snippet": "CHAPTER 35 For partial months, it accrues at the rate of \u00bd day for any period of 6 days or less. 2.2.2.1. A me"
       },
       {
-       "source": "ar_600_8_10.pdf",
-       "score": 0.635,
+       "source": "afi_36_3003.pdf",
+       "score": 0.655,
        "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 8  (2) Prevented from using leave through end of the FY due to deployment. (3) Deplo"
+       "snippet": "Chapter 6 for SLA provisions. 2.4.3. Payment for Accrued Leave. 37 USC \u00a7 501, Payments for Unused Accrued Leav"
       },
       {
-       "source": "afi_36_3003.pdf",
-       "score": 0.636,
+       "source": "ar_600_8_10.pdf",
+       "score": 0.655,
        "relevant": false,
-       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+       "snippet": "Chapter 3 Special Leave Accrual 3-1. Content and intent a. The intent of SLA is to provide relief to Soldiers "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.651,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 15  g. Advance leave changes to excess leave on date of separation, reenlistment, or"
       }
      ]
     },
@@ -1926,9 +1926,9 @@
       },
       {
        "source": "ar_600_8_10.pdf",
-       "score": 0.635,
+       "score": 0.648,
        "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 8  (2) Prevented from using leave through end of the FY due to deployment. (3) Deplo"
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 19 The number of leave days authorized for terminal leave cannot exceed the total le"
       }
      ]
     }
@@ -2106,21 +2106,21 @@
       },
       {
        "source": "afi_36_3003.pdf",
-       "score": 0.709,
-       "relevant": false,
-       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
-      },
-      {
-       "source": "afi_36_3003.pdf",
        "score": 0.687,
        "relevant": false,
        "snippet": "Chapter 3 Delegating Approval of En Route Leave: 3.2.4.2.1. Unit commanders should not delegate approval to a "
       },
       {
-       "source": "ar_600_8_10.pdf",
+       "source": "afi_36_3003.pdf",
        "score": 0.68,
        "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+       "snippet": "Chapter 1-OVERVIEW 5 For the purpose of this Department of the Air Force Instruction (DAFI), major DoD headqua"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.677,
+       "relevant": false,
+       "snippet": "Chapter 4 Members may take ordinary (i.e., chargeable) leave in between increments of parental leave or consec"
       }
      ]
     },
@@ -2139,21 +2139,21 @@
       },
       {
        "source": "afi_36_3003.pdf",
-       "score": 0.709,
-       "relevant": false,
-       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
-      },
-      {
-       "source": "afi_36_3003.pdf",
        "score": 0.687,
        "relevant": false,
        "snippet": "Chapter 3 Delegating Approval of En Route Leave: 3.2.4.2.1. Unit commanders should not delegate approval to a "
       },
       {
-       "source": "ar_600_8_10.pdf",
+       "source": "afi_36_3003.pdf",
        "score": 0.68,
        "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+       "snippet": "Chapter 1-OVERVIEW 5 For the purpose of this Department of the Air Force Instruction (DAFI), major DoD headqua"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.684,
+       "relevant": false,
+       "snippet": "Chapter 7 This applies to travel from the designated overseas location to the nearest CONUS port and return. D"
       }
      ]
     }
@@ -2676,9 +2676,9 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.604,
+       "score": 0.592,
        "relevant": false,
-       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem The total daily amount the Government pays for"
       }
      ]
     }
@@ -2692,12 +2692,18 @@
     "split": "holdout",
     "n_relevant_in_corpus": 4,
     "no_filter": {
-     "first_relevant_rank": 2,
-     "rr": 0.5,
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
      "hit@1": false,
-     "hit@2": true,
+     "hit@2": false,
      "hit@4": true,
      "top": [
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.654,
+       "relevant": false,
+       "snippet": "DEFINITIONS *Fully Qualified Health Professional A fully trained or licensed, registered, or certified health "
+      },
       {
        "source": "jtr.pdf",
        "score": 0.639,
@@ -2711,16 +2717,10 @@
        "snippet": "020304. M&IE Portion of Per Diem Paid by the Government and furnished at no 3 Furnished on a commercial or mil"
       },
       {
-       "source": "jtr.pdf",
-       "score": 0.622,
-       "relevant": false,
-       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
-      },
-      {
        "source": "dod_fmr_vol7a.pdf",
-       "score": 0.618,
+       "score": 0.603,
        "relevant": false,
-       "snippet": "68-11. When calculating TLA, use the actual amount without rounding. When neither Government nor commercial te"
+       "snippet": "VOLUME 7A, CHAPTER 25: \u201cSUBSISTENCE AND BASIC NEEDS ALLOWANCES\u201d ...... 1 In circumstances other than those req"
       }
      ]
     },
@@ -2745,15 +2745,15 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.622,
+       "score": 0.6,
        "relevant": false,
-       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+       "snippet": "020312. Return to Permanent Duty Station (PDS) During Long-Term TDY Long-term TDY means continuous travel for "
       },
       {
        "source": "jtr.pdf",
-       "score": 0.611,
+       "score": 0.652,
        "relevant": false,
-       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+       "snippet": "051203. PCS with TDY at a Location Near, but Outside the Limits of, the Old or New PDS A. Eligibility. This pa"
       }
      ]
     }
@@ -2781,10 +2781,31 @@
       },
       {
        "source": "jtr.pdf",
-       "score": 0.671,
+       "score": 0.698,
        "relevant": false,
-       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+       "snippet": "5-93. Additionally, a POV PCS mileage allowance for transportation of authorized travelers is paid. See mileag"
       },
+      {
+       "source": "jtr.pdf",
+       "score": 0.695,
+       "relevant": false,
+       "snippet": "054407. Funds Advance The civilian employee may receive an advance of mobile home transportation allowances wh"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.695,
+       "relevant": false,
+       "snippet": "054701. POV Transportation in the CONUS POV transportation from the old PDS to the new PDS may be authorized o"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 4,
+     "rr": 0.25,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
       {
        "source": "jtr.pdf",
        "score": 0.679,
@@ -2795,40 +2816,19 @@
        "source": "jtr.pdf",
        "score": 0.678,
        "relevant": false,
-       "snippet": "020213. Ground Transportation A. Use of Ground Transportation. A traveler should always use Government or cour"
-      }
-     ]
-    },
-    "domain_filter": {
-     "first_relevant_rank": 1,
-     "rr": 1.0,
-     "hit@1": true,
-     "hit@2": true,
-     "hit@4": true,
-     "top": [
+       "snippet": "020601. TDY within the PDS Local Area but outside the PDS Limits (b) If the traveler does not ordinarily trave"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.668,
+       "relevant": false,
+       "snippet": "020205. Separate Legs of Travel If the initial ticket is recovered or turned in for refund, and the Government"
+      },
       {
        "source": "jtr.pdf",
        "score": 0.7,
        "relevant": true,
        "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
-      },
-      {
-       "source": "jtr.pdf",
-       "score": 0.671,
-       "relevant": false,
-       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
-      },
-      {
-       "source": "jtr.pdf",
-       "score": 0.679,
-       "relevant": false,
-       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
-      },
-      {
-       "source": "jtr.pdf",
-       "score": 0.678,
-       "relevant": false,
-       "snippet": "020213. Ground Transportation A. Use of Ground Transportation. A traveler should always use Government or cour"
       }
      ]
     }
@@ -3450,27 +3450,27 @@
      "top": [
       {
        "source": "ar_600_8_10.pdf",
-       "score": 0.733,
-       "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 45  (b) Leave periods are credited toward completing the three-month service obligat"
-      },
-      {
-       "source": "ar_600_8_10.pdf",
-       "score": 0.711,
-       "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
-      },
-      {
-       "source": "ar_600_8_10.pdf",
        "score": 0.721,
        "relevant": false,
        "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
       },
       {
        "source": "ar_600_8_10.pdf",
-       "score": 0.704,
+       "score": 0.733,
        "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 18  (4) New warrant officers completing warrant officer candidate training will norm"
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 45  (b) Leave periods are credited toward completing the three-month service obligat"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.731,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 19 The number of leave days authorized for terminal leave cannot exceed the total le"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.723,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 34  (c) If stationed OCONUS, the Soldier is within 12 months of completing his or he"
       }
      ]
     },
@@ -3489,12 +3489,6 @@
       },
       {
        "source": "ar_600_8_10.pdf",
-       "score": 0.711,
-       "relevant": false,
-       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
-      },
-      {
-       "source": "ar_600_8_10.pdf",
        "score": 0.721,
        "relevant": false,
        "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
@@ -3504,6 +3498,12 @@
        "score": 0.731,
        "relevant": false,
        "snippet": "AR 600-8-10 \u2022 3 June 2020 19 The number of leave days authorized for terminal leave cannot exceed the total le"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.723,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 34  (c) If stationed OCONUS, the Soldier is within 12 months of completing his or he"
       }
      ]
     }
@@ -3854,6 +3854,6 @@
    "out_of_corpus_top1_max": 0.75
   },
   "warnings": [],
-  "seconds": 3.3
+  "seconds": 3.8
  }
 }

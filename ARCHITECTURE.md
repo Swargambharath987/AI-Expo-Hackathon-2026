@@ -50,7 +50,7 @@ The output is always a **filled artifact** (form, cost breakdown, checklist) plu
                        │
                        ▼
 ┌──────────────────────────────────────────────────────────────┐
-│       REACT AGENT  (claude-sonnet-4-6 by default;            │
+│       REACT AGENT  (claude-sonnet-5-5 by default;            │
 │                     Ollama + gemma4:e4b for offline)         │
 │                                                              │
 │  Principle: reason first, act only when needed              │
@@ -237,7 +237,7 @@ Ollama is the **offline fallback** — air-gap / SCIF environments with no inter
 
 | Deployment | Provider | Config |
 |------------|----------|--------|
-| Default (cloud-connected) | Claude API (`claude-sonnet-4-6`) | `LLM_BASE_URL=https://api.anthropic.com/v1` |
+| Default (cloud-connected) | Claude API (`claude-sonnet-5-5`) | `LLM_BASE_URL=https://api.anthropic.com/v1` |
 | Offline / air-gap | Ollama (`gemma4:e4b`) | `LLM_BASE_URL=http://localhost:11434/v1` |
 | Alternative cloud | llama.cpp server | `LLM_BASE_URL=http://localhost:8080/v1` |
 | Alternative cloud | LM Studio | `LLM_BASE_URL=http://localhost:1234/v1` |

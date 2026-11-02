@@ -7,7 +7,7 @@ Single reasoning loop:
   Observe  → receive tool result
   Repeat   → until sufficient, then stream final answer
 
-One model (claude-sonnet-4-6 via Claude API by default; Ollama for offline), all tools available every turn.
+One model (claude-sonnet-5-5 via Claude API by default; Ollama for offline), all tools available every turn.
 No separate classifier. No routing failures.
 
 Usage:
@@ -49,9 +49,9 @@ warnings.filterwarnings("ignore", message=".*existing embedding ID.*")
 # Config
 # ---------------------------------------------------------------------------
 LLM_BASE_URL   = os.getenv("LLM_BASE_URL",  "https://api.anthropic.com/v1")
-LLM_MODEL      = os.getenv("LLM_MODEL",     "claude-sonnet-4-6")
+LLM_MODEL      = os.getenv("LLM_MODEL",     "claude-sonnet-5-5")
 LLM_API_KEY    = os.getenv("LLM_API_KEY",   "")
-LLM_TIMEOUT    = float(os.getenv("LLM_TIMEOUT", "30"))   # seconds per LLM call
+LLM_TIMEOUT    = float(os.getenv("LLM_TIMEOUT", "60"))   # seconds per LLM call (thinking models)
 MAX_ITERATIONS = 5      # max tool calls per turn before forcing a final answer
 HISTORY_WINDOW = 8      # max messages kept in context (sliding window)
 RAG_TOP_K      = 2      # chunks per search — keeps context under 4096 tokens
@@ -508,9 +508,13 @@ class ReActAgent:
         self._custom   = custom
         self._base_url = cfg["base_url"]
         # OpenAI's newer models take max_completion_tokens and only the
-        # default temperature; reasoning models also need a bigger budget.
+        # default temperature. Claude 4.7+ rejects a temperature below 1, and
+        # Claude 5 models always think, which counts against max_tokens —
+        # both reasoning families need a bigger budget.
         if custom_url_host(cfg["base_url"]) == "api.openai.com":
             self._gen_params = {"max_completion_tokens": 2048}
+        elif "claude" in cfg["model"].lower():
+            self._gen_params = {"max_tokens": 4096}
         else:
             self._gen_params = {"temperature": 0.1, "max_tokens": 512}
 

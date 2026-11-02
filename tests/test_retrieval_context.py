@@ -1,6 +1,5 @@
-"""Chunk context headers (ingest.py) and lay-term query expansion (tools.py)."""
+"""Chunk context headers written by ingest.py."""
 
-from agents.tools import expand_lay_terms
 from ingest import chapter_titles, context_headers
 
 AR_CHUNKS = [
@@ -25,8 +24,3 @@ def test_headers_name_document_chapter_and_headings():
     assert "Chapter 3: Special Leave Accrual" in h[3] and "Chapter 2" not in h[3]
     assert "One-time leave sell back" in h[3]
 
-
-def test_lay_terms_add_regulation_vocabulary():
-    assert "advance leave" in expand_lay_terms("Can I take leave before I've earned it?")
-    assert "sell back" in expand_lay_terms("Can I get paid for leave I lose?")
-    assert expand_lay_terms("per diem in Columbus GA") == "per diem in Columbus GA"

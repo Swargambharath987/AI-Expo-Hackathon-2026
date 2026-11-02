@@ -84,7 +84,7 @@ Check backend + model status. Call on mount to populate sidebar status dots.
   "status": "ok",
   "llm_provider": "claude",
   "llm_ready": true,
-  "model": "claude-sonnet-4-6",
+  "model": "claude-sonnet-5-5",
   "vector_store_chunks": 2063,
   "vector_store_ready": true,
   "gsa_cache_loaded": true,

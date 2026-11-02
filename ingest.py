@@ -78,15 +78,8 @@ SOURCES = [
         "doc_type":    "regulation",
         "source_file": "afi_36_3003.pdf",
     },
-    # Eval — Army
-    {
-        "url":         "https://armypubs.army.mil/epubs/DR_pubs/DR_a/ARN32388-AR_623-3-000-WEB-1.pdf",
-        "local_path":  DATA_DIR / "army_regs" / "ar_623_3.pdf",
-        "domain":      "eval",
-        "branch":      "army",
-        "doc_type":    "regulation",
-        "source_file": "ar_623_3.pdf",
-    },
+    # Army evaluations (AR 623-3) are not in the library: the PDF was never
+    # obtained, and the agent says so when asked.
     # Eval — Navy
     {
         "url":         "https://www.mynavyhr.navy.mil/Portals/55/Reference/instructions/BUPERS/BUPERSINST_1610.10F.pdf",
@@ -483,9 +476,11 @@ def main():
         if ok:
             downloaded.append(src)
 
-    if not downloaded:
-        print("\n[!] No PDFs found locally. Download them manually:")
+    if len(downloaded) < len(SOURCES):
+        print("\n[!] Missing PDFs — the index would be incomplete. Download them manually:")
         for src in SOURCES:
+            if src in downloaded:
+                continue
             print(f"    {src['url']}")
             print(f"    -> save to: {src['local_path']}\n")
         print("Then re-run: python3 ingest.py")

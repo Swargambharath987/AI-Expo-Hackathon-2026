@@ -68,9 +68,9 @@ def test_providers_endpoint_shape():
         assert set(p) == {"id", "label", "key_placeholder", "default_model", "needs_base_url"}
         assert p["needs_base_url"] is (p["id"] == "custom")
     by_id = {p["id"]: p for p in providers}
-    assert by_id["anthropic"]["default_model"] == "claude-sonnet-4-6"
+    assert by_id["anthropic"]["default_model"] == "claude-sonnet-5-5"
     assert by_id["openai"]["default_model"] == "gpt-4.1"
-    assert by_id["openrouter"]["default_model"] == "anthropic/claude-sonnet-4.6"
+    assert by_id["openrouter"]["default_model"] == "anthropic/claude-sonnet-5.5"
 
 
 def test_new_preset_routes_to_its_fixed_url(echo_agent):
@@ -224,6 +224,10 @@ def test_agent_llm_clients_never_follow_redirects():
                     "api_key": KEY, "model": "m"})
     assert agent._client._client.follow_redirects is False
     assert agent._gen_params == {"max_completion_tokens": 2048}
+    # Claude 4.7+ rejects temperature < 1; Claude 5 thinking needs room
+    agent._use_llm({"provider": "anthropic", "base_url": "https://api.anthropic.com/v1",
+                    "api_key": KEY, "model": "claude-sonnet-5-5"})
+    assert agent._gen_params == {"max_tokens": 4096}
 
 
 # ---------------------------------------------------------------------------

@@ -144,4 +144,4 @@ async def run_many(appmod, jobs: list[tuple[dict, int]], profile: dict, concurre
 
 def llm_env_summary() -> dict:
     return {"base_url": os.getenv("LLM_BASE_URL", "https://api.anthropic.com/v1"),
-            "model": os.getenv("LLM_MODEL", "claude-sonnet-4-6")}
+            "model": os.getenv("LLM_MODEL", "claude-sonnet-5-5")}

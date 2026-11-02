@@ -326,10 +326,10 @@ queries:
     verified_chunks: [chunk_1913]
 
   # ---------------- Held-out set (split: holdout) ----------------
-  # Written in everyday wording AFTER the Nov 2026 retrieval changes (context
-  # headers, query instruction) and BEFORE the lay-term query expansion, and
-  # never used to tune either. Compare dev vs holdout to see whether a change
-  # generalises or only fits the queries it was tuned on. Labels: first a
+  # Written in everyday wording after the Nov 2026 retrieval changes (context
+  # headers, query instruction) and never used to tune them. Compare dev vs
+  # holdout to see whether a change generalises or only fits the queries it
+  # was tuned on. Labels: first a
   # phrase search of the corpus, then TREC-style pooling — the top 4 from the
   # old and new retrievers (with and without domain filter) were read and
   # judged, and every relevant passage added, before scoring either system.

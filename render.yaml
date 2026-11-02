@@ -8,6 +8,6 @@ services:
       - key: LLM_BASE_URL
         value: https://api.anthropic.com/v1
       - key: LLM_MODEL
-        value: claude-sonnet-4-6
+        value: claude-sonnet-5-5
       - key: LLM_API_KEY
         sync: false

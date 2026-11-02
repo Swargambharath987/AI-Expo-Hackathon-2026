@@ -38,9 +38,9 @@ def judge_turn(message: str, tool_calls: list[dict], answer: str, client=None) -
     prompt = (f"{rubric}\n\n=== USER MESSAGE ===\n{message}\n\n=== TOOL RESULTS ===\n{ev or '(none)'}"
               f"\n\n=== ASSISTANT ANSWER ===\n{answer}\n")
     resp = client.chat.completions.create(
-        model=os.getenv("JUDGE_MODEL") or os.getenv("LLM_MODEL", "claude-sonnet-4-6"),
+        model=os.getenv("JUDGE_MODEL") or os.getenv("LLM_MODEL", "claude-sonnet-5-5"),
         messages=[{"role": "user", "content": prompt}],
-        temperature=0, max_tokens=400,
+        max_tokens=4096,   # Claude 5 models think first; no temperature on 4.7+
     )
     text = resp.choices[0].message.content or ""
     m = re.search(r"\{.*\}", text, re.S)
