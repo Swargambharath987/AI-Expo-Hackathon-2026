@@ -325,6 +325,194 @@ queries:
       - {source: mco_1610_7.pdf, text_regex: "fitness reports for Marines in the rank of sergeant through major general"}
     verified_chunks: [chunk_1913]
 
+  # ---------------- Held-out set (split: holdout) ----------------
+  # Written in everyday wording AFTER the Nov 2026 retrieval changes (context
+  # headers, query instruction) and BEFORE the lay-term query expansion, and
+  # never used to tune either. Compare dev vs holdout to see whether a change
+  # generalises or only fits the queries it was tuned on. Labels: first a
+  # phrase search of the corpus, then TREC-style pooling — the top 4 from the
+  # old and new retrievers (with and without domain filter) were read and
+  # judged, and every relevant passage added, before scoring either system.
+  - id: H01
+    category: jtr_receipts
+    difficulty: paraphrase
+    split: holdout
+    domain: travel
+    query: "I lost my hotel receipt from my trip, can I still get paid back?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "Lost Receipts\\. If a receipt is impracticable"}
+    verified_chunks: [chunk_19]
+
+  - id: H02
+    category: jtr_meals
+    difficulty: paraphrase
+    split: holdout
+    domain: travel
+    query: "What do I get for food if I eat at the base chow hall while on TDY?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "GOVERNMENT MEAL RATE \\(GMR\\) is the daily rate"}
+      - {source: jtr.pdf, text_regex: "charged the discounted Government meal rate"}
+      - {source: jtr.pdf, text_regex: "may not direct the use of Government meal rate"}
+      - {source: jtr.pdf, text_regex: "if Government meals consumed in a Government"}
+    verified_chunks: [chunk_60, chunk_155, chunk_156, chunk_605]
+
+  - id: H03
+    category: jtr_pov
+    difficulty: paraphrase
+    split: holdout
+    domain: travel
+    query: "Will they pay me back for gas if I take my own truck on official travel?"
+    relevant:
+      - {source: jtr.pdf, text_regex: "MILEAGE ALLOWANCE is a rate per mile"}
+      - {source: jtr.pdf, text_regex: "Mileage reimbursement at the authorized TDY automobile mileage rate"}
+      - {source: jtr.pdf, text_regex: "020210\\. Privately Owned Vehicles \\(POV\\) A traveler cannot be directed"}
+    verified_chunks: [chunk_44, chunk_123, chunk_609]
+
+  - id: H04
+    category: army_accrual
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "How many days off do I build up each month in the Army?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "accrue leave at the rate of 2\\.5 calendar days"}
+    verified_chunks: [chunk_630]
+
+  - id: H05
+    category: af_accrual
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "How fast does an airman earn vacation time?"
+    relevant:
+      - {source: afi_36_3003.pdf, text_regex: "Members accrue 2\\.5 days of leave for each month"}
+    verified_chunks: [chunk_733]
+
+  - id: H06
+    category: army_convalescent
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "My doctor says I need time to recover after surgery. Does that come out of my leave balance?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "5-4\\. Convalescent leave a\\."}
+      - {source: afi_36_3003.pdf, text_regex: "Convalescent leave is an authorized absence"}
+    verified_chunks: [chunk_664, chunk_745]
+
+  - id: H07
+    category: af_bereavement
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "If my child passes away, how much time off can I get without it counting against my leave?"
+    relevant:
+      - {source: afi_36_3003.pdf, text_regex: "4\\.2\\.4\\.1\\. Bereavement Leave\\."}
+      - {source: afi_36_3003.pdf, text_regex: "bereavement leave up to 14 consecutive days"}
+    verified_chunks: [chunk_759]
+
+  - id: H08
+    category: army_pass
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "What is a weekend pass and where does it have to start and end?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "7-1\\. Regular pass a\\."}
+      - {source: ar_600_8_10.pdf, text_regex: "A regular pass begins and ends on post"}
+      - {source: afi_36_3003.pdf, text_regex: "5\\.2\\.1\\. A regular pass \\(liberty\\) is the period"}
+    verified_chunks: [chunk_694, chunk_695, chunk_773]
+
+  - id: H09
+    category: army_charging
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "If I go on leave Thursday through the next Tuesday, do the weekend days count?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "leave request is for Thursday through Tuesday"}
+    verified_chunks: [chunk_633]
+
+  - id: H10
+    category: leave_house_hunting
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "Can I get time off to find a house at my new base without it counting as leave?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "\\(9\\) House hunting\\. House hunting is only authorized"}
+      - {source: afi_36_3003.pdf, text_regex: "PTDY for House Hunting"}
+      - {source: afi_36_3003.pdf, text_regex: "Search for a house or search for a job"}
+    verified_chunks: [chunk_681, chunk_766, chunk_769]
+
+  - id: H11
+    category: army_request_timing
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "How far ahead should I turn in my leave paperwork?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "submit leave requests no earlier than one month before"}
+    verified_chunks: [chunk_711]
+
+  - id: H12
+    category: army_advance
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "Can a soldier go on leave using days they haven't earned yet?"
+    relevant:
+      - {source: ar_600_8_10.pdf, text_regex: "Advance leave is with pay and allowances"}
+    verified_chunks: [chunk_645]
+
+  - id: H13
+    category: eval_navy
+    difficulty: paraphrase
+    split: holdout
+    domain: eval
+    query: "What's an NOB report on a Navy eval?"
+    relevant:
+      - {source: bupersinst_1610_10f.pdf, text_regex: "CHAPTER 6 NOT OBSERVED \\(NOB\\) REPORTS 6-1\\. Purpose"}
+      - {source: bupersinst_1610_10f.pdf, text_regex: "Observed and Not Observed \\(NOB\\) Reports\\. The assigned reporting senior"}
+      - {source: bupersinst_1610_10f.pdf, text_regex: "This chapter provides the information needed to complete NOB reports"}
+      - {source: bupersinst_1610_10f.pdf, text_regex: "mark all other traits and the promotion recommendation as .NOB"}
+    verified_chunks: [chunk_867, chunk_868, chunk_869, chunk_875]
+
+  - id: H14
+    category: eval_usmc
+    difficulty: paraphrase
+    split: holdout
+    domain: eval
+    query: "Who's in a Marine's chain for writing and reviewing fitness reports?"
+    relevant:
+      - {source: mco_1610_7.pdf, text_regex: "The reporting chain consists only of the RS, the RO"}
+      - {source: mco_1610_7.pdf, text_regex: "c\\. Responsibilities\\. The RS must"}
+    verified_chunks: [chunk_1922, chunk_1923]
+
+  - id: H15
+    category: eval_navy
+    difficulty: paraphrase
+    split: holdout
+    domain: eval
+    query: "Whose signature is required on a sailor's evaluation?"
+    relevant:
+      - {source: bupersinst_1610_10f.pdf, text_regex: "The signature of the reporting senior is required"}
+      - {source: bupersinst_1610_10f.pdf, text_regex: "14-3\\. Reporting Senior Signature\\. Reporting seniors must"}
+      - {source: bupersinst_1610_10f.pdf, text_regex: "Signature\\. After reviewing the report, the Service members will check"}
+    verified_chunks: [chunk_795, chunk_830, chunk_840, chunk_907]
+
+  - id: H16
+    category: af_ptdy
+    difficulty: paraphrase
+    split: holdout
+    domain: leave
+    query: "What is permissive TDY in the Air Force and does it use up leave?"
+    relevant:
+      - {source: afi_36_3003.pdf, text_regex: "PTDY is non-chargeable leave of absence"}
+      - {source: afi_36_3003.pdf, text_regex: "Unit commanders account for member.s PTDY for non-\\s?duty days"}
+      - {source: afi_36_3003.pdf, text_regex: "4\\.2\\.5\\.6\\. PTDY Not Authorized"}
+    verified_chunks: [chunk_760, chunk_762, chunk_769]
+
+
 # Questions the corpus cannot answer (the system prompt advertises AR 623-3,
 # but it was never ingested). Not part of Recall/MRR; reported separately with
 # the top similarity score so you can see whether the retriever signals "no

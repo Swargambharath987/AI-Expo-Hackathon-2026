@@ -192,6 +192,9 @@ def _get_gsa_cache() -> dict:
 HYBRID_POOL = 20    # candidates taken from each retriever before fusion
 RRF_K       = 60    # standard reciprocal-rank-fusion constant
 BM25_WEIGHT = 0.5   # keyword rank counts half as much as semantic rank
+# bge-*-v1.5 retrieves better when short queries carry this instruction
+# (passages are embedded without it)
+QUERY_INSTRUCTION = "Represent this sentence for searching relevant passages: "
 
 _BM25_TOKEN = re.compile(r"[a-z0-9]+(?:[-.][a-z0-9]+)*")
 _BM25_STOP  = frozenset("the a an of to and or in on for is are be by with as at from that "
@@ -210,7 +213,8 @@ class _BM25Index:
         self.ids   = data["ids"]
         self.docs  = dict(zip(self.ids, data["documents"]))
         self.metas = dict(zip(self.ids, data["metadatas"]))
-        toks = [_bm25_tokens(d + " " + m.get("section_title", ""))
+        # "context": document/chapter/heading header written by ingest.py
+        toks = [_bm25_tokens(d + " " + m.get("section_title", "") + " " + m.get("context", ""))
                 for d, m in zip(data["documents"], data["metadatas"])]
         self.tf    = [Counter(t) for t in toks]
         self.len   = [len(t) for t in toks]
@@ -235,6 +239,27 @@ class _BM25Index:
                 scored.append((s, cid))
         scored.sort(reverse=True)
         return [cid for _, cid in scored[:k]]
+
+
+# Everyday wording → the terms the regulations use, added to the keyword
+# (BM25) query only. Written from the misses on the evals/ retrieval dev set;
+# check any addition against the held-out split, not just the dev queries.
+LAY_TERMS: list[tuple[re.Pattern, str]] = [(re.compile(p, re.I), t) for p, t in [
+    (r"\bmeal money\b|\bfood\b",                     "M&IE meals"),
+    (r"\bhotel\b",                                    "lodging"),
+    (r"\b(?:government |gov )?credit card\b",          "GTCC travel charge card"),
+    (r"\bmy (?:own|personal) (?:car|truck|vehicle)\b", "POV privately owned vehicle mileage"),
+    (r"\bwork trip\b|\btravel for work\b",            "TDY"),
+    (r"\buse[- ]or[- ]lose\b|\bover the cap\b",       "excess leave lost 60 days carry forward"),
+    (r"\bcarry (?:it )?over\b",                        "carry forward"),
+    (r"\b(?:get )?paid for (?:my |unused )?leave\b|\bcash (?:in|out)\b", "sell back leave"),
+    (r"(?:n't|not|before \w+(?:'ve)?) (?:yet )?earned", "advance leave"),
+]]
+
+
+def expand_lay_terms(query: str) -> str:
+    extra = [t for p, t in LAY_TERMS if p.search(query)]
+    return f"{query} {' '.join(extra)}" if extra else query
 
 
 _bm25_index: _BM25Index | None = None
@@ -264,9 +289,12 @@ def search_regulations(query: str, domain: str | None = None, n: int = 4) -> dic
 
         # Hybrid retrieval: semantic (embeddings) + keyword (BM25), merged by
         # reciprocal rank fusion. Keyword matching catches exact terms the
-        # embedding misses ("400 miles", section numbers); on the evals/
-        # retrieval gold set this lifted Recall@1 0.47 -> 0.59, MRR 0.60 -> 0.66.
-        embedding = model.encode([query], normalize_embeddings=True).tolist()
+        # embedding misses ("400 miles", section numbers). Chunks are embedded
+        # and indexed with a document/chapter header (ingest.py --reembed).
+        # evals/ retrieval, no filter: dev MRR 0.60 (embeddings only) -> 0.65
+        # (hybrid) -> 0.73 (headers, query instruction, lay terms); held-out
+        # MRR 0.47 -> 0.55, Recall@4 0.50 -> 0.62.
+        embedding = model.encode([QUERY_INSTRUCTION + query], normalize_embeddings=True).tolist()
         kwargs: dict[str, Any] = {"query_embeddings": embedding,
                                   "n_results": min(HYBRID_POOL, collection.count())}
         if domain:
@@ -279,7 +307,7 @@ def search_regulations(query: str, domain: str | None = None, n: int = 4) -> dic
         fused: Counter = Counter()
         for rank, cid in enumerate(vec_ids):
             fused[cid] += 1 / (RRF_K + rank)
-        for rank, cid in enumerate(index.top(query, HYBRID_POOL, domain)):
+        for rank, cid in enumerate(index.top(expand_lay_terms(query), HYBRID_POOL, domain)):
             fused[cid] += BM25_WEIGHT / (RRF_K + rank)
 
         chunks = []
@@ -590,6 +618,7 @@ FORM_DISPLAY_FIELDS: dict[str, list] = {
         ("action_requested", "Type of Requested Personnel Action"),
         ("effective_date",   "Effective Date"),
         ("reason",           "Reason for Requested Action"),
+        ("remarks",          "Remarks"),
     ],
 }
 
@@ -844,6 +873,13 @@ FIELD_SYNONYMS: dict[str, str] = {
 }
 
 
+# Trip details the user gives that a form has no box for: written into the
+# form's Remarks instead of being lost.
+REMARKS_EXTRAS: dict[str, str] = {
+    "destination": "Destination", "origin": "Origin", "one_way_miles": "One-way miles",
+}
+
+
 def _last_name(name: str) -> str:
     name = (name or "").strip().lower()
     return (name.split(",")[0] if "," in name else (name.split() or [""])[-1]).strip()
@@ -855,6 +891,55 @@ def _profile_for_form(form_name: str, profile: dict | None) -> dict:
     if role_map is None:
         return dict(profile)
     return {dst: profile[src] for src, dst in role_map.items() if profile.get(src)}
+
+
+# Identity and role fields: short facts that must come from the user, their
+# profile, or a tool result. Free text (summaries in the model's words), dates
+# and numbers (often derived from durations or tool math) and enumerated
+# choices are not checked — the eval's grounding layer covers those.
+PROVENANCE_KEYS = frozenset({
+    "name_last_first", "rank", "grade", "ssn_last4", "dod_id", "unit", "installation",
+    "phone", "supervisor_name", "auth_no",
+    "soldier_name", "soldier_rank", "leader_name", "leader_rank", "leader_position",
+})
+_PROV_TOKEN = re.compile(r"[a-z0-9]+")
+# Unit and title abbreviations a form legitimately writes for the user's words.
+_PROV_EQUIV = {"company": "co", "battalion": "bn", "brigade": "bde", "division": "div",
+               "regiment": "regt", "airborne": "abn", "infantry": "in", "sergeant": "sgt",
+               "staff": "ssg", "specialist": "spc", "private": "pvt", "lieutenant": "lt",
+               "captain": "cpt", "major": "maj", "colonel": "col"}
+
+
+def _prov_tokens(text: str) -> set[str]:
+    words = _PROV_TOKEN.findall(canonical_installation_text(text))
+    return {_PROV_EQUIV.get(w, w) for w in words} | set(words)
+
+
+def untraceable_fields(field_values: dict, sources_text: str) -> dict[str, str]:
+    """Identity/role values with a word that appears nowhere in the sources
+    (the user's messages, their profile, this turn's tool results)."""
+    have = _prov_tokens(sources_text)
+    bad = {}
+    for key, val in field_values.items():
+        if key not in PROVENANCE_KEYS or not val:
+            continue
+        words = {_PROV_EQUIV.get(w, w) for w in _PROV_TOKEN.findall(canonical_installation_text(str(val)))}
+        if any(w not in have for w in words if len(w) > 1 or w.isdigit()):
+            bad[key] = str(val)
+    return bad
+
+
+def _travel_cost_defaults(form_name: str, tool_results: list[dict]) -> dict:
+    """DD_1610 cost boxes from this conversation's latest travel cost estimate,
+    so the numbers on the form are the tool's, not retyped by the model."""
+    if form_name != "DD_1610":
+        return {}
+    for r in reversed(tool_results):
+        if r.get("name") == "calculate_travel_cost" and r.get("result", {}).get("success"):
+            c = r["result"]
+            per_diem = (c.get("lodging", {}).get("total") or 0) + (c.get("meals", {}).get("total") or 0)
+            return {"cost_estimate": f"${c['grand_total']:,.2f}", "per_diem_est": f"${per_diem:,.2f}"}
+    return {}
 
 
 def _prune_output_dir():
@@ -869,7 +954,8 @@ def _prune_output_dir():
             pass
 
 
-def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -> dict:
+def fill_form(form_name: str, field_values: dict, profile: dict | None = None,
+              context: dict | None = None) -> dict:
     """
     Populate a military form with provided field values.
     Merges soldier profile for common fields (name, rank, unit, SSN-4).
@@ -883,6 +969,10 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
         field_values: Dict of field names to values
         profile:      The requesting soldier's profile (injected by
                       execute_tool, never supplied by the LLM)
+        context:      {"user_text": str, "tool_results": [{name, args, result}]}
+                      for this conversation (injected by the agent). When
+                      given, identity/role values that appear nowhere in it
+                      are left blank and reported instead of printed.
 
     Returns dict with pdf_path (always set), filled_fields, missing_fields, summary.
     """
@@ -916,6 +1006,18 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
         if subject and _last_name(subject) != _last_name((profile or {}).get("name_last_first", "")):
             for key in IDENTITY_KEYS:
                 base.pop(key, None)
+        unverified: dict[str, str] = {}
+        if context is not None:
+            tool_results = context.get("tool_results") or []
+            for key, val in _travel_cost_defaults(form_name, tool_results).items():
+                field_values.setdefault(key, val)
+            sources = " ".join([context.get("user_text", "")] +
+                               [str(v) for v in (profile or {}).values() if v] +
+                               [json.dumps(r.get("result")) for r in tool_results
+                                if r.get("name") != "fill_form"])
+            unverified = untraceable_fields(field_values, sources)
+            for key in unverified:
+                field_values.pop(key)
         merged  = {**base, **field_values}   # field_values overrides profile
 
         # Auto-populate date if not provided
@@ -926,6 +1028,14 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
         # Report keys this form doesn't have instead of dropping them
         # silently, so the model can see and correct a wrong key.
         known_keys = {k for k, _ in display_schema} | {"date"}
+        if "remarks" in known_keys:
+            extras = [f"{label}: {merged[k]}" for k, label in REMARKS_EXTRAS.items()
+                      if k not in known_keys and merged.get(k)]
+            if extras:
+                merged["remarks"] = "; ".join(filter(None, [merged.get("remarks")] + extras))
+                for k in REMARKS_EXTRAS:
+                    if k not in known_keys:
+                        field_values.pop(k, None)
         ignored = sorted(k for k in field_values if k not in known_keys)
 
         # Build display_rows and track filled / missing
@@ -1018,6 +1128,12 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
             "missing_fields": missing_labels,
             "summary":        summary_text,
         }
+        if unverified:
+            result["unverified_fields"] = unverified
+            result["unverified_note"] = (
+                "Left blank because the user never gave these values: "
+                + ", ".join(f"{k}={v!r}" for k, v in unverified.items())
+                + ". Tell the user they're missing; don't guess them.")
         if ignored:
             result["ignored_fields"] = ignored
             result["ignored_note"] = f"These keys are not on {form_name} and were not used: {', '.join(ignored)}"
@@ -1191,7 +1307,8 @@ TOOL_SCHEMAS = [
 # Tool dispatcher — called by the orchestrator with LLM's tool_call response
 # ---------------------------------------------------------------------------
 
-def execute_tool(name: str, arguments: dict, profile: dict | None = None) -> str:
+def execute_tool(name: str, arguments: dict, profile: dict | None = None,
+                 context: dict | None = None) -> str:
     """
     Dispatch a tool call by name and return result as a string for LLM observation.
     Never raises — always returns something the LLM can reason about.
@@ -1208,7 +1325,7 @@ def execute_tool(name: str, arguments: dict, profile: dict | None = None) -> str
         return json.dumps({"success": False, "error": f"Unknown tool '{name}'. Available: {list(DISPATCH)}"})
 
     if name == "fill_form":
-        arguments = {**arguments, "profile": profile}
+        arguments = {**arguments, "profile": profile, "context": context}
 
     try:
         result = fn(**arguments)

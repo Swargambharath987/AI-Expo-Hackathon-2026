@@ -27,7 +27,7 @@ of these happened. The layers keep them apart.
 
 | Layer | What it checks | How it scores | LLM? |
 |---|---|---|---|
-| 1. Retrieval | `search_regulations` returns the passage that answers the question | Recall@1/@2/@4, MRR over 32 gold queries, with and without the domain filter; 3 out-of-corpus probes | No |
+| 1. Retrieval | `search_regulations` returns the passage that answers the question | Recall@1/@2/@4, MRR over 48 gold queries (32 dev + 16 held-out), with and without the domain filter; 3 out-of-corpus probes | No |
 | 2. Tool-call accuracy | The agent calls the right tools with the right key arguments | BFCL-style: tool-selection accuracy (required ⊆ called, forbidden ∩ called = ∅), plus per-argument match for destination city/state, travel_days, travel_mode, one_way_miles, form_name and domain | Yes |
 | 3. Grounding ("no invented data") | (a) every `$` amount in the answer appears in the conversation's tool results; (b) every cited document and section appears in the search results; (c) every filled form field traces to the user's messages, the profile or tool output; (d) on DA 4856 the soldier fields hold the counselee, not the profile owner, and the profile SSN and DoD ID never show up in an answer or on the counselee's form | Deterministic | Yes (scores the agent's output) |
 | 4. Task success | The expected end state: TDY total equals `calculate_travel_cost(expected args)`, the right form or no form, required form fields, required facts in the answer (e.g. "2.5") | Deterministic | Yes |
@@ -134,17 +134,24 @@ looking at what the retriever returns. Put the chunk ids you checked in
 `verified_chunks`. Every run re-derives the relevant set and warns when it
 drifts, for example after a re-ingest.
 
+Queries marked `split: holdout` are for checking that a retrieval change
+generalises: tune on the dev queries, then confirm the held-out numbers
+moved too. Their labels were completed by pooling (the top results of the
+old and new retrievers were read and judged before scoring). A phrase
+search alone misses relevant passages and makes every retriever look worse.
+
 ## Reading the report
 
 `evals/reports/<UTC stamp>.md` contains:
 
 1. **Retrieval**: Recall@k and MRR, unfiltered and with the gold domain
-   filter, broken down by source group and by difficulty (direct vs
-   paraphrase). It then lists every query missed at k=4, along with the
+   filter, broken down by source group, by difficulty (direct vs
+   paraphrase) and by split (dev vs held-out). It then lists every query missed at k=4, along with the
    wrong chunks that won and the out-of-corpus probes with their top scores.
    If the out-of-corpus top scores sit in the same range as the answerable
    ones, a score threshold can't tell the agent "nothing found".
-2. **Agent summary table**: each metric with its denominator. Grounding
+2. **Agent summary table**: each metric with its denominator and a 95%
+   Wilson interval. Grounding
    rates are over *applicable* turns (turns with a `$`, a citation or a form).
 3. **Per-category table**, then **consistency** (pass^k per case).
 4. **Failure details** for every failed case-run: the raw tool calls with

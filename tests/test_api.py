@@ -263,3 +263,67 @@ def test_unknown_form_keys_are_reported_not_silently_dropped(monkeypatch, tmp_pa
     monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
     r = fill_form("DD_1610", {"destination": "Fort Moore", "made_up_key": "x"})
     assert r["ignored_fields"] == ["made_up_key"]
+
+
+def test_form_values_nobody_gave_are_left_blank(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    context = {"user_text": "Counsel PFC Daniel Ortiz, he was late on 2 Nov.", "tool_results": []}
+    r = fill_form("DA_4856", {"soldier_name": "Ortiz, Daniel", "soldier_rank": "PFC",
+                              "leader_position": "Squad Leader"},
+                  profile={"name_last_first": "CARTER, JAMES R", "rank": "SSG"}, context=context)
+    f = r["filled_fields"]
+    assert f["Name of Soldier"] == "Ortiz, Daniel" and f["Counselor Name"] == "CARTER, JAMES R"
+    assert "Counselor Position" in r["missing_fields"]
+    assert r["unverified_fields"] == {"leader_position": "Squad Leader"}
+
+
+def test_form_values_from_user_profile_or_renamed_post_are_kept(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    context = {"user_text": "I'm the platoon sergeant. Send SPC Rivera, B Company, from Fort Bragg.",
+               "tool_results": []}
+    r = fill_form("DD_1610", {"subject_name": "Rivera", "subject_rank": "SPC",
+                              "unit": "B Co", "installation": "Fort Liberty"},
+                  profile={"name_last_first": "CARTER, JAMES R", "rank": "SSG"}, context=context)
+    assert "unverified_fields" not in r
+    assert r["filled_fields"]["Permanent Duty Station"] == "Fort Liberty"
+
+
+def test_dd1610_cost_boxes_come_from_the_cost_tool(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    estimate = {"success": True, "grand_total": 1222.0,
+                "lodging": {"total": 416}, "meals": {"total": 288}, "mileage": {"total": 518.0}}
+    context = {"user_text": "TDY to Fort Moore", "tool_results": [{"name": "calculate_travel_cost", "result": estimate}]}
+    r = fill_form("DD_1610", {"destination": "Fort Moore"}, context=context)
+    f = r["filled_fields"]
+    assert f["Total Estimated Cost"] == "$1,222.00" and f["Per Diem Estimate"] == "$704.00"
+
+
+def test_form_check_is_off_without_conversation_context(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    r = fill_form("DA_4856", {"soldier_name": "Ortiz", "leader_position": "Squad Leader"})
+    assert r["filled_fields"]["Counselor Position"] == "Squad Leader"
+
+
+def test_agent_gives_fill_form_the_whole_conversation():
+    agent = react_agent.ReActAgent()
+    agent._history = [{"role": "user", "content": "Counsel PFC Ortiz"},
+                      {"role": "assistant", "content": "He is a Squad Leader"},   # not a source
+                      {"role": "user", "content": "late twice"}]
+    agent._remember_tool_result("calculate_travel_cost", '{"success": true, "grand_total": 5}')
+    agent._remember_tool_result("search_regulations", '{"results": [{"text": "squad leader"}]}')
+    ctx = agent._form_context()
+    assert "Ortiz" in ctx["user_text"] and "late twice" in ctx["user_text"]
+    assert "Squad Leader" not in ctx["user_text"]
+    assert [r["name"] for r in ctx["tool_results"]] == ["calculate_travel_cost"]
+
+
+def test_trip_details_without_a_box_go_to_remarks(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    r = fill_form("DA_4187", {"action_requested": "Reassignment", "destination": "Fort Moore, GA"})
+    assert r["filled_fields"]["Remarks"] == "Destination: Fort Moore, GA"
+    assert "ignored_fields" not in r

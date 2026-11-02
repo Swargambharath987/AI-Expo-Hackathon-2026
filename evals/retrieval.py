@@ -64,7 +64,8 @@ def run_retrieval(only_ids: set[str] | None = None) -> dict:
                 f"(verified={sorted(q.get('verified_chunks', []))}, now={sorted(rel_ids)})"
             )
         row = {"id": q["id"], "category": q["category"], "difficulty": q["difficulty"],
-               "query": q["query"], "domain": q["domain"], "n_relevant_in_corpus": len(rel_ids)}
+               "query": q["query"], "domain": q["domain"], "split": q.get("split", "dev"),
+               "n_relevant_in_corpus": len(rel_ids)}
         for cond, domain in (("no_filter", None), ("domain_filter", q["domain"])):
             res = tools.search_regulations(q["query"], domain=domain, n=N_RETRIEVE)
             ranked = res.get("results", [])
@@ -109,6 +110,7 @@ def run_retrieval(only_ids: set[str] | None = None) -> dict:
     for r in per_query:
         groups.setdefault(r["category"].split("_")[0], []).append(r)
         groups.setdefault("difficulty:" + r["difficulty"], []).append(r)
+        groups.setdefault("split:" + r["split"], []).append(r)
     for g, rows in sorted(groups.items()):
         by_cat[g] = {cond: agg(rows, cond) for cond in ("no_filter", "domain_filter")}
 

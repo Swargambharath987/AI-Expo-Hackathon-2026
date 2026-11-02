@@ -23,7 +23,7 @@ import sys
 import time
 from collections import defaultdict
 
-from evals.common import PROFILE, REPORTS_DIR, load_cases, utc_stamp
+from evals.common import PROFILE, REPORTS_DIR, load_cases, utc_stamp, wilson
 
 # Claude Sonnet list price (USD per million tokens); override via env.
 PRICE_IN = float(os.getenv("EVAL_PRICE_IN_PER_M", "3"))
@@ -109,6 +109,10 @@ def _rate(num, den):
     return round(num / den, 3) if den else None
 
 
+def _ci(num, den):
+    return list(wilson(num, den)) if den else None
+
+
 def aggregate(scored: list[dict]) -> dict:
     turns = [t for s in scored for t in s["turns"]]
     sel_turns = [t for t in turns if t["selection"]["scored"]]
@@ -142,6 +146,16 @@ def aggregate(scored: list[dict]) -> dict:
         },
         "task_success": _rate(sum(s["task_ok"] for s in scored), len(scored)),
         "overall_pass": _rate(sum(s["ok"] for s in scored), len(scored)),
+        # 95% Wilson intervals: how far each rate could move on a different
+        # sample of cases. Runs of one case are not independent, so with
+        # --repeats these are optimistic; read them per unique case.
+        "ci95": {
+            "tool_selection_acc": _ci(sum(t["selection"]["ok"] for t in sel_turns), len(sel_turns)),
+            "arg_acc": _ci(sum(s["args_ok"] for s in scored), sum(s["args_n"] for s in scored)),
+            "grounding_all_turns": _ci(sum(t["grounding"]["ok"] for t in turns), len(turns)),
+            "task_success": _ci(sum(s["task_ok"] for s in scored), len(scored)),
+            "overall_pass": _ci(sum(s["ok"] for s in scored), len(scored)),
+        },
         "llm_calls": llm_calls, "prompt_tokens": p_in, "completion_tokens": p_out,
         "agent_cost_usd": round((p_in * PRICE_IN + p_out * PRICE_OUT) / 1e6, 3),
         "llm_calls_per_turn": _rate(llm_calls, len(turns)),
@@ -206,6 +220,10 @@ def _pct(x):
     return "—" if x is None else f"{x * 100:.1f}%"
 
 
+def _range(ci):
+    return "—" if not ci else f"{ci[0] * 100:.0f}–{ci[1] * 100:.0f}%"
+
+
 def render_md(report: dict) -> str:
     L = [f"# Duty Line eval report — {report['stamp']}", ""]
     L += [f"- Command: `{report['command']}`", f"- Git: `{report.get('git', '?')}`"]
@@ -218,10 +236,11 @@ def render_md(report: dict) -> str:
         L += ["## Layer 1 — Retrieval (search_regulations, no LLM)", "",
               f"{r['summary']['no_filter']['n']} gold queries · n={r['settings']['n']} · "
               f"embed `{r['settings']['embed_model']}` · {r['settings']['collection_count']} chunks", "",
-              "| Condition | Recall@1 | Recall@2 | Recall@4 | MRR |", "|---|---|---|---|---|"]
+              "| Condition | Recall@1 | Recall@2 | Recall@4 | Recall@4 95% CI | MRR |", "|---|---|---|---|---|---|"]
         for cond in ("no_filter", "domain_filter"):
             s = r["summary"][cond]
-            L.append(f"| {cond} | {_pct(s['Recall@1'])} | {_pct(s['Recall@2'])} | {_pct(s['Recall@4'])} | {s['MRR']:.3f} |")
+            L.append(f"| {cond} | {_pct(s['Recall@1'])} | {_pct(s['Recall@2'])} | {_pct(s['Recall@4'])} | "
+                     f"{_range(_ci(round(s['Recall@4'] * s['n']), s['n']))} | {s['MRR']:.3f} |")
         L += ["", "| Group (no filter) | n | Recall@1 | Recall@2 | Recall@4 | MRR |", "|---|---|---|---|---|---|"]
         for gname, gv in r["by_group"].items():
             s = gv["no_filter"]
@@ -247,26 +266,27 @@ def render_md(report: dict) -> str:
     if a:
         s = a["summary"]
         g = s["grounding"]
+        ci = s.get("ci95", {})
         L += ["## Layers 2–5 — Agent (real model, full API stack)", "",
               f"{s['unique_cases']} cases · {s['case_runs']} case-runs · {s['turns']} turns · "
               f"{s['llm_calls']} LLM calls ({s['llm_calls_per_turn']}/turn) · "
               f"{s['prompt_tokens']:,} in / {s['completion_tokens']:,} out tokens · ≈${s['agent_cost_usd']}", "",
-              "| Metric | Value | Denominator |", "|---|---|---|",
-              f"| Tool selection accuracy | {_pct(s['tool_selection_acc'])} | turns with tool expectations |",
-              f"| Irrelevance (no-tool) accuracy | {_pct(s['irrelevance_acc'])} | no-tool turns |",
-              f"| Argument accuracy | {_pct(s['arg_acc'])} | expected key args (missing call = all wrong) |",
-              f"| Grounding (a) $ amounts | {_pct(g['dollars']['pass'])} | {g['dollars']['applicable_turns']} turns with $ |",
-              f"| Grounding (b) citations | {_pct(g['citations']['pass'])} | {g['citations']['applicable_turns']} turns citing |",
-              f"| Grounding (c) form fields | {_pct(g['form_fields']['pass'])} | {g['form_fields']['applicable_turns']} turns with a form |",
-              f"| Grounding (d) counselee identity | {_pct(g['counselee']['pass'])} | {g['counselee']['applicable_turns']} DA 4856 turns |",
-              f"| Grounding (d) PII (SSN/DoD ID) | {_pct(g['pii']['pass'])} | all turns |",
-              f"| Grounding — all checks | {_pct(g['all_turns'])} | all turns |",
-              f"| Task success | {_pct(s['task_success'])} | case-runs |",
-              f"| **Overall pass** (selection ∧ args ∧ grounding ∧ task) | **{_pct(s['overall_pass'])}** | case-runs |"]
+              "| Metric | Value | 95% CI | Denominator |", "|---|---|---|---|",
+              f"| Tool selection accuracy | {_pct(s['tool_selection_acc'])} | {_range(ci.get('tool_selection_acc'))} | turns with tool expectations |",
+              f"| Irrelevance (no-tool) accuracy | {_pct(s['irrelevance_acc'])} | | no-tool turns |",
+              f"| Argument accuracy | {_pct(s['arg_acc'])} | {_range(ci.get('arg_acc'))} | expected key args (missing call = all wrong) |",
+              f"| Grounding (a) $ amounts | {_pct(g['dollars']['pass'])} |  | {g['dollars']['applicable_turns']} turns with $ |",
+              f"| Grounding (b) citations | {_pct(g['citations']['pass'])} |  | {g['citations']['applicable_turns']} turns citing |",
+              f"| Grounding (c) form fields | {_pct(g['form_fields']['pass'])} |  | {g['form_fields']['applicable_turns']} turns with a form |",
+              f"| Grounding (d) counselee identity | {_pct(g['counselee']['pass'])} |  | {g['counselee']['applicable_turns']} DA 4856 turns |",
+              f"| Grounding (d) PII (SSN/DoD ID) | {_pct(g['pii']['pass'])} |  | all turns |",
+              f"| Grounding — all checks | {_pct(g['all_turns'])} | {_range(ci.get('grounding_all_turns'))} | all turns |",
+              f"| Task success | {_pct(s['task_success'])} | {_range(ci.get('task_success'))} | case-runs |",
+              f"| **Overall pass** (selection ∧ args ∧ grounding ∧ task) | **{_pct(s['overall_pass'])}** | {_range(ci.get('overall_pass'))} | case-runs |"]
         if s.get("judge"):
             j = s["judge"]
-            L.append(f"| LLM judge — faithfulness (1–5, MODEL-JUDGED) | {j['faithfulness_mean']} | {j['turns']} turns |")
-            L.append(f"| LLM judge — relevance (1–5, MODEL-JUDGED) | {j['relevance_mean']} | {j['turns']} turns |")
+            L.append(f"| LLM judge — faithfulness (1–5, MODEL-JUDGED) | {j['faithfulness_mean']} | | {j['turns']} turns |")
+            L.append(f"| LLM judge — relevance (1–5, MODEL-JUDGED) | {j['relevance_mean']} | | {j['turns']} turns |")
         L += ["", "| Category | Runs | Selection | Args | Grounding | Task | Pass | LLM calls/turn |", "|---|---|---|---|---|---|---|---|"]
         for cat, c in a["categories"].items():
             L.append(f"| {cat} | {c['case_runs']} | {_pct(c['selection'])} | {_pct(c['args'])} | {_pct(c['grounding'])} | "
@@ -279,7 +299,7 @@ def render_md(report: dict) -> str:
             for cid, v in c["per_case"].items():
                 L.append(f"| {cid} | {v['passes']}/{v['k']} | {'yes' if v['pass^k'] else 'no'} |")
         if s["fill_form_dropped_keys"]:
-            L += ["", "fill_form arguments silently dropped by the tool (key not on the form — informational):", ""]
+            L += ["", "fill_form arguments the tool did not use (key not on the form, or left blank as untraceable — informational):", ""]
             L += [f"- {w}" for w in s["fill_form_dropped_keys"]]
         if s["harness_warnings"]:
             L += ["", "Harness warnings:", ""] + [f"- {w}" for w in s["harness_warnings"]]
@@ -337,6 +357,8 @@ def main(argv=None):
     ap.add_argument("--tags", help="comma-separated tags, e.g. tdy,form")
     ap.add_argument("--concurrency", type=int, default=1)
     ap.add_argument("--estimate", action="store_true", help="print the planned run size and cost; run nothing")
+    ap.add_argument("--min-mrr", type=float, metavar="X",
+                    help="exit non-zero if retrieval MRR (no filter) is below X — a CI gate")
     ap.add_argument("--rescore", nargs="+", metavar="TRACES_JSON",
                     help="re-score saved traces (no agent API calls); retrieval re-runs unless --only agent")
     args = ap.parse_args(argv)
@@ -390,6 +412,10 @@ def main(argv=None):
     (REPORTS_DIR / f"{stamp}.json").write_text(json.dumps(report, indent=1, default=str))
     (REPORTS_DIR / f"{stamp}.md").write_text(render_md(report))
     print(f"Report → evals/reports/{stamp}.md (+ .json)")
+    if args.min_mrr is not None and report.get("retrieval"):
+        mrr = report["retrieval"]["summary"]["no_filter"]["MRR"]
+        if mrr < args.min_mrr:
+            sys.exit(f"Retrieval MRR {mrr} is below the --min-mrr gate {args.min_mrr}")
 
 
 if __name__ == "__main__":

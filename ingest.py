@@ -7,6 +7,10 @@ Run once to build the vector store:
 
 Run with --verify to test retrieval after ingestion:
     python ingest.py --verify
+
+Recompute context headers and embeddings for the existing store, without
+the source PDFs (chunk text and ids stay the same):
+    python ingest.py --reembed
 """
 
 import os
@@ -15,7 +19,6 @@ import sys
 import logging
 import warnings
 import requests
-import pdfplumber
 import chromadb
 from chromadb.config import Settings
 from pathlib import Path
@@ -142,6 +145,7 @@ def download_pdf(url: str, dest: Path) -> bool:
 
 def parse_pdf(path: Path) -> list[dict]:
     """Returns list of {text, page} dicts, one per page."""
+    import pdfplumber   # only needed to (re)parse PDFs, not for --reembed
     pages = []
     try:
         with pdfplumber.open(path) as pdf:
@@ -268,13 +272,105 @@ def chunk_sections(sections: list[dict]) -> list[dict]:
     return chunks
 
 # ---------------------------------------------------------------------------
+# Step 3b: Context headers
+# ---------------------------------------------------------------------------
+# A chunk cut from the middle of a regulation often never names the document,
+# chapter or topic it belongs to ("Soldiers may carry forward up to 60 days"
+# with no mention of leave policy or the Army). Each chunk gets a short header
+# (document title, chapter, numbered headings inside it) that is embedded and
+# keyword-indexed with the text. The stored text itself is unchanged.
+
+DOC_TITLES = {
+    "jtr.pdf":                 "Joint Travel Regulations (JTR), DoD travel and per diem",
+    "ar_600_8_10.pdf":         "AR 600-8-10 Leaves and Passes, Army leave policy",
+    "milpersman_1050.pdf":     "MILPERSMAN 1050, Navy leave policy",
+    "afi_36_3003.pdf":         "DAFI 36-3003 Military Leave Program, Air Force and Space Force leave",
+    "bupersinst_1610_10f.pdf": "BUPERSINST 1610.10F Navy Performance Evaluation System, Navy fitness reports and evaluations",
+    "afi_36_2406.pdf":         "AFI 36-2406 Officer and Enlisted Evaluation Systems, Air Force performance reports",
+    "dod_fmr_vol7a.pdf":       "DoD Financial Management Regulation Volume 7A, military pay",
+    "mco_1610_7.pdf":          "MCO 1610.7 Performance Evaluation System, Marine Corps fitness reports",
+}
+
+_CHAPTER_LINE = re.compile(r"(?im)^\s*chapter\s+(\d{1,2})\b[\s—–:.-]*([^\n]*)")
+_MINOR_WORDS = {"and", "of", "the", "for", "to", "in", "on", "a", "or", "by", "at"}
+# Numbered paragraph headings: JTR 020301. / AR 3–5. / AFI 3.2.1. / FMR 3.2
+_HEADING = re.compile(r"(?m)^\s*(\d{6}\.|\d{1,2}[–-]\d{1,3}\.|\d{1,2}(?:\.\d{1,2}){1,4}\.?)\s+"
+                      r"([A-Z][^\n.]{2,70})")
+# Documents whose paragraph numbers don't start with the chapter number
+_UNCHAPTERED_NUMBERING = {"dod_fmr_vol7a.pdf"}
+
+
+def _chapter_of(number: str) -> int:
+    """Chapter a paragraph number belongs to: 020301. → 2, 3–5. → 3, 4.1.2. → 4."""
+    return int(number[:2]) if re.fullmatch(r"\d{6}\.", number) else int(re.match(r"\d+", number).group())
+
+
+def _heading_title(text: str) -> str | None:
+    """A chapter title, or None for TOC lines, sentences and cross-references."""
+    t = re.sub(r",\s*page\s*\d+.*$", "", text.strip())
+    t = re.sub(r"\s*\d+\s*$", "", t)
+    if not 4 <= len(t) <= 100 or "...." in t or not t[0].isupper():
+        return None
+    words = [w for w in t.split() if w[0].isalpha() and w.lower() not in _MINOR_WORDS]
+    return t if words and all(w[0].isupper() for w in words) else None
+
+
+def chapter_titles(texts: list[str]) -> dict[int, str]:
+    """Chapter number → title, from the first clean heading for each chapter."""
+    titles: dict[int, str] = {}
+    for text in texts:
+        for m in _CHAPTER_LINE.finditer(text):
+            n = int(m.group(1))
+            title = _heading_title(m.group(2))
+            if title is None and not m.group(2).strip():
+                title = _heading_title(text[m.end():].lstrip("\n").split("\n", 1)[0])
+            if title and n not in titles:
+                titles[n] = title
+    return titles
+
+
+def context_headers(source_file: str, texts: list[str]) -> list[str]:
+    """One header per chunk, for one document's chunks in reading order."""
+    titles = chapter_titles(texts)
+    doc = DOC_TITLES.get(source_file, source_file)
+    chapter = None
+    headers = []
+    for text in texts:
+        headings = [(m.group(1), m.group(2).strip()) for m in _HEADING.finditer(text)]
+        numbered = [] if source_file in _UNCHAPTERED_NUMBERING else \
+            [_chapter_of(n) for n, _ in headings if _chapter_of(n) in titles]
+        found = [int(m.group(1)) for m in _CHAPTER_LINE.finditer(text) if int(m.group(1)) in titles]
+        # The chapter carried over from the previous chunk, then the chapters
+        # this chunk's paragraph numbers (most reliable) or page headers name
+        touched = list(dict.fromkeys(([chapter] if chapter is not None else []) + (numbered or found)))
+        if len(touched) > 1 and headings and text.lstrip().startswith(headings[0][0]):
+            touched = touched[1:]   # chunk opens with a new paragraph: nothing carried over
+        chapter = touched[-1] if touched else None
+        parts = [doc]
+        for n in touched[-2:]:
+            parts.append(f"Chapter {n}: {titles[n]}")
+        heads = []
+        for _, h in headings:
+            if len(h.split()) <= 8 and h not in heads:
+                heads.append(h)
+        if heads:
+            parts.append("; ".join(heads[:6]))
+        headers.append(". ".join(parts))
+    return headers
+
+
+def embedding_text(header: str, text: str) -> str:
+    return f"{header}\n\n{text}"
+
+# ---------------------------------------------------------------------------
 # Step 4 + 5: Embed and store in ChromaDB
 # ---------------------------------------------------------------------------
 
 def build_vectorstore(all_chunks: list[dict], model: SentenceTransformer, collection):
     texts = [c["text"] for c in all_chunks]
     print(f"  [embed] encoding {len(texts)} chunks ...")
-    embeddings = model.encode(texts, batch_size=32, show_progress_bar=True, normalize_embeddings=True)
+    embeddings = model.encode([embedding_text(c["context"], c["text"]) for c in all_chunks],
+                              batch_size=32, show_progress_bar=True, normalize_embeddings=True)
 
     ids       = [f"chunk_{i}" for i in range(len(all_chunks))]
     metadatas = [{k: v for k, v in c.items() if k != "text"} for c in all_chunks]
@@ -325,6 +421,25 @@ def verify(collection, model: SentenceTransformer):
 # Main
 # ---------------------------------------------------------------------------
 
+def reembed(collection, model: SentenceTransformer):
+    """Recompute context headers + embeddings in place from the stored chunks."""
+    data = collection.get(include=["documents", "metadatas"])
+    order = sorted(range(len(data["ids"])), key=lambda i: int(data["ids"][i].split("_")[1]))
+    by_source: dict[str, list[int]] = {}
+    for i in order:
+        by_source.setdefault(data["metadatas"][i]["source_file"], []).append(i)
+    for src, idx in by_source.items():
+        for i, header in zip(idx, context_headers(src, [data["documents"][i] for i in idx])):
+            data["metadatas"][i]["context"] = header
+    print(f"  [embed] re-encoding {len(order)} chunks with context headers ...")
+    embeddings = model.encode([embedding_text(m["context"], d) for d, m in zip(data["documents"], data["metadatas"])],
+                              batch_size=32, show_progress_bar=True, normalize_embeddings=True)
+    for start in range(0, len(order), 500):
+        sl = slice(start, start + 500)
+        collection.update(ids=data["ids"][sl], embeddings=embeddings[sl].tolist(), metadatas=data["metadatas"][sl])
+    print(f"  [ok] {len(order)} chunks updated")
+
+
 def main():
     run_verify_only = "--verify" in sys.argv
 
@@ -345,6 +460,10 @@ def main():
     print("\n=== Loading Embedding Model ===")
     print(f"  model: {EMBED_MODEL}")
     model = SentenceTransformer(EMBED_MODEL)
+
+    if "--reembed" in sys.argv:
+        reembed(collection, model)
+        return
 
     # --verify: skip ingestion, just query existing store
     if run_verify_only:
@@ -386,6 +505,9 @@ def main():
             chunk["domain"]      = src["domain"]
             chunk["branch"]      = src["branch"]
             chunk["doc_type"]    = src["doc_type"]
+
+        for chunk, header in zip(chunks, context_headers(src["source_file"], [c["text"] for c in chunks])):
+            chunk["context"] = header
 
         print(f"  [ok] {len(pages)} pages -> {len(sections)} sections -> {len(chunks)} chunks")
         all_chunks.extend(chunks)

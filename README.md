@@ -142,6 +142,12 @@ section must appear in the regulation text retrieved for that answer. A
 mismatched figure gets one corrective retry; anything still unverified is
 flagged in the UI next to the answer.
 
+Forms get the same treatment before the PDF is made: a name, rank, unit or
+position that appears nowhere in what the user said, their profile or a tool
+result is left blank and listed as missing instead of guessed. The cost boxes
+on a DD 1610 are copied from the cost tool's estimate, not retyped by the
+model.
+
 This means Duty Line isn't locked into a single vendor. If a better model comes out tomorrow, or if procurement requires a specific provider, or if policy changes which APIs are authorized on a given network — the switch is one line in a config file. The rest of the system (retrieval, cost calculation, form generation) is completely independent of which LLM is behind the endpoint.
 
 ---
@@ -209,8 +215,10 @@ curl http://localhost:8000/api/health
 
 ### Tests
 
-The JTR cost math and the API's session, rate-limit and profile behaviour
-are covered by pytest. No API key or network needed — the LLM is faked.
+The JTR cost math, form filling, retrieval headers and the API's session,
+rate-limit and profile behaviour are covered by pytest. No API key or network
+needed — the LLM is faked. GitHub Actions runs these, the retrieval eval and
+the frontend build on every push.
 
 ```bash
 pip install -r requirements-dev.txt
@@ -229,26 +237,38 @@ python3 -m pytest tests
 4. **Task success** — exact TDY totals, correct form, no unrequested forms
 5. **Consistency** — pass^k over repeated runs
 
-| Metric | Baseline | After fixes |
-|---|---|---|
-| Retrieval Recall@1 / Recall@4 / MRR | 46.9% / 75.0% / 0.596 | 56.2% / 78.1% / 0.654 (hybrid BM25 + vector) |
-| Tool selection / argument accuracy | 100% / 100% | 96.2% / 100% |
-| Citations grounded in retrieved text | 74.3% | 91.7% |
-| Form fields traceable to a source | 55.2% | 85.7% |
-| Task success | 79.7% | 100% |
-| **Overall pass** (all of the above) | **57.6%** | **91.3%** |
+Agent results (23 cases, real model):
 
-Reports: `evals/reports/20261102T190733Z.md` (baseline) and
-`20261102T191728Z.md` / `20261102T192350Z.md` (after). Samples are small
-(23 cases), so treat differences under ~10 points as noise. In the repeat run
-`20261102T192004Z.md`, 2 of the 3 failed runs were the API account running
-out of credit mid-run, not app errors. Known remaining issue: the counseling
-form sometimes still invents the counselor's duty position when the profile
-doesn't have one.
+| Metric | Baseline | After fixes (95% CI) |
+|---|---|---|
+| Tool selection / argument accuracy | 100% / 100% | 100% / 100% |
+| Citations grounded in retrieved text | 74.3% | 100% |
+| Form fields traceable to a source | 55.2% | 85.7% |
+| Task success | 79.7% | 100% (86–100%) |
+| **Overall pass** (all of the above) | **57.6%** | **95.7%** (79–99%) |
+
+Retrieval (48 hand-labelled queries; the 16 held-out ones were never used
+for tuning):
+
+| | Embeddings only | + keyword (BM25) hybrid | + chunk headers, query instruction, lay terms |
+|---|---|---|---|
+| Dev MRR / Recall@4 (32) | 0.596 / 75.0% | 0.654 / 78.1% | 0.729 / 81.2% |
+| Held-out MRR / Recall@4 (16) | — | 0.469 / 50.0% | 0.552 / 62.5% |
+
+Reports in `evals/reports/`: `20261102T190733Z.md` (baseline),
+`20261102T204418Z.md` (after; re-graded from the `191728Z` run once a grading
+bug that failed a correct "that document isn't in my library" answer was
+fixed), `20261102T212042Z.md` (retrieval). Samples are small, so the 95%
+intervals are wide — read differences under ~10 points as noise. The one
+remaining failure (an invented counselor position) is now blocked by the
+form check above; that fix and 15 new cases (`evals/cases/variants.yaml`:
+missing details, prompt injection, PII requests, out-of-library questions)
+have not been run against the model yet. Everyday wording is still the
+weakest part of search.
 
 ```bash
-python -m evals.run --only retrieval     # free
-python -m evals.run                      # all layers, ~$0.70 per run
+python -m evals.run --only retrieval     # free; also runs in CI
+python -m evals.run                      # all layers, 38 cases, ~$1.10 per run
 ```
 
 ### Usage Limits

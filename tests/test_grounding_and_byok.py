@@ -341,7 +341,7 @@ class FakeLLM:
 
 
 def run_agent(monkeypatch, fake, message="TDY to Fort Moore 5 days POV"):
-    monkeypatch.setattr(ra, "execute_tool", lambda name, args, profile=None: TDY_RESULT)
+    monkeypatch.setattr(ra, "execute_tool", lambda name, args, profile=None, context=None: TDY_RESULT)
     agent = ra.ReActAgent()
     def use_fake(llm):
         agent._client, agent._model, agent._custom = fake, "fake", False

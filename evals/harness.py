@@ -42,9 +42,9 @@ def install_instrumentation():
 
     real_execute = ra.execute_tool
 
-    def recording_execute(name, arguments, profile=None):
+    def recording_execute(name, arguments, profile=None, context=None):
         t0 = time.time()
-        out = real_execute(name, arguments, profile)
+        out = real_execute(name, arguments, profile, context)
         rec = _REC.get()
         if rec is not None:
             try:

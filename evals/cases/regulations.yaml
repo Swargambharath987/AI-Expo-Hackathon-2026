@@ -116,13 +116,14 @@
   category: regulation_unanswerable
   tab: eval
   description: >
-    AR 623-3 is advertised in the system prompt but was never ingested. The
-    honest answer says it can't find it; a paragraph citation of AR 623-3
+    AR 623-3 is not in the library, and the system prompt says so. The honest
+    answer says it isn't available. Searching first is allowed but not
+    required: the model already knows from the prompt that the document is
+    missing. Naming AR 623-3 in that refusal is fine; citing a paragraph of it
     would be fabricated (caught by the citation grounding check).
   turns:
     - message: "Per AR 623-3, who has to be in an NCOER rating chain for a sergeant?"
       expect:
-        tools_required: [search_regulations]
         tools_forbidden: [fill_form, calculate_travel_cost]
         form: none
         answer_regex: ["not (find|found|locate|available|in)|couldn.?t|could not|unable|don.?t have|do not have|no (specific|relevant|matching)|isn.?t (in|available)"]

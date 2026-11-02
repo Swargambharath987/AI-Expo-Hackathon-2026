@@ -1,0 +1,3859 @@
+{
+ "stamp": "20261102T212042Z",
+ "command": "python -m evals.run --only retrieval",
+ "git": "4c674c8",
+ "retrieval": {
+  "settings": {
+   "n": 4,
+   "ks": [
+    1,
+    2,
+    4
+   ],
+   "embed_model": "BAAI/bge-small-en-v1.5",
+   "collection_count": 2063
+  },
+  "summary": {
+   "no_filter": {
+    "n": 48,
+    "MRR": 0.67,
+    "Recall@1": 0.604,
+    "Recall@2": 0.708,
+    "Recall@4": 0.75
+   },
+   "domain_filter": {
+    "n": 48,
+    "MRR": 0.663,
+    "Recall@1": 0.583,
+    "Recall@2": 0.688,
+    "Recall@4": 0.771
+   }
+  },
+  "by_group": {
+   "af": {
+    "no_filter": {
+     "n": 5,
+     "MRR": 0.4,
+     "Recall@1": 0.4,
+     "Recall@2": 0.4,
+     "Recall@4": 0.4
+    },
+    "domain_filter": {
+     "n": 5,
+     "MRR": 0.4,
+     "Recall@1": 0.4,
+     "Recall@2": 0.4,
+     "Recall@4": 0.4
+    }
+   },
+   "army": {
+    "no_filter": {
+     "n": 16,
+     "MRR": 0.594,
+     "Recall@1": 0.562,
+     "Recall@2": 0.625,
+     "Recall@4": 0.625
+    },
+    "domain_filter": {
+     "n": 16,
+     "MRR": 0.646,
+     "Recall@1": 0.562,
+     "Recall@2": 0.688,
+     "Recall@4": 0.75
+    }
+   },
+   "difficulty:direct": {
+    "no_filter": {
+     "n": 20,
+     "MRR": 0.85,
+     "Recall@1": 0.85,
+     "Recall@2": 0.85,
+     "Recall@4": 0.85
+    },
+    "domain_filter": {
+     "n": 20,
+     "MRR": 0.8,
+     "Recall@1": 0.8,
+     "Recall@2": 0.8,
+     "Recall@4": 0.8
+    }
+   },
+   "difficulty:paraphrase": {
+    "no_filter": {
+     "n": 28,
+     "MRR": 0.542,
+     "Recall@1": 0.429,
+     "Recall@2": 0.607,
+     "Recall@4": 0.679
+    },
+    "domain_filter": {
+     "n": 28,
+     "MRR": 0.565,
+     "Recall@1": 0.429,
+     "Recall@2": 0.607,
+     "Recall@4": 0.75
+    }
+   },
+   "eval": {
+    "no_filter": {
+     "n": 7,
+     "MRR": 0.714,
+     "Recall@1": 0.714,
+     "Recall@2": 0.714,
+     "Recall@4": 0.714
+    },
+    "domain_filter": {
+     "n": 7,
+     "MRR": 0.714,
+     "Recall@1": 0.714,
+     "Recall@2": 0.714,
+     "Recall@4": 0.714
+    }
+   },
+   "jtr": {
+    "no_filter": {
+     "n": 16,
+     "MRR": 0.802,
+     "Recall@1": 0.688,
+     "Recall@2": 0.875,
+     "Recall@4": 0.938
+    },
+    "domain_filter": {
+     "n": 16,
+     "MRR": 0.802,
+     "Recall@1": 0.688,
+     "Recall@2": 0.875,
+     "Recall@4": 0.938
+    }
+   },
+   "leave": {
+    "no_filter": {
+     "n": 1,
+     "MRR": 0.333,
+     "Recall@1": 0.0,
+     "Recall@2": 0.0,
+     "Recall@4": 1.0
+    },
+    "domain_filter": {
+     "n": 1,
+     "MRR": 0.333,
+     "Recall@1": 0.0,
+     "Recall@2": 0.0,
+     "Recall@4": 1.0
+    }
+   },
+   "navy": {
+    "no_filter": {
+     "n": 1,
+     "MRR": 1.0,
+     "Recall@1": 1.0,
+     "Recall@2": 1.0,
+     "Recall@4": 1.0
+    },
+    "domain_filter": {
+     "n": 1,
+     "MRR": 1.0,
+     "Recall@1": 1.0,
+     "Recall@2": 1.0,
+     "Recall@4": 1.0
+    }
+   },
+   "pay": {
+    "no_filter": {
+     "n": 2,
+     "MRR": 0.75,
+     "Recall@1": 0.5,
+     "Recall@2": 1.0,
+     "Recall@4": 1.0
+    },
+    "domain_filter": {
+     "n": 2,
+     "MRR": 0.167,
+     "Recall@1": 0.0,
+     "Recall@2": 0.0,
+     "Recall@4": 0.5
+    }
+   },
+   "split:dev": {
+    "no_filter": {
+     "n": 32,
+     "MRR": 0.729,
+     "Recall@1": 0.656,
+     "Recall@2": 0.781,
+     "Recall@4": 0.812
+    },
+    "domain_filter": {
+     "n": 32,
+     "MRR": 0.693,
+     "Recall@1": 0.625,
+     "Recall@2": 0.719,
+     "Recall@4": 0.781
+    }
+   },
+   "split:holdout": {
+    "no_filter": {
+     "n": 16,
+     "MRR": 0.552,
+     "Recall@1": 0.5,
+     "Recall@2": 0.562,
+     "Recall@4": 0.625
+    },
+    "domain_filter": {
+     "n": 16,
+     "MRR": 0.604,
+     "Recall@1": 0.5,
+     "Recall@2": 0.625,
+     "Recall@4": 0.75
+    }
+   }
+  },
+  "per_query": [
+   {
+    "id": "R01",
+    "category": "jtr_per_diem",
+    "difficulty": "direct",
+    "query": "What is the per diem allowance and what does it cover?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.76,
+       "relevant": true,
+       "snippet": "CHAPTER 2: STANDARD TRAVEL AND TRANSPORTATION ALLOWANCES 0201 INTRODUCTION Standard allowances are the core se"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.724,
+       "relevant": false,
+       "snippet": "060401. Travel and Transportation Expenses The en route travel and transportation expenses for a civilian empl"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.716,
+       "relevant": false,
+       "snippet": "053902. PCS Per Diem for Dependents 04/01/2026 5F-28  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter 5 "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.706,
+       "relevant": false,
+       "snippet": "050411. Dependent Joins or Accompanies the Service Member during TDY En Route A. Basic Allowance. When a depen"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.76,
+       "relevant": true,
+       "snippet": "CHAPTER 2: STANDARD TRAVEL AND TRANSPORTATION ALLOWANCES 0201 INTRODUCTION Standard allowances are the core se"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.724,
+       "relevant": false,
+       "snippet": "060401. Travel and Transportation Expenses The en route travel and transportation expenses for a civilian empl"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.716,
+       "relevant": false,
+       "snippet": "053902. PCS Per Diem for Dependents 04/01/2026 5F-28  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter 5 "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.706,
+       "relevant": false,
+       "snippet": "050411. Dependent Joins or Accompanies the Service Member during TDY En Route A. Basic Allowance. When a depen"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R02",
+    "category": "jtr_first_last_day",
+    "difficulty": "direct",
+    "query": "M&IE rate on the departure day of TDY travel is 75 percent",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.752,
+       "relevant": true,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.744,
+       "relevant": false,
+       "snippet": "020309. Trip Length As It Affects Per Diem The length of a TDY trip has a major impact on the amount of per di"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.71,
+       "relevant": false,
+       "snippet": "053901. PCS Per Diem Allowance PCS Per Diem Computations for Lodging Plus Per Diem For\u2026 Then per diem is\u2026 the "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.698,
+       "relevant": false,
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.752,
+       "relevant": true,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.744,
+       "relevant": false,
+       "snippet": "020309. Trip Length As It Affects Per Diem The length of a TDY trip has a major impact on the amount of per di"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.71,
+       "relevant": false,
+       "snippet": "053901. PCS Per Diem Allowance PCS Per Diem Computations for Lodging Plus Per Diem For\u2026 Then per diem is\u2026 the "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.698,
+       "relevant": false,
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R03",
+    "category": "jtr_first_last_day",
+    "difficulty": "paraphrase",
+    "query": "Do I get full meal money on the days I travel to and from my TDY?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.72,
+       "relevant": false,
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.706,
+       "relevant": true,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.701,
+       "relevant": false,
+       "snippet": "020301. Daily Allowances The Government pays per diem on a daily basis, for whole days. This does not include "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.681,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.72,
+       "relevant": false,
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.706,
+       "relevant": true,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.701,
+       "relevant": false,
+       "snippet": "020301. Daily Allowances The Government pays per diem on a daily basis, for whole days. This does not include "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.681,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R04",
+    "category": "jtr_gtcc",
+    "difficulty": "direct",
+    "query": "Is the government travel charge card mandatory for TDY travel?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.726,
+       "relevant": true,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.724,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.72,
+       "relevant": false,
+       "snippet": "Chapter 2. 3. The interviewee is responsible for, and accountable for, all transportation tickets and Governme"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.716,
+       "relevant": false,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds Direct that the authorization or order be am"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.726,
+       "relevant": true,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.724,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.72,
+       "relevant": false,
+       "snippet": "Chapter 2. 3. The interviewee is responsible for, and accountable for, all transportation tickets and Governme"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.716,
+       "relevant": false,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds Direct that the authorization or order be am"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R05",
+    "category": "jtr_gtcc",
+    "difficulty": "paraphrase",
+    "query": "Do I have to put my hotel and expenses on the government credit card when I travel for work?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.728,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "020208. Reimbursement for Government 2 Gov Auto - Fuel, Oil, or Charging Transportation  020208. Reimbursement"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.69,
+       "relevant": true,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.678,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Automatic teller machine fees in locations OCO"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.728,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem For expenses that may be claimed for TDY trave"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "020208. Reimbursement for Government 2 Gov Auto - Fuel, Oil, or Charging Transportation  020208. Reimbursement"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.69,
+       "relevant": true,
+       "snippet": "010204. Government Travel Charge Card (GTCC) and Advance of Funds The Government Travel Charge Card (GTCC) Reg"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.678,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Automatic teller machine fees in locations OCO"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R06",
+    "category": "jtr_pov_mileage",
+    "difficulty": "direct",
+    "query": "POV mileage reimbursement rate for TDY travel by privately owned automobile",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.854,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.795,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.796,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) When an individual travels partly by POV and partly by commercial modes"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.785,
+       "relevant": false,
+       "snippet": "053802. Privately Owned Vehicle (POV) A civilian employee or dependent who uses a POV may be authorized MALT. "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.854,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.795,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.796,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) When an individual travels partly by POV and partly by commercial modes"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.785,
+       "relevant": false,
+       "snippet": "053802. Privately Owned Vehicle (POV) A civilian employee or dependent who uses a POV may be authorized MALT. "
+      }
+     ]
+    }
+   },
+   {
+    "id": "R07",
+    "category": "jtr_pov_mileage",
+    "difficulty": "paraphrase",
+    "query": "If I drive my own car instead of flying, how much will I be reimbursed?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.694,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.672,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.696,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle driver fee, the AO determines that a Service member or civilian employee between the ag"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.67,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.694,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.672,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.696,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle driver fee, the AO determines that a Service member or civilian employee between the ag"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.67,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R08",
+    "category": "jtr_lodging",
+    "difficulty": "direct",
+    "query": "Lodging reimbursement is limited to the lodging portion of the locality per diem rate",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 8,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.794,
+       "relevant": true,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.794,
+       "relevant": false,
+       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.759,
+       "relevant": false,
+       "snippet": "053901. PCS Per Diem Allowance A per diem rate includes a maximum reimbursement amount for lodging expenses an"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.755,
+       "relevant": true,
+       "snippet": "032903. Lodging Reimbursement during an Authorized Absence While TDY in Support of an Operational Deployment o"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.794,
+       "relevant": true,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.794,
+       "relevant": false,
+       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.759,
+       "relevant": false,
+       "snippet": "053901. PCS Per Diem Allowance A per diem rate includes a maximum reimbursement amount for lodging expenses an"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.755,
+       "relevant": true,
+       "snippet": "032903. Lodging Reimbursement during an Authorized Absence While TDY in Support of an Operational Deployment o"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R09",
+    "category": "jtr_lodging",
+    "difficulty": "paraphrase",
+    "query": "Am I required to stay in on-post government lodging when I go TDY?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.774,
+       "relevant": true,
+       "snippet": "020303. Lodging A traveler on TDY must reserve lodging compliant with U.S. Fire Administration Guidelines thro"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.732,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem The total daily amount the Government pays for"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.732,
+       "relevant": true,
+       "snippet": "020303. Lodging Any officer in a pay grade of O-7 through O-10 or Senior Executive Service (SES) employee who "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.722,
+       "relevant": true,
+       "snippet": "020303. Lodging The ILP does not apply to the U.S. Coast Guard (USCG), National 04/01/2026 2-31  Intro Chapter"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.774,
+       "relevant": true,
+       "snippet": "020303. Lodging A traveler on TDY must reserve lodging compliant with U.S. Fire Administration Guidelines thro"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.732,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem The total daily amount the Government pays for"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.732,
+       "relevant": true,
+       "snippet": "020303. Lodging Any officer in a pay grade of O-7 through O-10 or Senior Executive Service (SES) employee who "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.736,
+       "relevant": false,
+       "snippet": "020212. Travel in and around the TDY Location A. Travel Locations. Transportation expense reimbursement in the"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R10",
+    "category": "jtr_receipts",
+    "difficulty": "direct",
+    "query": "Receipt requirements for lodging and expenses of $75 or more",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.773,
+       "relevant": true,
+       "snippet": "010301. Receipt Requirements A. Retain Receipts. Travelers are advised to retain ALL receipts for tax or other"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.717,
+       "relevant": false,
+       "snippet": "020303. Lodging A traveler on TDY must reserve lodging compliant with U.S. Fire Administration Guidelines thro"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.702,
+       "relevant": false,
+       "snippet": "054506. Procedure and Claim Requirements for Sale or Purchase of Residence Reimbursement A. Application for Re"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.686,
+       "relevant": false,
+       "snippet": "033501. Lodging Expenses for a Service Member on Leave during an Authorized or Ordered Evacuation A. Eligibili"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.773,
+       "relevant": true,
+       "snippet": "010301. Receipt Requirements A. Retain Receipts. Travelers are advised to retain ALL receipts for tax or other"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.717,
+       "relevant": false,
+       "snippet": "020303. Lodging A traveler on TDY must reserve lodging compliant with U.S. Fire Administration Guidelines thro"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.702,
+       "relevant": false,
+       "snippet": "054506. Procedure and Claim Requirements for Sale or Purchase of Residence Reimbursement A. Application for Re"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.686,
+       "relevant": false,
+       "snippet": "033501. Lodging Expenses for a Service Member on Leave during an Authorized or Ordered Evacuation A. Eligibili"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R11",
+    "category": "jtr_rental",
+    "difficulty": "paraphrase",
+    "query": "What size rental car am I allowed to get on a work trip?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.714,
+       "relevant": true,
+       "snippet": "020209. Rental Vehicle A. Selecting a Rental Vehicle. If a traveler is authorized or approved the use of a ren"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "020211. Car Ferry Transportation Only a passenger automobile, light truck, or similar vehicle used primarily f"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.688,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle Note: See DTMO Rental Car Agreement, and DTR 4500.9-R, Part I (Passenger Movement) for "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.65,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.714,
+       "relevant": true,
+       "snippet": "020209. Rental Vehicle A. Selecting a Rental Vehicle. If a traveler is authorized or approved the use of a ren"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "020211. Car Ferry Transportation Only a passenger automobile, light truck, or similar vehicle used primarily f"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.688,
+       "relevant": false,
+       "snippet": "020209. Rental Vehicle Note: See DTMO Rental Car Agreement, and DTR 4500.9-R, Part I (Passenger Movement) for "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.65,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) The per diem that the Government would have incurred if travel had been"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R12",
+    "category": "jtr_travel_time",
+    "difficulty": "direct",
+    "query": "How many travel days are authorized when driving a POV? one day per 400 miles",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.755,
+       "relevant": false,
+       "snippet": "050205. Authorized Travel Time The trip from the new PDS in the CONUS to the designated place to retrieve the "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.759,
+       "relevant": false,
+       "snippet": "054702. Authorizing POV Transportation in the CONUS Commanding officers, or their designated representatives, "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.739,
+       "relevant": false,
+       "snippet": "053807. Authorized Travel Time A. Travel Time Rules. A civilian employee or dependent is authorized travel tim"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.74,
+       "relevant": false,
+       "snippet": "053802. Privately Owned Vehicle (POV) A civilian employee or dependent who uses a POV may be authorized MALT. "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.755,
+       "relevant": false,
+       "snippet": "050205. Authorized Travel Time The trip from the new PDS in the CONUS to the designated place to retrieve the "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.759,
+       "relevant": false,
+       "snippet": "054702. Authorizing POV Transportation in the CONUS Commanding officers, or their designated representatives, "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.739,
+       "relevant": false,
+       "snippet": "053807. Authorized Travel Time A. Travel Time Rules. A civilian employee or dependent is authorized travel tim"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.74,
+       "relevant": false,
+       "snippet": "053802. Privately Owned Vehicle (POV) A civilian employee or dependent who uses a POV may be authorized MALT. "
+      }
+     ]
+    }
+   },
+   {
+    "id": "R13",
+    "category": "jtr_per_diem",
+    "difficulty": "paraphrase",
+    "query": "Can I get per diem if my trip only lasts 10 hours?",
+    "domain": "travel",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.714,
+       "relevant": false,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.707,
+       "relevant": true,
+       "snippet": "020309. Trip Length As It Affects Per Diem The length of a TDY trip has a major impact on the amount of per di"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.68,
+       "relevant": false,
+       "snippet": "053902. PCS Per Diem for Dependents A civilian employee is authorized per diem for each dependent\u2019s actual tra"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.719,
+       "relevant": false,
+       "snippet": "020301. Daily Allowances The Government pays per diem on a daily basis, for whole days. This does not include "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.714,
+       "relevant": false,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.707,
+       "relevant": true,
+       "snippet": "020309. Trip Length As It Affects Per Diem The length of a TDY trip has a major impact on the amount of per di"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.706,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.68,
+       "relevant": false,
+       "snippet": "053902. PCS Per Diem for Dependents A civilian employee is authorized per diem for each dependent\u2019s actual tra"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R14",
+    "category": "army_leave_accrual",
+    "difficulty": "direct",
+    "query": "How many days of leave do soldiers accrue per month of active duty?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.803,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.743,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 4  2-5. Forfeiture of accrued leave a. Soldiers discharged under other than honorabl"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.749,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 24 (9) If ordinary leave was authorized in conjunction with CLV, to and from dates, "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.746,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 22 Continuation or recall of retirees a. Retiring Soldiers who are subsequently cont"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.803,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.749,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 24 (9) If ordinary leave was authorized in conjunction with CLV, to and from dates, "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.743,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 4  2-5. Forfeiture of accrued leave a. Soldiers discharged under other than honorabl"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.746,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 22 Continuation or recall of retirees a. Retiring Soldiers who are subsequently cont"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R15",
+    "category": "army_leave_carryover",
+    "difficulty": "direct",
+    "query": "Maximum leave carry over at the end of the fiscal year",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.747,
+       "relevant": false,
+       "snippet": "CHAPTER 35 For partial months, it accrues at the rate of \u00bd day for any period of 6 days or less. 2.2.2.1. A me"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.743,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.701,
+       "relevant": false,
+       "snippet": "Chapter 2 MANAGING THE LEAVE PROGRAM 2.1. Military Leave Program. 2.1.1. Annual Leave Program. Annual leave pr"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.687,
+       "relevant": false,
+       "snippet": "Chapter 7 In such cases, the activity having responsibility for the member when TDY or hospitalization occurs "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.743,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.701,
+       "relevant": false,
+       "snippet": "Chapter 2 MANAGING THE LEAVE PROGRAM 2.1. Military Leave Program. 2.1.1. Annual Leave Program. Annual leave pr"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.687,
+       "relevant": false,
+       "snippet": "Chapter 7 In such cases, the activity having responsibility for the member when TDY or hospitalization occurs "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.7,
+       "relevant": false,
+       "snippet": "Chapter 7 Members must settle their leave balances using the DAF Form 1089A prior to tour end date indicating "
+      }
+     ]
+    }
+   },
+   {
+    "id": "R16",
+    "category": "army_leave_carryover",
+    "difficulty": "paraphrase",
+    "query": "What happens to my use-or-lose leave days over the cap on 1 October?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 5,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.649,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.647,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.675,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.659,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 44 (2) If school instruction is suspended and the Soldier must continue training aft"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.649,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.647,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.636,
+       "relevant": false,
+       "snippet": "DAFMAN 36-2102, Base-Level Relocation Procedures. The FSO computes leave for authorized absences in excess of "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.634,
+       "relevant": false,
+       "snippet": "Chapter 2 MANAGING THE LEAVE PROGRAM 2.1. Military Leave Program. 2.1.1. Annual Leave Program. Annual leave pr"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R17",
+    "category": "army_leave_types",
+    "difficulty": "direct",
+    "query": "Is emergency leave chargeable and who approves it?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.776,
+       "relevant": true,
+       "snippet": "KY 40122-5408 at email: usarmy.knox.hrc.mbx.tagd-leave-and-pass-policy@mail.mil. Attach com- mander\u2019s recommen"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.731,
+       "relevant": false,
+       "snippet": "Chapter 3 Emergency travel allowances are under the JTR, Chapter 4. 3.2.3.1. Emergency Leave Approval. Unit co"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.732,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 17  (3) Emergency leave will not be granted for the purpose of either increasing the"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.757,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 16 Emergency leave travel at Government expense is authorized in accordance with the"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.776,
+       "relevant": true,
+       "snippet": "KY 40122-5408 at email: usarmy.knox.hrc.mbx.tagd-leave-and-pass-policy@mail.mil. Attach com- mander\u2019s recommen"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.731,
+       "relevant": false,
+       "snippet": "Chapter 3 Emergency travel allowances are under the JTR, Chapter 4. 3.2.3.1. Emergency Leave Approval. Unit co"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.732,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 17  (3) Emergency leave will not be granted for the purpose of either increasing the"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.757,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 16 Emergency leave travel at Government expense is authorized in accordance with the"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R18",
+    "category": "army_leave_types",
+    "difficulty": "direct",
+    "query": "Who can grant convalescent leave to a soldier?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.759,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 24  intent not to initiate a claim against the Government for reimbursement of expen"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.744,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 27 Only an MTF, the USARC Surgeon\u2019s office, or the Regional Support Command Surgeon "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.741,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 28  caregiver leave. However, if the Soldier requesting secondary caregiver leave is"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.715,
+       "relevant": false,
+       "snippet": "Chapter 4 This may include convalescence to enable healthy coping mechanisms following traumatic events such a"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.759,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 24  intent not to initiate a claim against the Government for reimbursement of expen"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.744,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 27 Only an MTF, the USARC Surgeon\u2019s office, or the Regional Support Command Surgeon "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.741,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 28  caregiver leave. However, if the Soldier requesting secondary caregiver leave is"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.715,
+       "relevant": false,
+       "snippet": "Chapter 4 This may include convalescence to enable healthy coping mechanisms following traumatic events such a"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R19",
+    "category": "army_leave_types",
+    "difficulty": "direct",
+    "query": "Advance leave rules when the soldier has no accrued leave",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.806,
+       "relevant": true,
+       "snippet": "SEP 18) c. 4-digit control number; for example, \u201c0015;\u201d For the 15th control number logged in FY18 Example for"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.811,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.777,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 19 The number of leave days authorized for terminal leave cannot exceed the total le"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.789,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 38  o. Soldiers in an involuntary or voluntary excess leave status while awaiting pu"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.806,
+       "relevant": true,
+       "snippet": "SEP 18) c. 4-digit control number; for example, \u201c0015;\u201d For the 15th control number logged in FY18 Example for"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.811,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.777,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 19 The number of leave days authorized for terminal leave cannot exceed the total le"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.789,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 38  o. Soldiers in an involuntary or voluntary excess leave status while awaiting pu"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R20",
+    "category": "army_pass",
+    "difficulty": "direct",
+    "query": "What is the maximum length of a special pass?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.687,
+       "relevant": true,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.681,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 40  f. A special pass may not be immediately followed by any other pass. g. A specia"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.636,
+       "relevant": true,
+       "snippet": "Chapter 5 Ensure the Unit Leave Monitor processes a LeaveWeb request or an DAF Form 988 when members fail to r"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.652,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 39 A three-day special pass must include at least one duty day, and may be for- (1) "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.687,
+       "relevant": true,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.681,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 40  f. A special pass may not be immediately followed by any other pass. g. A specia"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.636,
+       "relevant": true,
+       "snippet": "Chapter 5 Ensure the Unit Leave Monitor processes a LeaveWeb request or an DAF Form 988 when members fail to r"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.652,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 39 A three-day special pass must include at least one duty day, and may be for- (1) "
+      }
+     ]
+    }
+   },
+   {
+    "id": "R21",
+    "category": "army_leave_charging",
+    "difficulty": "paraphrase",
+    "query": "If my leave starts on a Saturday, is that Saturday charged as leave?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.745,
+       "relevant": false,
+       "snippet": "Chapter 3 Exception: Commanders may authorize leave on Monday without charging leave for Saturday and Sunday i"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.703,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.653,
+       "relevant": false,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.688,
+       "relevant": false,
+       "snippet": "Chapter 7 Pass 7-1. Regular pass a. A short, non-chargeable, authorized absence from post or place of duty dur"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.745,
+       "relevant": false,
+       "snippet": "Chapter 3 Exception: Commanders may authorize leave on Monday without charging leave for Saturday and Sunday i"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.703,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.653,
+       "relevant": false,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.688,
+       "relevant": false,
+       "snippet": "Chapter 7 Pass 7-1. Regular pass a. A short, non-chargeable, authorized absence from post or place of duty dur"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R22",
+    "category": "army_leave_carryover",
+    "difficulty": "direct",
+    "query": "Special leave accrual after deployment allows carrying forward 120 days",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.826,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 8  (2) Prevented from using leave through end of the FY due to deployment. (3) Deplo"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.824,
+       "relevant": true,
+       "snippet": "Chapter 3 Special Leave Accrual 3-1. Content and intent a. The intent of SLA is to provide relief to Soldiers "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.807,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.789,
+       "relevant": false,
+       "snippet": "Chapter 6 SPECIAL LEAVE ACCRUAL 6.1. Overview. This chapter describes the SLA provisions when deployments or a"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.826,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 8  (2) Prevented from using leave through end of the FY due to deployment. (3) Deplo"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.824,
+       "relevant": true,
+       "snippet": "Chapter 3 Special Leave Accrual 3-1. Content and intent a. The intent of SLA is to provide relief to Soldiers "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.807,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.789,
+       "relevant": false,
+       "snippet": "Chapter 6 SPECIAL LEAVE ACCRUAL 6.1. Overview. This chapter describes the SLA provisions when deployments or a"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R23",
+    "category": "army_leave_sellback",
+    "difficulty": "paraphrase",
+    "query": "Can I get paid for leave I would lose above 120 days?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.655,
+       "relevant": false,
+       "snippet": "Chapter 6 for SLA provisions. 2.4.3. Payment for Accrued Leave. 37 USC \u00a7 501, Payments for Unused Accrued Leav"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.664,
+       "relevant": false,
+       "snippet": "CHAPTER 35 For partial months, it accrues at the rate of \u00bd day for any period of 6 days or less. 2.2.2.1. A me"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.635,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 8  (2) Prevented from using leave through end of the FY due to deployment. (3) Deplo"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.636,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.655,
+       "relevant": false,
+       "snippet": "Chapter 6 for SLA provisions. 2.4.3. Payment for Accrued Leave. 37 USC \u00a7 501, Payments for Unused Accrued Leav"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.655,
+       "relevant": false,
+       "snippet": "Chapter 3 Special Leave Accrual 3-1. Content and intent a. The intent of SLA is to provide relief to Soldiers "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.651,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 15  g. Advance leave changes to excess leave on date of separation, reenlistment, or"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.635,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 8  (2) Prevented from using leave through end of the FY due to deployment. (3) Deplo"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R24",
+    "category": "navy_leave",
+    "difficulty": "direct",
+    "query": "Navy leave day of departure and day of return, which days are charged",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "milpersman_1050.pdf",
+       "score": 0.756,
+       "relevant": true,
+       "snippet": "MILPERSMAN 1050-090 LEAVE: DAY OF DEPARTURE/RETURN Responsible OPNAV P hone: DSN 664-5477 Office (N130) COM (7"
+      },
+      {
+       "source": "milpersman_1050.pdf",
+       "score": 0.732,
+       "relevant": true,
+       "snippet": "MILPERSMAN 1050-090 of special liberty, Example # WHEN ... THEN ... AND ... 5 member wants to Monday is the fi"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.731,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.713,
+       "relevant": false,
+       "snippet": "CHAPTER 27 Constructive day of return to the PDS is the actual date of return minus number of days leave autho"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "milpersman_1050.pdf",
+       "score": 0.756,
+       "relevant": true,
+       "snippet": "MILPERSMAN 1050-090 LEAVE: DAY OF DEPARTURE/RETURN Responsible OPNAV P hone: DSN 664-5477 Office (N130) COM (7"
+      },
+      {
+       "source": "milpersman_1050.pdf",
+       "score": 0.732,
+       "relevant": true,
+       "snippet": "MILPERSMAN 1050-090 of special liberty, Example # WHEN ... THEN ... AND ... 5 member wants to Monday is the fi"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.731,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.685,
+       "relevant": false,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R25",
+    "category": "af_leave",
+    "difficulty": "direct",
+    "query": "Air Force emergency leave approval authority and maximum initial period",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.794,
+       "relevant": true,
+       "snippet": "Chapter 3 Emergency travel allowances are under the JTR, Chapter 4. 3.2.3.1. Emergency Leave Approval. Unit co"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.79,
+       "relevant": true,
+       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.765,
+       "relevant": false,
+       "snippet": "Chapter 1 and AFMAN 65-116, Vol. 1 Chapter 70. DAFI36-3003 26 FEBRUARY 2026 63 3 for separation or unit comman"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.762,
+       "relevant": false,
+       "snippet": "Chapter 7 This applies to travel from the designated overseas location to the nearest CONUS port and return. D"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.794,
+       "relevant": true,
+       "snippet": "Chapter 3 Emergency travel allowances are under the JTR, Chapter 4. 3.2.3.1. Emergency Leave Approval. Unit co"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.79,
+       "relevant": true,
+       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.765,
+       "relevant": false,
+       "snippet": "Chapter 1 and AFMAN 65-116, Vol. 1 Chapter 70. DAFI36-3003 26 FEBRUARY 2026 63 3 for separation or unit comman"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.762,
+       "relevant": false,
+       "snippet": "Chapter 7 This applies to travel from the designated overseas location to the nearest CONUS port and return. D"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R26",
+    "category": "af_leave",
+    "difficulty": "paraphrase",
+    "query": "As an airman, can I take leave before I've earned it?",
+    "domain": "leave",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "DAFPD 36-30, Military Entitlements, 26 April 2023 Duty Status-A member is considered to be in a duty status du"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.709,
+       "relevant": false,
+       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.687,
+       "relevant": false,
+       "snippet": "Chapter 3 Delegating Approval of En Route Leave: 3.2.4.2.1. Unit commanders should not delegate approval to a "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.68,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "DAFPD 36-30, Military Entitlements, 26 April 2023 Duty Status-A member is considered to be in a duty status du"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.709,
+       "relevant": false,
+       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.687,
+       "relevant": false,
+       "snippet": "Chapter 3 Delegating Approval of En Route Leave: 3.2.4.2.1. Unit commanders should not delegate approval to a "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.68,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R27",
+    "category": "pay_leave",
+    "difficulty": "paraphrase",
+    "query": "Is there a limit to how much leave I can sell back over my career?",
+    "domain": "regs",
+    "split": "dev",
+    "n_relevant_in_corpus": 7,
+    "no_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.712,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 9  7. Operational requirements (unless due to preparation and subsequent deployment)"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.675,
+       "relevant": true,
+       "snippet": "Chapter 6 for SLA provisions. 2.4.3. Payment for Accrued Leave. 37 USC \u00a7 501, Payments for Unused Accrued Leav"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.666,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 22 Continuation or recall of retirees a. Retiring Soldiers who are subsequently cont"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.675,
+       "relevant": false,
+       "snippet": "Chapter 7 Members must settle their leave balances using the DAF Form 1089A prior to tour end date indicating "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "CHAPTER 35 For partial months, it accrues at the rate of \u00bd day for any period of 6 days or less. 2.2.2.1. A me"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.643,
+       "relevant": false,
+       "snippet": "CHAPTER 35 That limit is different for enlisted members and officers. The limit is fully described in Chapter "
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.647,
+       "relevant": true,
+       "snippet": "CHAPTER 35 The 60-day leave payment limitation does not apply to leave accrued by a member of a Reserve Compon"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.632,
+       "relevant": false,
+       "snippet": "CHAPTER 9 Such preexisting period of obligated service includes no more than a 2-year period of an unserved vo"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R28",
+    "category": "pay_leave",
+    "difficulty": "direct",
+    "query": "Am I entitled to pay and allowances while on excess leave?",
+    "domain": "regs",
+    "split": "dev",
+    "n_relevant_in_corpus": 5,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.714,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 29 (4) If not used, accrued leave balances are retained until the Soldier resumes du"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.725,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 15  g. Advance leave changes to excess leave on date of separation, reenlistment, or"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.747,
+       "relevant": false,
+       "snippet": "1-11. Excess leave properly charged before the date a member extends a term of service (reenlistment, appointm"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.698,
+       "relevant": false,
+       "snippet": "16-21. See subparagraph 4.1.4 for collection requirements when advance leave is changed to excess leave. 2. En"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.698,
+       "relevant": false,
+       "snippet": "16-21. See subparagraph 4.1.4 for collection requirements when advance leave is changed to excess leave. 2. En"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.747,
+       "relevant": false,
+       "snippet": "1-11. Excess leave properly charged before the date a member extends a term of service (reenlistment, appointm"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.675,
+       "relevant": false,
+       "snippet": "Chapter 52, Table 52-1, rule 1). When a previously executed dishonorable or bad conduct discharge is not impos"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.696,
+       "relevant": false,
+       "snippet": "Chapter 4, section 9.0. Authorized absence under these circumstances in excess of accrued leave is not chargea"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R29",
+    "category": "eval_af",
+    "difficulty": "direct",
+    "query": "How many evaluators sign an Air Force enlisted performance brief (EPB)?",
+    "domain": "eval",
+    "split": "dev",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.73,
+       "relevant": false,
+       "snippet": "DAFPD 36-24, Military Evaluations, 7 October 2022 Duty Qualification History Brief (DQHB)-A computer product u"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.693,
+       "relevant": false,
+       "snippet": "Chapter 1 GENERAL CONSIDERATIONS 1.1. Purpose. The Officer and Enlisted Evaluation Systems have varied purpose"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.695,
+       "relevant": false,
+       "snippet": "DAFI 51-509 and Joint Publication 1, Volume 2, SecAF is responsible for the ADCON The ratee\u2019s signature in the"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.689,
+       "relevant": false,
+       "snippet": "A2.1. Overview. In this attachment, the term \"evaluation\" encompasses all versions of enlisted These statement"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.73,
+       "relevant": false,
+       "snippet": "DAFPD 36-24, Military Evaluations, 7 October 2022 Duty Qualification History Brief (DQHB)-A computer product u"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.693,
+       "relevant": false,
+       "snippet": "Chapter 1 GENERAL CONSIDERATIONS 1.1. Purpose. The Officer and Enlisted Evaluation Systems have varied purpose"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.695,
+       "relevant": false,
+       "snippet": "DAFI 51-509 and Joint Publication 1, Volume 2, SecAF is responsible for the ADCON The ratee\u2019s signature in the"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.689,
+       "relevant": false,
+       "snippet": "A2.1. Overview. In this attachment, the term \"evaluation\" encompasses all versions of enlisted These statement"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R30",
+    "category": "eval_af",
+    "difficulty": "direct",
+    "query": "Which form is used for an Air Force officer performance brief?",
+    "domain": "eval",
+    "split": "dev",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.761,
+       "relevant": true,
+       "snippet": "Chapter 1 GENERAL CONSIDERATIONS 1.1. Purpose. The Officer and Enlisted Evaluation Systems have varied purpose"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.743,
+       "relevant": false,
+       "snippet": "DAFPD 36-24, Military Evaluations, 7 October 2022 Duty Qualification History Brief (DQHB)-A computer product u"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.753,
+       "relevant": false,
+       "snippet": "Chapter 1 Form will be attached to an ALQ evaluation to provide notice that an alternate evaluation containing"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.726,
+       "relevant": false,
+       "snippet": "DAFI 51-509 and Joint Publication 1, Volume 2, SecAF is responsible for the ADCON AFI36-2406 22 AUGUST 2025 13"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.761,
+       "relevant": true,
+       "snippet": "Chapter 1 GENERAL CONSIDERATIONS 1.1. Purpose. The Officer and Enlisted Evaluation Systems have varied purpose"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.743,
+       "relevant": false,
+       "snippet": "DAFPD 36-24, Military Evaluations, 7 October 2022 Duty Qualification History Brief (DQHB)-A computer product u"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.753,
+       "relevant": false,
+       "snippet": "Chapter 1 Form will be attached to an ALQ evaluation to provide notice that an alternate evaluation containing"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.726,
+       "relevant": false,
+       "snippet": "DAFI 51-509 and Joint Publication 1, Volume 2, SecAF is responsible for the ADCON AFI36-2406 22 AUGUST 2025 13"
+      }
+     ]
+    }
+   },
+   {
+    "id": "R31",
+    "category": "eval_navy",
+    "difficulty": "direct",
+    "query": "Navy EVAL rater and senior rater responsibilities",
+    "domain": "eval",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.801,
+       "relevant": true,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025 c. An immediate superior in command is a reporting senior for assigned COs and"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.794,
+       "relevant": false,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025 the overdue reports. In cases of inquiry or investigation, the assumption of a"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.801,
+       "relevant": false,
+       "snippet": "Chapter 1 The management level and their servicing personnel activity: 1.6.10.1. Designate senior rater positi"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.799,
+       "relevant": false,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025  CHAPTER 2 QUALIFICATIONS OF REPORTING SENIORS AND RATERS  2-1. Purpose. This "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.801,
+       "relevant": true,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025 c. An immediate superior in command is a reporting senior for assigned COs and"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.794,
+       "relevant": false,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025 the overdue reports. In cases of inquiry or investigation, the assumption of a"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.801,
+       "relevant": false,
+       "snippet": "Chapter 1 The management level and their servicing personnel activity: 1.6.10.1. Designate senior rater positi"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.799,
+       "relevant": false,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025  CHAPTER 2 QUALIFICATIONS OF REPORTING SENIORS AND RATERS  2-1. Purpose. This "
+      }
+     ]
+    }
+   },
+   {
+    "id": "R32",
+    "category": "eval_usmc",
+    "difficulty": "paraphrase",
+    "query": "Which Marines get fitness reports, by rank?",
+    "domain": "eval",
+    "split": "dev",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.741,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (8) Provide liaison with other branches of the military regarding performance evaluatio"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.742,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (5) Supplemental comments will not serve to change evaluative markings in sections D - "
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.75,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015  Chapter 1 Concepts and Overview 1. Scope a. The Marine Corps Performance Evaluation Sy"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.745,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (5) The Reporting Senior High. The highest fitness report average of any report written"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.741,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (8) Provide liaison with other branches of the military regarding performance evaluatio"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.742,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (5) Supplemental comments will not serve to change evaluative markings in sections D - "
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.75,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015  Chapter 1 Concepts and Overview 1. Scope a. The Marine Corps Performance Evaluation Sy"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.745,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (5) The Reporting Senior High. The highest fitness report average of any report written"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H01",
+    "category": "jtr_receipts",
+    "difficulty": "paraphrase",
+    "query": "I lost my hotel receipt from my trip, can I still get paid back?",
+    "domain": "travel",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.731,
+       "relevant": true,
+       "snippet": "010301. Receipt Requirements A. Retain Receipts. Travelers are advised to retain ALL receipts for tax or other"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.652,
+       "relevant": false,
+       "snippet": "020205. Separate Legs of Travel If the initial ticket is recovered or turned in for refund, and the Government"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.606,
+       "relevant": false,
+       "snippet": "020303. Lodging A traveler on TDY must reserve lodging compliant with U.S. Fire Administration Guidelines thro"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.592,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem The total daily amount the Government pays for"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.731,
+       "relevant": true,
+       "snippet": "010301. Receipt Requirements A. Retain Receipts. Travelers are advised to retain ALL receipts for tax or other"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.652,
+       "relevant": false,
+       "snippet": "020205. Separate Legs of Travel If the initial ticket is recovered or turned in for refund, and the Government"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.606,
+       "relevant": false,
+       "snippet": "020303. Lodging A traveler on TDY must reserve lodging compliant with U.S. Fire Administration Guidelines thro"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.604,
+       "relevant": false,
+       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H02",
+    "category": "jtr_meals",
+    "difficulty": "paraphrase",
+    "query": "What do I get for food if I eat at the base chow hall while on TDY?",
+    "domain": "travel",
+    "split": "holdout",
+    "n_relevant_in_corpus": 4,
+    "no_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.639,
+       "relevant": false,
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.626,
+       "relevant": true,
+       "snippet": "020304. M&IE Portion of Per Diem Paid by the Government and furnished at no 3 Furnished on a commercial or mil"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.622,
+       "relevant": false,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.618,
+       "relevant": false,
+       "snippet": "68-11. When calculating TLA, use the actual amount without rounding. When neither Government nor commercial te"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.639,
+       "relevant": false,
+       "snippet": "020304. M&IE Portion of Per Diem M&IE reimbursement does not require expense itemization or receipts unless an"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.626,
+       "relevant": true,
+       "snippet": "020304. M&IE Portion of Per Diem Paid by the Government and furnished at no 3 Furnished on a commercial or mil"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.622,
+       "relevant": false,
+       "snippet": "020310. Lodging and M&IE Per Diem Calculation Rules The calculation of per diem allowance for each day at a TD"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.611,
+       "relevant": false,
+       "snippet": "020314. Impact of the International Date Line (IDL) on Per Diem Per Diem for TDY on a Foreign (Non-Government)"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H03",
+    "category": "jtr_pov",
+    "difficulty": "paraphrase",
+    "query": "Will they pay me back for gas if I take my own truck on official travel?",
+    "domain": "travel",
+    "split": "holdout",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.7,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.671,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.679,
+       "relevant": false,
+       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.678,
+       "relevant": false,
+       "snippet": "020213. Ground Transportation A. Use of Ground Transportation. A traveler should always use Government or cour"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "jtr.pdf",
+       "score": 0.7,
+       "relevant": true,
+       "snippet": "020210. Privately Owned Vehicles (POV) A traveler cannot be directed to use a POV for official travel or be a "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.671,
+       "relevant": false,
+       "snippet": "020210. Privately Owned Vehicles (POV) 04/01/2026 2-23  Intro Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter "
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.679,
+       "relevant": false,
+       "snippet": "020303. Lodging lodging during official travel, a traveler purchases a residence, to include a recreational ve"
+      },
+      {
+       "source": "jtr.pdf",
+       "score": 0.678,
+       "relevant": false,
+       "snippet": "020213. Ground Transportation A. Use of Ground Transportation. A traveler should always use Government or cour"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H04",
+    "category": "army_accrual",
+    "difficulty": "paraphrase",
+    "query": "How many days off do I build up each month in the Army?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.689,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.679,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 34  (c) If stationed OCONUS, the Soldier is within 12 months of completing his or he"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.729,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 17 (2) Soldiers completing recruit training are authorized up to 10 days of leave fo"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.71,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 44 (2) If school instruction is suspended and the Soldier must continue training aft"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 2,
+     "rr": 0.5,
+     "hit@1": false,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.689,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.691,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.679,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 34  (c) If stationed OCONUS, the Soldier is within 12 months of completing his or he"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.682,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 4  2-5. Forfeiture of accrued leave a. Soldiers discharged under other than honorabl"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H05",
+    "category": "af_accrual",
+    "difficulty": "paraphrase",
+    "query": "How fast does an airman earn vacation time?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.634,
+       "relevant": false,
+       "snippet": "AFMAN 10-409-O, Support to Adaptive Planning, dated June 15, 2021. 15.2.2.4. Have completed the requisite trai"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.671,
+       "relevant": false,
+       "snippet": "Chapter 35, paragraphs 2.1 and 2.2, and procedural instructions of the Military Services concerned. When a mem"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.665,
+       "relevant": false,
+       "snippet": "CHAPTER 22 Aviation accident is an accident in which a Service member, who is required to participate frequent"
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "Chapter 22) for the appropriate status category into which redistributed (i.e., AD flying time for Next, apply"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.609,
+       "relevant": false,
+       "snippet": "DAFPD 36-30, Military Entitlements, 26 April 2023 Duty Status-A member is considered to be in a duty status du"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.617,
+       "relevant": false,
+       "snippet": "Chapter 3 Completing technical training and requesting up to 10 days advance leave if the first duty station i"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.617,
+       "relevant": false,
+       "snippet": "DAFMAN 36-2102, Base-Level Relocation Procedures. The FSO computes leave for authorized absences in excess of "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.595,
+       "relevant": false,
+       "snippet": "Chapter 3 Delegating Approval of En Route Leave: 3.2.4.2.1. Unit commanders should not delegate approval to a "
+      }
+     ]
+    }
+   },
+   {
+    "id": "H06",
+    "category": "army_convalescent",
+    "difficulty": "paraphrase",
+    "query": "My doctor says I need time to recover after surgery. Does that come out of my leave balance?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.624,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.643,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 51  12-10. Processing approved emergency leave upon Soldier\u2019s return to same unit a."
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.63,
+       "relevant": false,
+       "snippet": "DAFMAN 36-2102, Base-Level Relocation Procedures. The FSO computes leave for authorized absences in excess of "
+      },
+      {
+       "source": "dod_fmr_vol7a.pdf",
+       "score": 0.63,
+       "relevant": false,
+       "snippet": "Chapter 48. Pay and allowances will not accrue again until the date the member is restored to a full-duty stat"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.624,
+       "relevant": false,
+       "snippet": "Chapter 6 Assuming the member used 22.5 days of leave from 1 January 2023 through 30 September 2023, 17.5 days"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.618,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 45  (b) Leave periods are credited toward completing the three-month service obligat"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.643,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 51  12-10. Processing approved emergency leave upon Soldier\u2019s return to same unit a."
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.63,
+       "relevant": false,
+       "snippet": "DAFMAN 36-2102, Base-Level Relocation Procedures. The FSO computes leave for authorized absences in excess of "
+      }
+     ]
+    }
+   },
+   {
+    "id": "H07",
+    "category": "af_bereavement",
+    "difficulty": "paraphrase",
+    "query": "If my child passes away, how much time off can I get without it counting against my leave?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.62,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 28 (i) For adoptions, a Soldier married to another Servicemember will state either \u201c"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.619,
+       "relevant": false,
+       "snippet": "AR 600-81. This authority may be delegated to subordinate O-5 level commanders, but is not further delegable. "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.66,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5 (For example, a twoor three-day pass may not become a four-day pass. It may become"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.651,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 64 Secondary caregiver leave may be approved for an unmar- ried, non-birthparent if "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.62,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 28 (i) For adoptions, a Soldier married to another Servicemember will state either \u201c"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.619,
+       "relevant": false,
+       "snippet": "AR 600-81. This authority may be delegated to subordinate O-5 level commanders, but is not further delegable. "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.618,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 27  document and written acknowledgment of an obligation to support the child, eithe"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.617,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H08",
+    "category": "army_pass",
+    "difficulty": "paraphrase",
+    "query": "What is a weekend pass and where does it have to start and end?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.677,
+       "relevant": true,
+       "snippet": "Chapter 7 Pass 7-1. Regular pass a. A short, non-chargeable, authorized absence from post or place of duty dur"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.631,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 39 A three-day special pass must include at least one duty day, and may be for- (1) "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.653,
+       "relevant": true,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.612,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 40  f. A special pass may not be immediately followed by any other pass. g. A specia"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.677,
+       "relevant": true,
+       "snippet": "Chapter 7 Pass 7-1. Regular pass a. A short, non-chargeable, authorized absence from post or place of duty dur"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.631,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 39 A three-day special pass must include at least one duty day, and may be for- (1) "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.653,
+       "relevant": true,
+       "snippet": "Chapter 5 REGULAR AND SPECIAL PASSES 5.1. Regular and Special Pass Information. A pass period is an authorized"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.612,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 40  f. A special pass may not be immediately followed by any other pass. g. A specia"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H09",
+    "category": "army_charging",
+    "difficulty": "paraphrase",
+    "query": "If I go on leave Thursday through the next Tuesday, do the weekend days count?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.703,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.692,
+       "relevant": false,
+       "snippet": "Chapter 7 Pass 7-1. Regular pass a. A short, non-chargeable, authorized absence from post or place of duty dur"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.686,
+       "relevant": false,
+       "snippet": "Chapter 3 Exception: Commanders may authorize leave on Monday without charging leave for Saturday and Sunday i"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.67,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 39 A three-day special pass must include at least one duty day, and may be for- (1) "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.703,
+       "relevant": true,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 5  (3) President\u2019s Birthday, the third Monday in February. (4) Memorial Day, the las"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.692,
+       "relevant": false,
+       "snippet": "Chapter 7 Pass 7-1. Regular pass a. A short, non-chargeable, authorized absence from post or place of duty dur"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.686,
+       "relevant": false,
+       "snippet": "Chapter 3 Exception: Commanders may authorize leave on Monday without charging leave for Saturday and Sunday i"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.67,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 39 A three-day special pass must include at least one duty day, and may be for- (1) "
+      }
+     ]
+    }
+   },
+   {
+    "id": "H10",
+    "category": "leave_house_hunting",
+    "difficulty": "paraphrase",
+    "query": "Can I get time off to find a house at my new base without it counting as leave?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.649,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18  (4) New warrant officers completing warrant officer candidate training will norm"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.634,
+       "relevant": false,
+       "snippet": "Chapter 4 Unit commanders account for member\u2019s PTDY for non- duty days when they are on PTDY before and after "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.631,
+       "relevant": true,
+       "snippet": "OTEIP 30-day special R&R leave or 15-day special R&R leave option. (T-1). See paragraph 7.6 for additional gui"
+      },
+      {
+       "source": "milpersman_1050.pdf",
+       "score": 0.656,
+       "relevant": false,
+       "snippet": "MILPERSMAN 1050-090 LEAVE: DAY OF DEPARTURE/RETURN Responsible OPNAV P hone: DSN 664-5477 Office (N130) COM (7"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.649,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18  (4) New warrant officers completing warrant officer candidate training will norm"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.634,
+       "relevant": false,
+       "snippet": "Chapter 4 Unit commanders account for member\u2019s PTDY for non- duty days when they are on PTDY before and after "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.631,
+       "relevant": true,
+       "snippet": "OTEIP 30-day special R&R leave or 15-day special R&R leave option. (T-1). See paragraph 7.6 for additional gui"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.627,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 35 Proceed time is requested using DA Form 31. If used in increments (one or two day"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H11",
+    "category": "army_request_timing",
+    "difficulty": "paraphrase",
+    "query": "How far ahead should I turn in my leave paperwork?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.72,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18  (4) New warrant officers completing warrant officer candidate training will norm"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.713,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 35 Proceed time is requested using DA Form 31. If used in increments (one or two day"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.684,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 47  (2) Soldiers must physically report for duty before leave requests will be consi"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.681,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 49  b. Enter return date, time, and authority on DA Form 31, block 14. c. Determine "
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 3,
+     "rr": 0.3333333333333333,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.669,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 37  available for contact by the unit and the PEBLO until the effective date of disa"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.674,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 25 (d) May be taken consecutively with either primary or secondary caregiver leave, "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.673,
+       "relevant": true,
+       "snippet": "Chapter 12 Processing Procedures 12-1. Process leave and other types of absence a. DA Form 31 is used to reque"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.662,
+       "relevant": false,
+       "snippet": "AR 600-81. This authority may be delegated to subordinate O-5 level commanders, but is not further delegable. "
+      }
+     ]
+    }
+   },
+   {
+    "id": "H12",
+    "category": "army_advance",
+    "difficulty": "paraphrase",
+    "query": "Can a soldier go on leave using days they haven't earned yet?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 1,
+    "no_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.733,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 45  (b) Leave periods are credited toward completing the three-month service obligat"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.711,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.721,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.704,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 18  (4) New warrant officers completing warrant officer candidate training will norm"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": null,
+     "rr": 0.0,
+     "hit@1": false,
+     "hit@2": false,
+     "hit@4": false,
+     "top": [
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.733,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 45  (b) Leave periods are credited toward completing the three-month service obligat"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.711,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 42  (2) Leave may be granted upon completion of candidate training, after completion"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.721,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 3  (c) Commanders will announce tentative block leave dates at least 60 days before "
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.731,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 19 The number of leave days authorized for terminal leave cannot exceed the total le"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H13",
+    "category": "eval_navy",
+    "difficulty": "paraphrase",
+    "query": "What's an NOB report on a Navy eval?",
+    "domain": "eval",
+    "split": "holdout",
+    "n_relevant_in_corpus": 4,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.817,
+       "relevant": true,
+       "snippet": "BUPERSINST 1610.10H This chapter provides the information needed to complete NOB reports using FITREPS, CHIEFE"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.761,
+       "relevant": true,
+       "snippet": "6-3. Observed Report with Not-Observed Traits or Promotion Recommendation. When circumstances warrant, it is a"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.738,
+       "relevant": false,
+       "snippet": "6-4. Summary Letters. Summary letters are required for all mailed submissions. Enter data for all NOB reports "
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.761,
+       "relevant": false,
+       "snippet": "6-4. Summary Letters. Summary letters are required for all mailed submissions. Enter data for all To make eval"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.817,
+       "relevant": true,
+       "snippet": "BUPERSINST 1610.10H This chapter provides the information needed to complete NOB reports using FITREPS, CHIEFE"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.761,
+       "relevant": true,
+       "snippet": "6-3. Observed Report with Not-Observed Traits or Promotion Recommendation. When circumstances warrant, it is a"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.738,
+       "relevant": false,
+       "snippet": "6-4. Summary Letters. Summary letters are required for all mailed submissions. Enter data for all NOB reports "
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.761,
+       "relevant": false,
+       "snippet": "6-4. Summary Letters. Summary letters are required for all mailed submissions. Enter data for all To make eval"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H14",
+    "category": "eval_usmc",
+    "difficulty": "paraphrase",
+    "query": "Who's in a Marine's chain for writing and reviewing fitness reports?",
+    "domain": "eval",
+    "split": "holdout",
+    "n_relevant_in_corpus": 2,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.704,
+       "relevant": true,
+       "snippet": "MCO 1610.7 13 Feb 2015 c. Responsibilities. The RS must: (1) Provide in-depth observation of the MRO\u2019s perform"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015  Chapter 1 Concepts and Overview 1. Scope a. The Marine Corps Performance Evaluation Sy"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.724,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 a. Accurate Fitness Reports. The evaluation must: (1) Reflect an assessment of performa"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.698,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (3) Site Commanders/Inspector-Instructors within Marine Forces Reserve and Reserve Supp"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.704,
+       "relevant": true,
+       "snippet": "MCO 1610.7 13 Feb 2015 c. Responsibilities. The RS must: (1) Provide in-depth observation of the MRO\u2019s perform"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015  Chapter 1 Concepts and Overview 1. Scope a. The Marine Corps Performance Evaluation Sy"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.724,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 a. Accurate Fitness Reports. The evaluation must: (1) Reflect an assessment of performa"
+      },
+      {
+       "source": "mco_1610_7.pdf",
+       "score": 0.698,
+       "relevant": false,
+       "snippet": "MCO 1610.7 13 Feb 2015 (3) Site Commanders/Inspector-Instructors within Marine Forces Reserve and Reserve Supp"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H15",
+    "category": "eval_navy",
+    "difficulty": "paraphrase",
+    "query": "Whose signature is required on a sailor's evaluation?",
+    "domain": "eval",
+    "split": "holdout",
+    "n_relevant_in_corpus": 4,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.712,
+       "relevant": true,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025 Signature. After reviewing the report, the Service members will check the box "
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "DAFI 51-509 and Joint Publication 1, Volume 2, SecAF is responsible for the ADCON The ratee\u2019s signature in the"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.701,
+       "relevant": true,
+       "snippet": "14-3. Reporting Senior Signature. Reporting seniors must personally sign each report on which their name appea"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.692,
+       "relevant": false,
+       "snippet": "Chapter 2. Comments are limited to the behavior and not the fact the member is separating, retiring, or transf"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.712,
+       "relevant": true,
+       "snippet": "BUPERSINST 1610.10H 30 Jul 2025 Signature. After reviewing the report, the Service members will check the box "
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.705,
+       "relevant": false,
+       "snippet": "DAFI 51-509 and Joint Publication 1, Volume 2, SecAF is responsible for the ADCON The ratee\u2019s signature in the"
+      },
+      {
+       "source": "bupersinst_1610_10f.pdf",
+       "score": 0.701,
+       "relevant": true,
+       "snippet": "14-3. Reporting Senior Signature. Reporting seniors must personally sign each report on which their name appea"
+      },
+      {
+       "source": "afi_36_2406.pdf",
+       "score": 0.692,
+       "relevant": false,
+       "snippet": "Chapter 2. Comments are limited to the behavior and not the fact the member is separating, retiring, or transf"
+      }
+     ]
+    }
+   },
+   {
+    "id": "H16",
+    "category": "af_ptdy",
+    "difficulty": "paraphrase",
+    "query": "What is permissive TDY in the Air Force and does it use up leave?",
+    "domain": "leave",
+    "split": "holdout",
+    "n_relevant_in_corpus": 3,
+    "no_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.769,
+       "relevant": true,
+       "snippet": "Chapter 4 Unit commanders account for member\u2019s PTDY for non- duty days when they are on PTDY before and after "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.758,
+       "relevant": false,
+       "snippet": "Chapter 3 CHARGEABLE LEAVE 3.1. Purpose. Established to provide service members respite from the work environm"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.748,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 64  Deployment A TCS or TDY to an area where the Soldier is entitled to HFP/IDP. Lea"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.739,
+       "relevant": true,
+       "snippet": "OTEIP 30-day special R&R leave or 15-day special R&R leave option. (T-1). See paragraph 7.6 for additional gui"
+      }
+     ]
+    },
+    "domain_filter": {
+     "first_relevant_rank": 1,
+     "rr": 1.0,
+     "hit@1": true,
+     "hit@2": true,
+     "hit@4": true,
+     "top": [
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.769,
+       "relevant": true,
+       "snippet": "Chapter 4 Unit commanders account for member\u2019s PTDY for non- duty days when they are on PTDY before and after "
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.758,
+       "relevant": false,
+       "snippet": "Chapter 3 CHARGEABLE LEAVE 3.1. Purpose. Established to provide service members respite from the work environm"
+      },
+      {
+       "source": "ar_600_8_10.pdf",
+       "score": 0.748,
+       "relevant": false,
+       "snippet": "AR 600-8-10 \u2022 3 June 2020 64  Deployment A TCS or TDY to an area where the Soldier is entitled to HFP/IDP. Lea"
+      },
+      {
+       "source": "afi_36_3003.pdf",
+       "score": 0.739,
+       "relevant": true,
+       "snippet": "OTEIP 30-day special R&R leave or 15-day special R&R leave option. (T-1). See paragraph 7.6 for additional gui"
+      }
+     ]
+    }
+   }
+  ],
+  "out_of_corpus": [
+   {
+    "id": "X01",
+    "query": "Army NCOER rating chain requirements under AR 623-3",
+    "note": "AR 623-3 (Army evaluations) is listed in the system prompt but is not in the vectorstore.",
+    "top_score": 0.724,
+    "top_sources": [
+     "afi_36_2406.pdf",
+     "afi_36_2406.pdf",
+     "afi_36_2406.pdf",
+     "afi_36_2406.pdf"
+    ]
+   },
+   {
+    "id": "X02",
+    "query": "When is an Army OER change-of-rater report required?",
+    "note": "Army OER policy (AR 623-3) not ingested.",
+    "top_score": 0.75,
+    "top_sources": [
+     "afi_36_2406.pdf",
+     "afi_36_2406.pdf",
+     "afi_36_2406.pdf",
+     "afi_36_2406.pdf"
+    ]
+   },
+   {
+    "id": "X03",
+    "query": "What is the BAH rate for an E-5 with dependents at Fort Liberty?",
+    "note": "BAH rate tables are not in the corpus.",
+    "top_score": 0.672,
+    "top_sources": [
+     "dod_fmr_vol7a.pdf",
+     "dod_fmr_vol7a.pdf",
+     "dod_fmr_vol7a.pdf",
+     "dod_fmr_vol7a.pdf"
+    ]
+   }
+  ],
+  "score_separation": {
+   "answerable_top1_mean": 0.73,
+   "answerable_top1_min": 0.62,
+   "out_of_corpus_top1_mean": 0.715,
+   "out_of_corpus_top1_max": 0.75
+  },
+  "warnings": [],
+  "seconds": 3.3
+ }
+}

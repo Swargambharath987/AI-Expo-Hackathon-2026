@@ -416,6 +416,9 @@ class ReActAgent:
         self.last_form: dict | None = None   # fill_form result from the latest turn
         # Every tool call of the latest turn: {name, args, result (raw string)}
         self.last_tool_results: list[dict] = []
+        # Parsed tool results across recent turns — what fill_form may draw on
+        # besides the user's words (e.g. a DD 1610 after last turn's estimate)
+        self._recent_tool_results: list[dict] = []
         # Grounding report for the latest answer (see verify_answer), or None
         self.last_verification: dict | None = None
 
@@ -555,6 +558,7 @@ class ReActAgent:
         self._history = []
         self.last_form = None
         self.last_tool_results = []
+        self._recent_tool_results = []
         self.last_verification = None
 
     def get_history(self) -> list[dict]:
@@ -616,9 +620,11 @@ class ReActAgent:
                     yield observation_header
 
                     # Execute tool
-                    result_str = execute_tool(tool_name, tool_args, self._profile)
+                    result_str = execute_tool(tool_name, tool_args, self._profile,
+                                              self._form_context())
                     self.last_tool_results.append(
                         {"name": tool_name, "args": tool_args, "result": result_str})
+                    self._remember_tool_result(tool_name, result_str)
                     if tool_name == "fill_form":
                         try:
                             form = json.loads(result_str)
@@ -747,6 +753,21 @@ class ReActAgent:
             window = window[1:]
         messages.extend(window)
         return messages
+
+    def _form_context(self) -> dict:
+        """What fill_form may take values from: everything the user said in
+        this conversation, and recent tool results."""
+        user_text = "\n".join(m["content"] for m in self._history if m["role"] == "user")
+        return {"user_text": user_text, "tool_results": list(self._recent_tool_results)}
+
+    def _remember_tool_result(self, name: str, result_str: str):
+        if name == "search_regulations":
+            return   # regulation text is not a source of anyone's name or unit
+        try:
+            result = json.loads(result_str)
+        except json.JSONDecodeError:
+            return
+        self._recent_tool_results = (self._recent_tool_results + [{"name": name, "result": result}])[-20:]
 
     def _add_message(self, role: str, content: str):
         self._history.append({"role": role, "content": content})

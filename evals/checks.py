@@ -232,6 +232,19 @@ def extract_citations(answer: str) -> tuple[list[tuple[str, str | None]], list[s
     return docs, sections
 
 
+# Saying a document is unavailable, or pointing the user to it, is not citing it.
+_REFUSAL = re.compile(r"not (?:in|part of|available|included)|isn.?t (?:in|available|part)|"
+                      r"(?:don.?t|do not) have|couldn.?t|could not|unable|no access|"
+                      r"refer (?:directly )?to|consult|available (?:at|from|on)|apd\.army\.mil", re.I)
+
+
+def _named_only_to_refuse(name: str, answer: str) -> bool:
+    """True when every sentence naming the document says it isn't available."""
+    sents = [s for s in re.split(r"(?<=[.!?])\s+|\n+", norm_dashes(answer))
+             if re.search(re.escape(norm_dashes(name)), s, re.I)]
+    return bool(sents) and all(_REFUSAL.search(s) for s in sents)
+
+
 def check_citations(answer: str, src: Sources) -> dict:
     docs, sections = extract_citations(answer)
     corpus, sources = _search_corpus(src)
@@ -247,6 +260,8 @@ def check_citations(answer: str, src: Sources) -> dict:
         if re.search(rf"(?<!\w){re.escape(norm_dashes(name))}(?!\w)", src.tool_text, re.I):
             continue   # e.g. calculate_travel_cost's own "First/last day at 75% per JTR" note
         if not srcfile and re.search(re.escape(norm_dashes(name)), corpus, re.I):
+            continue
+        if not srcfile and _named_only_to_refuse(name, answer):
             continue
         bad_docs.append(name + ("" if srcfile else " (not in corpus)"))
     for s in sections:
@@ -499,15 +514,17 @@ def score_case(case: dict, trace: dict, profile: dict = PROFILE) -> dict:
             "counselee": counsel, "pii": pii,
             "ok": dollars["ok"] and cites["ok"] and fields["ok"] and counsel["ok"] and pii["ok"],
         }
-        # fill_form silently ignores keys that aren't on the form — record them
+        # Keys fill_form reported as not on the form (after its own synonym
+        # and alias mapping), and values it left blank as untraceable
         dropped = []
-        from agents.tools import FORM_DISPLAY_FIELDS
         for c in t["tool_calls"]:
             if c["name"] == "fill_form":
                 fn = str(c["args"].get("form_name", "")).upper()
-                known = {k for k, _ in FORM_DISPLAY_FIELDS.get(fn, [])}
                 fv = c["args"].get("field_values") or {}
-                dropped += [f"{fn}.{k}={str(v)[:40]!r}" for k, v in fv.items() if known and k not in known]
+                res = c.get("result") or {}
+                dropped += [f"{fn}.{k}={str(fv.get(k))[:40]!r}" for k in res.get("ignored_fields", [])]
+                dropped += [f"{fn}.{k}={str(v)[:40]!r} (left blank: untraceable)"
+                            for k, v in (res.get("unverified_fields") or {}).items()]
         harness_warn = None
         if len(t["api_tool_calls"]) != len(t["tool_calls"]):
             harness_warn = (f"recorded {len(t['tool_calls'])} tool calls but API reported "
