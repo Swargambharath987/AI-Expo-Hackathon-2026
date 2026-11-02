@@ -106,6 +106,35 @@ KNOWN_DISTANCES: dict[tuple[str, str], int] = {
     ("fort belvoir",     "pentagon"):          15,
 }
 
+# Former/restored installation names → the name used in KNOWN_DISTANCES and
+# the GSA cache. Several Army posts were renamed in 2023 and renamed back in
+# 2025, so users say either; joint bases also go by their component names.
+INSTALLATION_ALIASES: dict[str, str] = {
+    "fort bragg":       "fort liberty",
+    "fort benning":     "fort moore",
+    "fort hood":        "fort cavazos",
+    "fort gordon":      "fort eisenhower",
+    "fort sam houston": "jbsa",
+    "lackland":         "jbsa",
+    "randolph":         "jbsa",
+    "joint base san antonio": "jbsa",
+    "fort lewis":       "jblm",
+    "mcchord":          "jblm",
+    "joint base lewis-mcchord": "jblm",
+    "fort richardson":  "jber",
+    "elmendorf":        "jber",
+    "aberdeen proving ground": "apg",
+}
+
+
+def canonical_installation_text(text: str) -> str:
+    """Lowercase text with any alias replaced by its canonical installation name."""
+    text = text.lower()
+    for alias, canonical in INSTALLATION_ALIASES.items():
+        text = text.replace(alias, canonical)
+    return text
+
+
 # ---------------------------------------------------------------------------
 # Lazy-loaded singletons (expensive — load only when first tool is called)
 # ---------------------------------------------------------------------------
@@ -230,8 +259,9 @@ def get_per_diem(city: str, state: str = "", year: str = "2026") -> dict:
             entry = rates_db[direct_key]
             return _format_per_diem(entry, "exact_match")
 
-        # Try matching by installation name
-        city_lower = city.lower()
+        # Try matching by installation name (aliases resolved first, e.g.
+        # "Fort Sam Houston" is cached under "JBSA")
+        city_lower = canonical_installation_text(city).strip()
         for key, entry in rates_db.items():
             inst = entry.get("installation", "").lower()
             if city_lower in inst or inst in city_lower:
@@ -345,7 +375,8 @@ def calculate_travel_cost(
                 # KNOWN_DISTANCES keys are plain lowercased strings (with
                 # spaces), not the underscore-joined form _normalize()
                 # produces for the GSA cache — match that format instead.
-                o, d = origin.strip().lower(), destination_city.strip().lower()
+                o = canonical_installation_text(origin).strip()
+                d = canonical_installation_text(destination_city).strip()
                 one_way_miles = KNOWN_DISTANCES.get((o, d)) or KNOWN_DISTANCES.get((d, o), 0)
             if one_way_miles > 0:
                 round_trip_miles = one_way_miles * 2
@@ -721,6 +752,22 @@ PROFILE_ROLE_MAP: dict[str, dict[str, str]] = {
 }
 
 
+# When the user files a form about someone else (e.g. sends a soldier on
+# TDY), the model names that person with one of these keys. Not used on
+# DA_4856, where soldier_* are the form's own fields.
+SUBJECT_ALIASES: dict[str, str] = {
+    "subject_name":  "name_last_first", "subject_rank":  "rank", "subject_grade":  "grade",
+    "traveler_name": "name_last_first", "traveler_rank": "rank", "traveler_grade": "grade",
+    "soldier_name":  "name_last_first", "soldier_rank":  "rank", "soldier_grade":  "grade",
+}
+IDENTITY_KEYS = ("name_last_first", "rank", "grade", "ssn_last4", "dod_id")
+
+
+def _last_name(name: str) -> str:
+    name = (name or "").strip().lower()
+    return (name.split(",")[0] if "," in name else (name.split() or [""])[-1]).strip()
+
+
 def _profile_for_form(form_name: str, profile: dict | None) -> dict:
     profile = profile or {}
     role_map = PROFILE_ROLE_MAP.get(form_name)
@@ -770,13 +817,31 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
             }
 
         # Merge soldier profile into field_values (profile provides defaults)
-        merged  = {**_profile_for_form(form_name, profile), **field_values}   # field_values overrides profile
+        field_values = dict(field_values or {})
+        if form_name != "DA_4856":
+            for alias, key in SUBJECT_ALIASES.items():
+                if alias in field_values:
+                    value = field_values.pop(alias)
+                    if value:
+                        field_values[key] = value
+        base = _profile_for_form(form_name, profile)
+        # Someone other than the user is the subject: none of the user's own
+        # identity (name, rank, SSN-4, DoD ID) may land on that person's form.
+        subject = field_values.get("name_last_first")
+        if subject and _last_name(subject) != _last_name((profile or {}).get("name_last_first", "")):
+            for key in IDENTITY_KEYS:
+                base.pop(key, None)
+        merged  = {**base, **field_values}   # field_values overrides profile
 
         # Auto-populate date if not provided
         if not merged.get("date"):
             merged["date"] = datetime.now().strftime("%d %b %Y").upper()
 
         display_schema = FORM_DISPLAY_FIELDS[form_name]
+        # Report keys this form doesn't have instead of dropping them
+        # silently, so the model can see and correct a wrong key.
+        known_keys = {k for k, _ in display_schema} | {"date"}
+        ignored = sorted(k for k in field_values if k not in known_keys)
 
         # Build display_rows and track filled / missing
         display_rows:   list = []
@@ -868,6 +933,9 @@ def fill_form(form_name: str, field_values: dict, profile: dict | None = None) -
             "missing_fields": missing_labels,
             "summary":        summary_text,
         }
+        if ignored:
+            result["ignored_fields"] = ignored
+            result["ignored_note"] = f"These keys are not on {form_name} and were not used: {', '.join(ignored)}"
         if acroform_path:
             result["acroform_pdf_path"] = str(acroform_path)
             result["note"] = (
@@ -912,8 +980,8 @@ TOOL_SCHEMAS = [
                     },
                     "n": {
                         "type": "integer",
-                        "description": "Number of results to return (default 2, max 4)",
-                        "default": 2,
+                        "description": "Number of results to return (default 4)",
+                        "default": 4,
                     },
                 },
                 "required": ["query"],
@@ -1018,7 +1086,8 @@ TOOL_SCHEMAS = [
                     "field_values": {
                         "type": "object",
                         "description": (
-                            "Dict of field values. Common fields: "
+                            "Dict of field values. For a form about someone other than the user "
+                            "(DD_1610, DA_31, DA_4187), give that person as subject_name / subject_rank. Common fields: "
                             "departure_date, return_date, destination, purpose, travel_mode, cost_estimate (DD_1610); "
                             "leave_type, num_days, leave_address (DA_31); "
                             "soldier_name, soldier_rank, counseling_type, key_points, action_plan, leader_position (DA_4856); "

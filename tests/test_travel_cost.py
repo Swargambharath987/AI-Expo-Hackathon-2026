@@ -91,3 +91,11 @@ def test_unknown_city_falls_back_to_standard_conus_rate():
 def test_installation_name_resolves_to_city_rate():
     r = get_per_diem("Fort Moore", "GA")
     assert (r["lodging"], r["mie"]) == (MOORE_LODGING, MOORE_MIE)
+
+
+def test_renamed_installations_resolve():
+    # Cached as "JBSA" / distances keyed on 2023 names; users say either
+    sam = get_per_diem("Fort Sam Houston", "TX")
+    assert sam["match_type"] == "installation_match" and sam["installation"] == "JBSA"
+    r = calculate_travel_cost("Fort Benning", "GA", 5, "POV", 0, origin="Fort Bragg")
+    assert r["mileage"]["one_way_miles"] == 370

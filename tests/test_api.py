@@ -244,3 +244,22 @@ def test_counseling_form_puts_user_as_counselor_not_soldier(monkeypatch, tmp_pat
     assert f["Name of Soldier"] == "SMITH, JOHN" and f["Rank"] == "PFC"
     assert f["Counselor Name"] == "RIVERA, MARIA J" and f["Counselor Rank/Title"] == "SSG"
     assert "1234" not in r["summary"]          # counselor's SSN never on the soldier's form
+
+
+def test_form_for_someone_else_never_carries_users_identity(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    r = fill_form("DD_1610", {"subject_name": "RIVERA, MARIA", "subject_rank": "SPC", "destination": "Fort Moore"},
+                  profile={"name_last_first": "CARTER, JAMES R", "rank": "SSG", "ssn_last4": "4321",
+                           "dod_id": "1234567890", "unit": "1-503 IN"})
+    f = r["filled_fields"]
+    assert f["Traveler Name"] == "RIVERA, MARIA" and f["Grade/Rank"] == "SPC"
+    assert "CARTER" not in r["summary"] and "4321" not in r["summary"]
+    assert f["Organization"] == "1-503 IN"          # shared unit still useful
+
+
+def test_unknown_form_keys_are_reported_not_silently_dropped(monkeypatch, tmp_path):
+    import agents.tools as tools
+    monkeypatch.setattr(tools, "OUTPUT_DIR", tmp_path)
+    r = fill_form("DD_1610", {"destination": "Fort Moore", "made_up_key": "x"})
+    assert r["ignored_fields"] == ["made_up_key"]

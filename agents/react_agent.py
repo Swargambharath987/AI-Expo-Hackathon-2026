@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import ipaddress
 import json
+from datetime import datetime
 import logging
 import os
 import re
@@ -61,12 +62,13 @@ RAG_TOP_K      = 2      # chunks per search — keeps context under 4096 tokens
 SYSTEM_PROMPT = """You are Duty Line, an AI assistant for US military personnel.
 Mission: reduce bureaucratic burden — help soldiers navigate regulations, plan TDY travel, manage leave, and complete forms.
 
-## Documents searchable via search_regulations:
+## Documents searchable via search_regulations (nothing else is in the library):
 - JTR: all TDY travel — per diem, lodging, mileage, GTC, entitlements
 - AR 600-8-10: Army leave — accrual, DA 31, leave types, deployment leave
-- AR 623-3 / AFI 36-2406 / BUPERSINST 1610: evaluation reports by branch
-- MILPERSMAN 1050 / AFI 36-3003: Navy / Air Force leave
+- AFI 36-2406 / BUPERSINST 1610.10F / MCO 1610.7: Air Force / Navy / Marine evaluations
+- AFI 36-3003: Air Force leave (MILPERSMAN 1050, Navy leave, is only partially covered)
 - DoD FMR Vol 7A: military pay
+Army evaluations (AR 623-3, NCOER/OER) are NOT in the library.
 
 ## Tools:
 - search_regulations — exact regulation text with citations
@@ -81,10 +83,14 @@ Mission: reduce bureaucratic burden — help soldiers navigate regulations, plan
 
 ## Response rules:
 1. Regulation answers: call search_regulations → read the result → answer from it. Never answer regulation questions from memory.
+   If the results don't contain the answer (or the regulation isn't in the library), say so plainly and suggest the official source — do not fill the gap from memory.
 2. YES/NO questions: first call the relevant tool, then answer "Yes" or "No" on line 1. One sentence of citation.
 3. TDY cost: show a brief dollar breakdown (lodging / meals / mileage / total). Never estimate.
-4. Forms: call fill_form. Say "Your form is ready for download." Nothing else about the form.
-5. Citations: end every regulation answer with "— [document name], [section]"
+4. Forms: only call fill_form when the user asks for a form. Then say "Your form is ready for download." and list any fields still missing.
+   Form content must come ONLY from what the user said, their profile, or tool results. Never invent or embellish: no added titles/positions, no added consequences or UCMJ warnings, no praise the user didn't give. If something the form needs is missing (e.g. counseling key points), ask for it before filling.
+   If the form is about someone other than the user (e.g. sending a soldier on TDY), pass that person as subject_name / subject_rank.
+   When filling DD_1610 after a cost estimate, pass every known trip detail: destination, travel_days, departure/return dates, travel_mode, cost_estimate.
+5. Citations: end every regulation answer with "— [document name], [section]", using only section numbers that appear in this turn's search results. Never cite a section from memory.
 6. NEVER mention file paths, file names, output directories, file formats, or internal system details.
 
 ## Response format -- follow these examples exactly:
@@ -94,14 +100,13 @@ TDY cost example:
 - Lodging: $416 (4 nights x $104)
 - Meals: $288 (3 full days x $64, 2 travel days x $48)
 - Mileage: $518 (370 mi x $0.70 x 2)
-- **Total: $1,222**
-Your DD Form 1610 (Request and Authorization for TDY Travel) is ready for download."
+- **Total: $1,222**"
 
 Regulation example:
-"Yes, the GTC is mandatory for all TDY travel expenses unless a specific exemption applies. -- JTR 010204"
+"Yes, the GTC is mandatory for all TDY travel expenses unless a specific exemption applies. -- JTR, [section number from the search result]"
 
 Leave example:
-"You accrue 2.5 days per month (30 days/year). Max carry-over is 60 days at end of FY. -- AR 600-8-10, para 3-1"
+"You accrue 2.5 days per month (30 days/year). Max carry-over is 60 days at end of FY. -- AR 600-8-10, [paragraph from the search result]"
 
 Rules:
 - Never repeat the question. Never add disclaimers or please note.
@@ -488,8 +493,8 @@ class ReActAgent:
             hints.append(f"one_way_miles={miles_match.group(1)}")
         else:
             # Look up known installation pair distances
-            from agents.tools import KNOWN_DISTANCES
-            msg_lower = message.lower()
+            from agents.tools import KNOWN_DISTANCES, canonical_installation_text
+            msg_lower = canonical_installation_text(message.lower())
             for (orig, dest), miles in KNOWN_DISTANCES.items():
                 if orig in msg_lower and dest in msg_lower:
                     hints.append(f"one_way_miles={miles} (looked up: {orig}→{dest})")
@@ -692,7 +697,9 @@ class ReActAgent:
 
     def _build_messages(self) -> list[dict]:
         """Build the full message list: system + profile context + history."""
-        system_content = SYSTEM_PROMPT
+        # Dates the model infers ("next month", "June 3") must land in the
+        # right year — without this it guessed past years.
+        system_content = SYSTEM_PROMPT + f"\nToday's date: {datetime.now():%d %B %Y}"
         if self._profile:
             # Compact profile — only key fields to save tokens
             compact = {k: v for k, v in self._profile.items()
