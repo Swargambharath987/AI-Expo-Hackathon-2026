@@ -13,6 +13,13 @@ const ICONS: Record<string, typeof WrenchIcon> = {
 
 const clean = (s: string) => s.replace(/^\s*→\s*/, "").trim();
 
+/** Source file → document name, e.g. "ar_600_8_10.pdf" → "AR 600-8-10", "jtr.pdf" → "JTR". */
+function docName(source: string): string {
+  const base = source.trim().replace(/\.pdf$/i, "");
+  const m = base.match(/^([a-z]+)_(.+)$/i);
+  return m ? `${m[1].toUpperCase()} ${m[2].replace(/_/g, "-").toUpperCase()}` : base.toUpperCase();
+}
+
 /** Short past-tense phrase for one tool call, e.g. "searched JTR 020210". */
 function stepPhrase(tc: ToolCallItem): string {
   const summary = clean(tc.result_summary);
@@ -20,7 +27,7 @@ function stepPhrase(tc: ToolCallItem): string {
     case "search_regulations": {
       // "Found: JTR | 020210 Per diem … (score 0.81)"
       const m = summary.match(/^Found:\s*([^|]+?)\s*\|\s*([^\s(|]+)/);
-      return m ? `searched ${m[1]} ${m[2]}` : "searched regulations";
+      return m ? `searched ${docName(m[1])} ${m[2].replace(/\.+$/, "")}` : "searched regulations";
     }
     case "get_per_diem": {
       const m = tc.label.match(/for\s+([^,]+)/);

@@ -124,12 +124,23 @@ The agent connects to any OpenAI-compatible API through a single environment var
 Set `LLM_MODEL` to the provider's model id (e.g. `claude-sonnet-4-6`, `gpt-4.1`,
 `anthropic/claude-sonnet-4.6` on OpenRouter). The model must support tool calling.
 
-Visitors can also **use their own key**: *AI settings* in the sidebar lets
-them pick Anthropic, OpenAI or OpenRouter, paste a key (checked against the provider's
-free model-list endpoint, then they choose a model), and their requests go to
-that provider instead of the server's. The key stays in their browser's
-localStorage and is only ever sent to the fixed provider URL — the request
-can't redirect it elsewhere.
+Visitors can also **use their own key**: *AI settings* in the sidebar offers
+Anthropic, OpenAI, OpenRouter, Groq, Mistral, Google Gemini, DeepSeek, xAI and
+Together AI, plus **Custom** — any OpenAI-compatible endpoint by base URL. The
+key is checked against the provider's free model-list endpoint, the visitor
+picks a model, and their requests go to that provider instead of the
+server's. The key stays in their browser's localStorage and is never logged
+or stored server-side. Custom URLs must be public HTTPS endpoints: the server
+refuses private/internal addresses (checked again at connect time) and never
+follows redirects, so the feature can't be used to reach internal services.
+
+### Verified answers
+
+After the model answers, the server checks it deterministically: every dollar
+figure must match a value the tools actually returned, and every cited
+section must appear in the regulation text retrieved for that answer. A
+mismatched figure gets one corrective retry; anything still unverified is
+flagged in the UI next to the answer.
 
 This means Duty Line isn't locked into a single vendor. If a better model comes out tomorrow, or if procurement requires a specific provider, or if policy changes which APIs are authorized on a given network — the switch is one line in a config file. The rest of the system (retrieval, cost calculation, form generation) is completely independent of which LLM is behind the endpoint.
 
@@ -139,7 +150,7 @@ This means Duty Line isn't locked into a single vendor. If a better model comes 
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18, Vite, TypeScript, Tailwind CSS |
+| Frontend | React 19, Vite, TypeScript, Tailwind CSS v4, shadcn/ui, react-hook-form + zod, react-markdown |
 | Backend | FastAPI, Uvicorn, Python 3.10+ |
 | Agent | ReAct loop — single model, 4 tools, max 5 iterations |
 | LLM | Model-agnostic via OpenAI-compatible API (Claude API default) |
