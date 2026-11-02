@@ -233,41 +233,19 @@ users and never written to the server.
 
 ---
 
-## Deploying (Google Cloud Run)
+## Deploying
 
-The live app runs on Cloud Run (project `duty-line`, region `us-central1`).
-The `Dockerfile` builds the React frontend and bundles it into the same
-FastAPI process (backend serves the built UI under `/`, API under `/api/*`)
-— one service, one URL.
+The `Dockerfile` builds the React frontend and serves it from the same
+FastAPI process (UI under `/`, API under `/api/*`), so it runs as one
+container on any host that runs Docker images — Google Cloud Run, Render
+(`render.yaml` included), Fly.io, etc.
 
-From the repo root (Cloud Build builds the Dockerfile, no local Docker needed):
-
-```bash
-gcloud run deploy duty-line --source . --region us-central1 \
-  --allow-unauthenticated --memory 1Gi --max-instances 1
-```
-
-- `--max-instances 1` is a deliberate spend cap, and the in-memory sessions
-  and rate limits rely on it. Raising it would need shared state (e.g. Redis).
-- `LLM_API_KEY` is never in git. To set or rotate it, run
-  `./scripts/set_llm_key.sh` — it prompts for the key with hidden input,
-  checks it with Anthropic, and updates Cloud Run (about a minute, no
-  rebuild) and your local `.env`. Or edit it in the Cloud Run console
-  (Edit & deploy new revision → Variables & Secrets).
-- `/api/health` checks the key for real (free model-list call, cached), so
-  the "AI Model" status light turns red if the key is revoked.
-- A build takes ~5–10 minutes. Check it with
-  `curl https://duty-line-nfkymvutzq-uc.a.run.app/api/health`.
-
-### Alternative: Render
-
-1. On [Render](https://render.com), New → Web Service → connect this repo.
-   Render auto-detects `render.yaml` and the Docker runtime.
-2. Set the `LLM_API_KEY` environment variable in the Render dashboard
-   (kept out of `render.yaml`/git on purpose).
-3. Deploy. First build takes a few minutes (installs `sentence-transformers`
-   / `chromadb` / torch). The free instance (512MB RAM) may be tight for the
-   embedding model at load — bump to Starter if it OOMs on boot.
+- Provide `LLM_API_KEY` (and optionally `LLM_BASE_URL` / `LLM_MODEL`) as
+  environment variables on the host — never commit them.
+- Give the container about 1 GB of memory (the embedding model and vector
+  store load at startup).
+- Run a single instance: sessions and rate limits are kept in memory.
+  Scaling out would need shared state (e.g. Redis).
 
 ---
 
