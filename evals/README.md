@@ -1,6 +1,6 @@
 # Duty Line evals
 
-An evaluation harness for the Duty Line agent. The 43 unit tests under
+An evaluation harness for the Duty Line agent. The 104 unit tests under
 `tests/` fake the LLM. This harness calls the real model through the real
 FastAPI app and measures what the system actually does. It does not modify
 any app code. Everything is wrapped at runtime.
@@ -77,7 +77,8 @@ runs used claude-sonnet-4-6 at $3/$15); override with `EVAL_PRICE_IN_PER_M` / `E
   tokens per call. A turn that searches carries 4 regulation chunks of about
   3k characters each, so input tokens dominate the cost.
 - The full suite at `--repeats 1` (23 cases, 27 turns, 51 calls) cost
-  **$0.70**.
+  **$0.70** on Sonnet 4.6. With the 15 cases in `variants.yaml` there are 38
+  cases (about $1.10 on Sonnet 5.5, not yet measured).
 - `--tags tdy,form --repeats 3` (12 cases, 48 turns, 91 calls) cost
   **$1.15**.
 - Retrieval and `--rescore` are free.
@@ -166,8 +167,8 @@ full tool results. Use `--rescore` to re-score those traces after you change
 a check, with no new API spend.
 
 ## Known limitations of the method
-- **Sample size.** 23 cases and k=3 repeats give wide confidence intervals.
-  Treat ±10 points as noise.
+- **Sample size.** 23 measured cases (38 defined) and k=3 repeats give wide
+  confidence intervals; reports print 95% intervals. Treat ±10 points as noise.
 - **Lenient grounding check (a).** Search results contain many numbers, so
   a `$` amount that happens to appear in any retrieved chunk passes.
 - **Lenient grounding check (b).** A section id that appears anywhere in the

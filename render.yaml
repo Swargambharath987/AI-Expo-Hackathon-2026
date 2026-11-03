@@ -3,6 +3,8 @@ services:
     name: duty-line
     runtime: docker
     dockerfilePath: ./Dockerfile
+    # Needs about 2 GB of RAM (search model + indexes); a 512 MB plan will be
+    # killed on the first regulation search. Pick a plan with 2 GB or more.
     plan: starter
     envVars:
       - key: LLM_BASE_URL

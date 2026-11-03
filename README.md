@@ -240,7 +240,7 @@ python3 -m pytest tests
 4. **Task success** — exact TDY totals, correct form, no unrequested forms
 5. **Consistency** — pass^k over repeated runs
 
-Agent results (23 cases, real model):
+Agent results (23 cases, measured on `claude-sonnet-4-6`):
 
 | Metric | Baseline | After fixes (95% CI) |
 |---|---|---|
@@ -266,8 +266,11 @@ intervals are wide — read differences under ~10 points as noise. The one
 remaining failure (an invented counselor position) is now blocked by the
 form check above; that fix and 15 new cases (`evals/cases/variants.yaml`:
 missing details, prompt injection, PII requests, out-of-library questions)
-have not been run against the model yet. Everyday wording is still the
-weakest part of search.
+have not been run against the model yet. The default model is now
+`claude-sonnet-5-5`; it was spot-checked on the live site (a cost estimate,
+a regulation question with citations, and an out-of-library question) but the
+full evaluation has not been re-run on it, so the table above describes
+Sonnet 4.6. Everyday wording is still the weakest part of search.
 
 ```bash
 python -m evals.run --only retrieval     # free; also runs in CI
@@ -281,8 +284,8 @@ rate limited: **10 requests/minute and 100/day per IP, 500/day total**.
 Requests made with a visitor's own key skip the daily caps (they don't
 spend the server's credit) but keep the per-minute limit.
 Over the limit the API returns `429` with a `Retry-After` header and the UI
-shows a "please wait" message. Each Claude call times out after 30s and a
-whole chat turn is capped at 120s. All limits are tunable via environment
+shows a "please wait" message. Each model call times out after 60s and a
+whole chat turn is capped at 180s. All limits are tunable via environment
 variables:
 
 | Variable | Default | Meaning |
@@ -290,8 +293,8 @@ variables:
 | `RATE_PER_IP_MINUTE` | `10` | Chat requests per IP per minute |
 | `RATE_PER_IP_DAY` | `100` | Chat requests per IP per day |
 | `RATE_GLOBAL_DAY` | `500` | Chat requests per day across all users |
-| `LLM_TIMEOUT` | `30` | Seconds per LLM API call |
-| `CHAT_TIMEOUT` | `120` | Seconds per full chat turn |
+| `LLM_TIMEOUT` | `60` | Seconds per LLM API call |
+| `CHAT_TIMEOUT` | `180` | Seconds per full chat turn |
 
 Each browser gets its own conversation per tab (via an httponly session
 cookie). Conversations are held in memory and reset when the server
@@ -310,8 +313,10 @@ container on any host that runs Docker images — Google Cloud Run, Render
 
 - Provide `LLM_API_KEY` (and optionally `LLM_BASE_URL` / `LLM_MODEL`) as
   environment variables on the host — never commit them.
-- Give the container about 1 GB of memory (the embedding model and vector
-  store load at startup).
+- Give the container about 2 GB of memory. The search model, the vector
+  index and the keyword index load on the first regulation search; 1 GB was
+  not enough on the live server. After idling, the first request takes about
+  a minute while they load.
 - Run a single instance: sessions and rate limits are kept in memory.
   Scaling out would need shared state (e.g. Redis).
 
@@ -371,12 +376,17 @@ AI-Expo-Hackathon-2026/
 │   ├── marine_regs/            # MCO 1610.7
 │   └── dod_regs/               # DoD FMR Vol 7A
 ├── frontend/
-│   ├── src/App.tsx             # React UI — chat, profile, tool traces, form download
-│   ├── src/AnimatedBackground.tsx
-│   ├── src/index.css           # Military color scheme + classification banner
+│   ├── src/App.tsx             # App shell: tabs, state, responsive layout
+│   ├── src/components/         # Header, sidebar ("Your forms"), profile form, AI settings,
+│   │   └── chat/               #   chat panel, collapsible tool steps, verification badge, form card
+│   ├── src/lib/                # API client, localStorage, constants
 │   └── vite.config.ts          # Proxies /api/* -> localhost:8000
 ├── vectorstore/                # Pre-built ChromaDB index (23 MB; rebuilt by ingest.py)
 ├── output/                     # Generated form PDFs (gitignored)
+├── tests/                      # 104 pytest cases (LLM faked)
+├── evals/                      # Evaluation harness, gold sets, reports
+├── scripts/                    # set_llm_key.sh, fetch_gsa_cache.py
+├── .github/workflows/ci.yml    # Tests, retrieval eval, frontend + Docker builds
 ├── ARCHITECTURE.md             # Detailed design decisions
 └── FRONTEND_API_SPEC.md        # Full API contract for frontend/backend
 ```

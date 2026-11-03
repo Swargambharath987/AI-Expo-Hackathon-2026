@@ -94,7 +94,7 @@ Click the **Evaluations** tab.
 **Prompt 1:**
 > Write NCOER bullets for a squad leader who improved Table VI pass rate from 60% to 95%.
 
-*AR 623-3 compliant bullets with measurable impact.*
+*Bullets that lead with a measurable result. (AR 623-3 isn't in the library yet, so don't claim Duty Line is citing it.)*
 
 *"The hardest part of writing an eval — done in 10 seconds."*
 
