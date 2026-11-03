@@ -37,6 +37,13 @@ VECTORSTORE   = Path("vectorstore")
 EMBED_MODEL   = "BAAI/bge-small-en-v1.5"   # small, fast, offline after first run
 COLLECTION    = "dutyline"
 
+# These limits count WORDS (see estimate_tokens), not model tokens. Text here
+# runs ~1.67 tokens per word, so most passages exceed bge-small's 512-token
+# window and the embedding only sees their first part (keyword search and
+# the LLM still see all of it). Re-chunking to 400 real tokens (4,960
+# passages) was tested in Nov 2026 and scored WORSE on the gold queries:
+# MRR 0.66 -> 0.55, Recall@4 0.75 -> 0.71. Don't "fix" this without re-running
+# python -m evals.run --only retrieval on both versions.
 CHUNK_MIN_TOKENS = 150
 CHUNK_MAX_TOKENS = 600
 
