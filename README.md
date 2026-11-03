@@ -185,14 +185,18 @@ git clone https://github.com/Swargambharath987/AI-Expo-Hackathon-2026.git
 cd AI-Expo-Hackathon-2026
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements-ingest.txt   # runtime deps + pdfplumber
+pip install -r requirements.txt
 
 # 2. Configure LLM provider
 cp .env.example .env
 # Edit .env — add your Claude API key (or OpenRouter key)
 
-# 3. Build the search index from the regulation PDFs in data/ (~3 min, once;
-#    again only if a PDF or ingest.py changes). Docker does this itself.
+# 3. (Optional) Rebuild the search index — only needed if you change the
+#    source regulations or ingest.py. A pre-built vectorstore/ ships in the
+#    repo, so most setups can skip straight to step 4. Rebuilds from the PDFs
+#    in data/ in about 3 minutes; needs pdfplumber, which isn't in the
+#    runtime requirements:
+pip install -r requirements-ingest.txt
 python3 ingest.py
 
 # 4. Start the backend (Terminal 1)
@@ -371,7 +375,7 @@ AI-Expo-Hackathon-2026/
 │   ├── src/AnimatedBackground.tsx
 │   ├── src/index.css           # Military color scheme + classification banner
 │   └── vite.config.ts          # Proxies /api/* -> localhost:8000
-├── vectorstore/                # ChromaDB index built by ingest.py (gitignored)
+├── vectorstore/                # Pre-built ChromaDB index (23 MB; rebuilt by ingest.py)
 ├── output/                     # Generated form PDFs (gitignored)
 ├── ARCHITECTURE.md             # Detailed design decisions
 └── FRONTEND_API_SPEC.md        # Full API contract for frontend/backend

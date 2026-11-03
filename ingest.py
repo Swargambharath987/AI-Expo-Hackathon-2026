@@ -7,14 +7,13 @@ Run once to build the vector store:
 
 Run with --verify to test retrieval after ingestion:
     python ingest.py --verify
-
-Recompute context headers and embeddings for the existing store, without
-the source PDFs (chunk text and ids stay the same):
-    python ingest.py --reembed
 """
 
+import gc
 import os
 import re
+import shutil
+import sqlite3
 import sys
 import logging
 import warnings
@@ -138,7 +137,7 @@ def download_pdf(url: str, dest: Path) -> bool:
 
 def parse_pdf(path: Path) -> list[dict]:
     """Returns list of {text, page} dicts, one per page."""
-    import pdfplumber   # only needed to (re)parse PDFs, not for --reembed
+    import pdfplumber
     pages = []
     try:
         with pdfplumber.open(path) as pdf:
@@ -414,52 +413,42 @@ def verify(collection, model: SentenceTransformer):
 # Main
 # ---------------------------------------------------------------------------
 
-def reembed(collection, model: SentenceTransformer):
-    """Recompute context headers + embeddings in place from the stored chunks."""
-    data = collection.get(include=["documents", "metadatas"])
-    order = sorted(range(len(data["ids"])), key=lambda i: int(data["ids"][i].split("_")[1]))
-    by_source: dict[str, list[int]] = {}
-    for i in order:
-        by_source.setdefault(data["metadatas"][i]["source_file"], []).append(i)
-    for src, idx in by_source.items():
-        for i, header in zip(idx, context_headers(src, [data["documents"][i] for i in idx])):
-            data["metadatas"][i]["context"] = header
-    print(f"  [embed] re-encoding {len(order)} chunks with context headers ...")
-    embeddings = model.encode([embedding_text(m["context"], d) for d, m in zip(data["documents"], data["metadatas"])],
-                              batch_size=32, show_progress_bar=True, normalize_embeddings=True)
-    for start in range(0, len(order), 500):
-        sl = slice(start, start + 500)
-        collection.update(ids=data["ids"][sl], embeddings=embeddings[sl].tolist(), metadatas=data["metadatas"][sl])
-    print(f"  [ok] {len(order)} chunks updated")
+def open_collection(path: Path):
+    client = chromadb.PersistentClient(path=str(path), settings=Settings(anonymized_telemetry=False))
+    return client.get_or_create_collection(name=COLLECTION, metadata={"hnsw:space": "cosine"})
+
+
+def slim_store(path: Path):
+    """Drop Chroma's built-in full-text search index and compact the database.
+
+    Chroma keeps a second copy of every passage for its own text filtering,
+    which this app never uses (keyword search is done in memory by
+    agents/tools.py). Removing it cuts the store from ~54 MB to ~23 MB with
+    identical search results. The store is read-only afterwards: re-run this
+    script to change it (it always rebuilds from scratch).
+    """
+    gc.collect()   # let Chroma release its database connection
+    db = sqlite3.connect(path / "chroma.sqlite3")
+    db.execute("DROP TABLE IF EXISTS embedding_fulltext_search")
+    db.commit()
+    db.execute("VACUUM")
+    db.close()
+    print(f"  [slim] store is now {sum(f.stat().st_size for f in path.rglob('*') if f.is_file()) // 2**20} MB")
 
 
 def main():
     run_verify_only = "--verify" in sys.argv
 
-    VECTORSTORE.mkdir(exist_ok=True)
-
     # Suppress ChromaDB telemetry noise
     os.environ.setdefault("ANONYMIZED_TELEMETRY", "false")
-
-    client = chromadb.PersistentClient(
-        path=str(VECTORSTORE),
-        settings=Settings(anonymized_telemetry=False),
-    )
-    collection = client.get_or_create_collection(
-        name=COLLECTION,
-        metadata={"hnsw:space": "cosine"},
-    )
 
     print("\n=== Loading Embedding Model ===")
     print(f"  model: {EMBED_MODEL}")
     model = SentenceTransformer(EMBED_MODEL)
 
-    if "--reembed" in sys.argv:
-        reembed(collection, model)
-        return
-
     # --verify: skip ingestion, just query existing store
     if run_verify_only:
+        collection = open_collection(VECTORSTORE)
         count = collection.count()
         if count == 0:
             print("[!] Vector store is empty — run without --verify first.")
@@ -510,19 +499,15 @@ def main():
     print(f"\nTotal chunks across all documents: {len(all_chunks)}")
 
     print("\n=== Step 4+5: Embedding and Storing ===")
-    # Clear existing data for clean re-ingest
-    existing = collection.count()
-    if existing > 0:
-        print(f"  [reset] Clearing {existing} existing chunks for clean re-ingest")
-        client.delete_collection(COLLECTION)
-        collection = client.get_or_create_collection(
-            name=COLLECTION,
-            metadata={"hnsw:space": "cosine"},
-        )
-
-
+    # Always a clean rebuild, and only now that every PDF parsed: the old
+    # store is untouched if anything above failed.
+    shutil.rmtree(VECTORSTORE, ignore_errors=True)
+    collection = open_collection(VECTORSTORE)
     build_vectorstore(all_chunks, model, collection)
-    print(f"\n  Total chunks in store: {collection.count()}")
+    total = collection.count()
+    print(f"\n  Total chunks in store: {total}")
+    del collection
+    slim_store(VECTORSTORE)
 
     print("\n=== Done ===")
     print(f"Vector store saved to: {VECTORSTORE}/")

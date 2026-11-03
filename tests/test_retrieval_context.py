@@ -24,3 +24,19 @@ def test_headers_name_document_chapter_and_headings():
     assert "Chapter 3: Special Leave Accrual" in h[3] and "Chapter 2" not in h[3]
     assert "One-time leave sell back" in h[3]
 
+
+
+def test_committed_search_index_is_complete_and_slim():
+    """vectorstore/ is committed, so keep it the size ingest.py produces."""
+    import sqlite3
+    from pathlib import Path
+    import chromadb
+    store = Path(__file__).resolve().parent.parent / "vectorstore"
+    col = chromadb.PersistentClient(path=str(store)).get_collection("dutyline")
+    metas = col.get(include=["metadatas"])["metadatas"]
+    assert len(metas) > 2000
+    assert all(m.get("context") for m in metas), "chunks lack context headers: re-run ingest.py"
+    db = sqlite3.connect(store / "chroma.sqlite3")
+    assert not db.execute("select 1 from sqlite_master where name like '%fulltext%'").fetchone(), \
+        "Chroma's unused text-search index is back (+30 MB): re-run ingest.py"
+    db.close()

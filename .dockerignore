@@ -11,5 +11,15 @@ archive/
 tests/
 scripts/
 
-# Rebuilt from data/ by the Dockerfile
-vectorstore/
+
+# Source regulation PDFs — only needed by ingest.py to (re)build the
+# vectorstore. The runtime app only reads the pre-built vectorstore/
+# and data/forms/ (fillable templates), so these don't need to ship.
+data/jtr/
+data/army_regs/
+data/navy_regs/
+data/af_regs/
+data/marine_regs/
+data/dod_regs/
+ingest.py
+requirements-ingest.txt
